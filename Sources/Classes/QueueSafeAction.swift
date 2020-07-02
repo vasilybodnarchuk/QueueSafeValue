@@ -33,6 +33,13 @@ public struct QueueSafeAction<T> {
         accessQueue.sync { closure?(&valueContainer.value) }
     }
     
+    public func map<V>(closure: ((_ currentValue: inout T) -> V)?) -> V? {
+        guard let accessQueue = accessQueue, let valueContainer = valueContainer else { return nil }
+        var newValue: V?
+        accessQueue.sync { newValue = closure?(&valueContainer.value) }
+        return newValue
+    }
+    
     public func setNewValueAndReturnOld(new value: T) -> T? {
         guard let accessQueue = accessQueue, let valueContainer = valueContainer else { return nil }
         var currentValue: T?

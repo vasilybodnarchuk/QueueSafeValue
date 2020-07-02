@@ -22,7 +22,7 @@ pod 'QueueSafeValue'
 
 ## Author
 
-Vasily Bodnarchuk, vasilybodnarchuk@gmail.com
+Vasily Bodnarchuk, https://www.linkedin.com/in/vasily-bodnarchuk/
 
 ## License
 
