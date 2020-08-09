@@ -45,3 +45,7 @@ public class ValueContainer<T> {
         perform()
     }
 }
+
+extension ValueContainer where T: AnyObject {
+    public func getRetainCount() -> CFIndex { CFGetRetainCount(value) }
+}

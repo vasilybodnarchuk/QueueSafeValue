@@ -19,3 +19,7 @@ public class QueueSafeValue<T> {
     public var wait: QueueSafeAction.When<T> { .init(valueContainer: valueContainer) }
 
 }
+
+extension QueueSafeValue where T: AnyObject {
+    public func getRetainCount() -> CFIndex { valueContainer.getRetainCount() }
+}

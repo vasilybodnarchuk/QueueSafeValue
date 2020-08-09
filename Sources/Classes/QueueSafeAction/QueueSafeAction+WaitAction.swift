@@ -40,9 +40,7 @@ extension QueueSafeAction {
         
         // MARK: Update
     
-        public func update(closure: ((_ currentValue: inout T) -> Void)?) {
-            _perform { closure?(&$0) }
-        }
+        public func update(closure: ((_ currentValue: inout T) -> Void)?) { _perform { closure?(&$0) } }
     
         public func updated(closure: ((_ currentValue: inout T) -> Void)?) -> T? {
             var newValue: T?
@@ -55,9 +53,7 @@ extension QueueSafeAction {
     
         // MAKR: Other
     
-        public func perform(closure: ((T) -> Void)?) {
-            _perform { closure?($0) }
-        }
+        public func perform(closure: ((T) -> Void)?) { _perform { closure?($0) } }
     
         public func transform<V>(closure: ((_ currentValue: T) -> V)?) -> V? {
             var newValue: V?
