@@ -7,22 +7,15 @@
 
 import Foundation
 
-public class ValueContainer<T> {
-    var value: T
-    init (value: T) { self.value = value }
-}
 
 public class QueueSafeValue<T> {
 
-    private let valueContainer: ValueContainer<T>!
-    private var accessQueue: DispatchQueue!
+    private let valueContainer: ValueContainer<T>
 
     public init (value: T) {
         valueContainer = ValueContainer(value: value)
-        let address = Unmanaged.passUnretained(self).toOpaque()
-        let label = "accessQueue.\(type(of: self)).\(address)"
-        accessQueue = DispatchQueue(label: label)
     }
+    
+    public var wait: QueueSafeAction.When<T> { .init(valueContainer: valueContainer) }
 
-    public var syncInCurrentQueue: QueueSafeAction<T> { .init(valueContainer: valueContainer, accessQueue: accessQueue) }
 }
