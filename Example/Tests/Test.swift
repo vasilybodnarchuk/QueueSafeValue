@@ -43,29 +43,34 @@ extension Test {
         let retainCount = (queueSafeValue as? QueueSafeValue<SimpleClass>)?.getRetainCount()
         describe(description) {
             waitUntil(timeout: 100) { done in
-                self.dispatchGroup.notify(queue: .global(qos: .unspecified)) {
-                    self.resultClosure(self)
-                    if let retainCount2 = (self.queueSafeValue as? QueueSafeValue<SimpleClass>)?.getRetainCount() {
-                        it("expect to have the same retain count") {
-                            expect(retainCount) == retainCount2
-                        }
-                    }
-                    done()
-                }
                 DispatchQueue.global(qos: .unspecified).async {
+                    var count = 0
                     for iteration in 0..<self.iterationsCountPerQueue {
                         self.queues.enumerated().forEach { (index, queue) in
+                            let iteration = iteration*self.queues.count + index
                             self.dispatchGroup.enter()
                             queue.async {
-                                let step = iteration*self.queues.count + index
                                 let startTime = Date()
                                 var endDate = startTime
-                                closure(step, self.queueSafeValue, startTime, &endDate)
-                                // expect closure not to run asynchronously
-                                expect(endDate) > startTime
+                                closure(iteration, self.queueSafeValue, startTime, &endDate)
+                                expect(endDate) >= startTime
                                 self.dispatchGroup.leave()
                             }
+                            count = iteration
                         }
+                    }
+                    
+                    self.dispatchGroup.notify(queue: .global(qos: .unspecified)) {
+                        self.resultClosure(self)
+                        if let retainCount2 = (self.queueSafeValue as? QueueSafeValue<SimpleClass>)?.getRetainCount() {
+                            it("expected to have the same retain count") {
+                                expect(retainCount) == retainCount2
+                            }
+                        }
+                        it("expected to execute all iterations") {
+                            expect(count) == self.expectedMeasurementsCount - 1
+                        }
+                        done()
                     }
                     self.dispatchGroup.wait()
                 }

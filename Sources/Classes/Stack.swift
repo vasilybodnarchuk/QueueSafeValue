@@ -14,10 +14,6 @@ protocol Stackable {
     @discardableResult mutating func pop() -> Element?
 }
 
-extension Stackable {
-    var isEmpty: Bool { peek() == nil }
-}
-
 struct Stack<Element>: Stackable /* where Element: Equatable*/ {
     private let accessQueue: DispatchQueue!
     private var storage: [Element]
@@ -30,6 +26,12 @@ struct Stack<Element>: Stackable /* where Element: Equatable*/ {
                                     autoreleaseFrequency: .inherit,
                                     target: nil)
         storage = [Element]()
+    }
+    
+    var isEmpty: Bool {
+        var _isEmpty: Bool!
+        accessQueue.sync { _isEmpty = storage.isEmpty }
+        return _isEmpty
     }
     
     func peek() -> Element? {

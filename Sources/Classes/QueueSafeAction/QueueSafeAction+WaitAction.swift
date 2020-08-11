@@ -18,12 +18,13 @@ extension QueueSafeAction {
         
         private func _perform(closure: @escaping Closure) {
             guard let valueContainer = valueContainer else { return }
-            let semaphore = DispatchSemaphore(value: 1)
+            let dispatchGroup = DispatchGroup()
+            dispatchGroup.enter()
             valueContainer.performLast { current in
                 closure(&current)
-                semaphore.signal()
+                dispatchGroup.leave()
             }
-            semaphore.wait()
+            dispatchGroup.wait()
         }
         
          // MARK: Get
@@ -47,6 +48,9 @@ extension QueueSafeAction {
             _perform {
                 closure?(&$0)
                 newValue = $0
+            }
+            if newValue == nil {
+                print("!!!!!1 nil")
             }
             return newValue
         }
