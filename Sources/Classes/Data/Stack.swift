@@ -14,7 +14,7 @@ protocol Stackable {
     @discardableResult mutating func pop() -> Element?
 }
 
-struct Stack<Element>: Stackable /* where Element: Equatable*/ {
+struct Stack<Element>: Stackable {
     private let accessQueue: DispatchQueue!
     private var storage: [Element]
 
@@ -48,6 +48,4 @@ struct Stack<Element>: Stackable /* where Element: Equatable*/ {
     }
 }
 
-extension Stack: CustomStringConvertible {
-    var description: String { "\(storage)" }
-}
+extension Stack: CustomStringConvertible { var description: String { "\(storage)" } }

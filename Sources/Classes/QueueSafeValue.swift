@@ -9,15 +9,9 @@ import Foundation
 
 
 public class QueueSafeValue<T> {
-
     private let valueContainer: ValueContainer<T>
-
-    public init (value: T) {
-        valueContainer = ValueContainer(value: value)
-    }
-    
+    public init (value: T) { valueContainer = ValueContainer(value: value) }
     public var wait: QueueSafeAction.When<T> { .init(valueContainer: valueContainer) }
-
 }
 
 extension QueueSafeValue where T: AnyObject {

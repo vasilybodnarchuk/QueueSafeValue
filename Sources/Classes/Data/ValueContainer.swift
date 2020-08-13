@@ -31,9 +31,7 @@ public class ValueContainer<T> {
         perform()
     }
     
-    func performNow(closure: Closure?) {
-        accessQueue.sync { closure?(&self.value) }
-    }
+    func performNow(closure: Closure?) { accessQueue.sync { closure?(&self.value) } }
 
     private func perform() {
         if stack.isEmpty { return }
