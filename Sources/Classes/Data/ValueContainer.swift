@@ -41,7 +41,7 @@ public class ValueContainer<Value> {
 
 // MARK: Performing closures in `stack`
 extension ValueContainer {
-
+    
     /**
      Adds closure to the end of our `stack` and perform it queue order.
      - Parameter closure: code that we want to perform.
@@ -65,12 +65,11 @@ extension ValueContainer {
     }
 }
 
-// MARK: Extensions values that is objects
 extension ValueContainer where Value: AnyObject {
-
     /**
-     Adds closure to the end of our `stack` and perform it queue order.
-     - Returns:retain count of object
+     Get retain count of wrapped value
+     - Note: only for objects
+     - Returns:retain count of wrapped value
      */
     public func getRetainCount() -> CFIndex { CFGetRetainCount(value) }
 }
