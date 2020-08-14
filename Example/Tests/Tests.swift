@@ -21,17 +21,21 @@ extension TableOfContentsSpec {
         describe("Queue Safe Value") {
             context("test wait actions") {
                 executeSeriallyInsideOneQueue(value: 0,
-                                              result: "expected to be executed one buy one in one queue") { i, queueSafeValue in
+                                              result: "expected that basic functionality works") { i, queueSafeValue in
                                                 queueSafeValue.wait.performLast!.set(value: i)
                                                 var value = queueSafeValue.wait.performLast!.get()
                                                 expect(value) == i
+                                                
                                                 let string = queueSafeValue.wait.performLast!.transform { "\($0)" }
                                                 expect(string) == "\(i)"
+                                               
                                                 value = queueSafeValue.wait.performLast!.updated { $0 += 1 }
                                                 expect(value) == i + 1
+                                                
                                                 queueSafeValue.wait.performLast!.update { $0 += 1 }
                                                 value = queueSafeValue.wait.performLast!.get()
                                                 expect(value) == i + 2
+                                                
                                                 value = nil
                                                 queueSafeValue.wait.performLast!.perform { value = $0 }
                                                 expect(value) == i + 2
@@ -73,7 +77,7 @@ extension TableOfContentsSpec {
                 }
                 
                 executeSeriallyInsideOneQueue(value: SimpleClass(),
-                                              result: "expected to be executed one buy one in one queue") { i, queueSafeValue in
+                                              result: "expected that basic functionality works") { i, queueSafeValue in
                                                 queueSafeValue.wait.performLast!.update { $0.value = i }
                                                 expect(queueSafeValue.getRetainCount()) == 4
                                                 
@@ -134,7 +138,7 @@ extension TableOfContentsSpec {
 
     func executeAsynchronouslyInsideOneQueue<T>(value: T, result: String, iterations: Int = 10_000,
                                                 iterationClosure: @escaping (Int, QueueSafeValue<T>) -> Void) {
-        let description = "executed asynchronously inside one queue"
+        let description = "executed asynchronously inside one queue with wrapped value type \(type(of: value))"
         Test(value: value, description: description,
              queues: [.global(qos: .unspecified)],
              iterationsCountPerQueue: iterations) { _ in
@@ -147,7 +151,7 @@ extension TableOfContentsSpec {
     
     func executeSeriallyInsideOneQueue<T>(value: T, result: String, iterations: Int = 10_000,
                                           iterationClosure: @escaping (Int, QueueSafeValue<T>) -> Void) {
-        let description = "executed serially inside one queue with value type \(type(of: value))"
+        let description = "executed serially inside one queue with wrapped value type \(type(of: value))"
         Test(value: value, description: description,
              queues: [.global(qos: .unspecified)],
              iterationsCountPerQueue: 1) { _ in
