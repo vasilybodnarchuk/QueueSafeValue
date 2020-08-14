@@ -8,9 +8,9 @@
 import Foundation
 
 /// Main class where we keep an original value that we are going to read/write asynchronously.
-public class ValueContainer<T> {
+public class ValueContainer<Value> {
     /// The type of closures to be pushed onto the stack and executed.
-    typealias Closure = (inout T) -> Void
+    typealias Closure = (inout Value) -> Void
     
     /// Queue where closures will be added (stacked).
     private var stack: Stack<Closure>
@@ -19,14 +19,14 @@ public class ValueContainer<T> {
     private var accessQueue: DispatchQueue!
     
     /// Instance of the value that we are going to read/write from one or several threads
-    private var value: T
+    private var value: Value
     
     /**
      Initialize object with properties.
      - Parameter value: Instance of the value that we are going to read/write from one or several DispatchQueue
      - Returns: Container that provides limited and thread safe access to the `value`.
      */
-    init (value: T) {
+    init (value: Value) {
         self.value = value
         stack = Stack<Closure>()
         let address = Unmanaged.passUnretained(self).toOpaque()
@@ -66,7 +66,7 @@ extension ValueContainer {
 }
 
 // MARK: Extensions values that is objects
-extension ValueContainer where T: AnyObject {
+extension ValueContainer where Value: AnyObject {
 
     /**
      Adds closure to the end of our `stack` and perform it queue order.

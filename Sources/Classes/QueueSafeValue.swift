@@ -8,12 +8,16 @@
 import Foundation
 
 
-public class QueueSafeValue<T> {
-    private let valueContainer: ValueContainer<T>
-    public init (value: T) { valueContainer = ValueContainer(value: value) }
-    public var wait: QueueSafeAction.When<T> { .init(valueContainer: valueContainer) }
+public class QueueSafeValue<Value> {
+
+    /// Retains the original instance of the value and provides thread-safe access to it.
+    private let valueContainer: ValueContainer<Value>
+    public init (value: Value) { valueContainer = ValueContainer(value: value) }
+    
+    /// Locks the current queue at runtime.
+    public var wait: QueueSafeAction.When<Value> { .init(valueContainer: valueContainer) }
 }
 
-extension QueueSafeValue where T: AnyObject {
+extension QueueSafeValue where Value: AnyObject {
     public func getRetainCount() -> CFIndex { valueContainer.getRetainCount() }
 }
