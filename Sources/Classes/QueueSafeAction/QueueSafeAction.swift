@@ -16,9 +16,8 @@ public class QueueSafeAction {
             self.valueContainer = valueContainer
         }
         
-        public var performLast: QueueSafeAction.WaitAction<Value>? {
-            guard let valueContainer = valueContainer else { return nil }
-            return .init(valueContainer: valueContainer)
+        public var performLast: QueueSafeAction.WaitAction<Value> {
+            .init(valueContainer: valueContainer)
         }
     }
 }

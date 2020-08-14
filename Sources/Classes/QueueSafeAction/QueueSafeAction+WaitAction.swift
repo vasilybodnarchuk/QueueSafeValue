@@ -12,7 +12,7 @@ extension QueueSafeAction {
         typealias Closure = ValueContainer<T>.Closure
         private weak var valueContainer: ValueContainer<T>?
 
-        init (valueContainer: ValueContainer<T>) {
+        init (valueContainer: ValueContainer<T>?) {
             self.valueContainer = valueContainer
         }
         
