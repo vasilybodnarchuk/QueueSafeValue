@@ -27,7 +27,7 @@ extension QueueSafeAction {
             dispatchGroup.wait()
         }
         
-         // MARK: Get
+        // MARK: Get
         
         public func get() -> T? {
             var result: T?
@@ -48,9 +48,6 @@ extension QueueSafeAction {
             _perform {
                 closure?(&$0)
                 newValue = $0
-            }
-            if newValue == nil {
-                print("!!!!!1 nil")
             }
             return newValue
         }
