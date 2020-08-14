@@ -23,7 +23,7 @@ public class ValueContainer<T> {
     private var value: T
     
     /**
-     Initializes a new bicycle with the provided parts and specifications.
+     Initialize value container with properties.
 
      - Parameters:
         - value: Instance of the value that we are going to read/write from one or several DispatchQueue
