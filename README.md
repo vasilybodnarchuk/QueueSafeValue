@@ -14,6 +14,7 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 ```Swift
 let queueSafeValue = QueueSafeValue(value: 0)
 ```
+___
 
 ### Base structure of command
 
@@ -39,12 +40,12 @@ let queueSafeValue = QueueSafeValue(value: 0)
 > describes what to do with value 
 
 *Available actions*: 
-- `get`
-- `set`
-- `update`
-- `updated`
-- `transform`
-- `perform`
+- `func get() -> Value?` - gat value
+- `func set(value: Value)` - set value
+- `update(closure: ((_ currentValue: inout Value) -> Void)?)` - update value in closure
+- `updated(closure: ((_ currentValue: inout Value) -> Void)?)` - update value in closure and return updated value
+- `func perform(closure: ((Value) -> Void)?)` - do something with value without changing it
+- `func transform<Output>(closure: ((_ currentValue: Value) -> Output)?)` - transform value without changing original instance
     
 ## Requirements
 
