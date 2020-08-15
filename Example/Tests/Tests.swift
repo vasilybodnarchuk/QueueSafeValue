@@ -7,7 +7,18 @@ import QueueSafeValue
 class SimpleClass { var value = 0 }
 
 class TableOfContentsSpec: QuickSpec {
-    override func spec() { testWaitWhileActions() }
+    override func spec() {
+        testWaitWhileActions()
+        useCases()
+    }
+    
+    private func useCases() {
+        /// Create QueueSafeValue
+        let queueSafeValue = QueueSafeValue(value: 0)
+        
+        /// Base structure of command
+        queueSafeValue.wait.performLast.get()
+    }
 }
 
 // MARK: Tess sync actions
