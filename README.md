@@ -21,23 +21,24 @@ let queueSafeValue = QueueSafeValue(value: 0)
 
 ### Components:
 
-#### schedule
-describes will func be executed synchronously or asynchronously. 
+#### { schedule }
 
-Available schedules: 
+> describes will func be executed synchronously or asynchronously. 
+
+*Available schedules*: 
 - `wait` - blocks the queue on which the given command is running until it completes
 
-#### order
+#### { order }
 
-describes when (in what order) the function will be executed. 
+> describes when (in what order) the function will be executed. 
 
-Available orders: 
+*Available orders*: 
 - `performLast` - add a closure to the end of the command stack
     
-#### action
-describes what to do with value 
+#### { action }
+> describes what to do with value 
 
-Available actions: 
+*Available actions*: 
 - `get`
 - `set`
 - `update`
