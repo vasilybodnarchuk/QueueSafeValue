@@ -21,7 +21,7 @@ public class QueueSafeValue<Value> {
     public init (value: Value) { valueContainer = ValueContainer(value: value) }
     
     /// Locks the current queue at runtime.
-    public var wait: QueueSafeAction.When<Value> { .init(valueContainer: valueContainer) }
+    public var wait: QueueSafeSchedule<Value> { .init(valueContainer: valueContainer) }
 }
 
 extension QueueSafeValue where Value: AnyObject {

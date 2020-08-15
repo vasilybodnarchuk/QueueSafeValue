@@ -7,6 +7,9 @@
 
 import Foundation
 
+/// Provides syntax sugar to access to a weak reference of `ValueContainer` object and restricts its functionality.
+public class QueueSafeAction { }
+
 extension QueueSafeAction {
     
     /**

@@ -42,8 +42,8 @@ ___
 *Available actions*: 
 - `func get() -> Value?` - gat value
 - `func set(value: Value)` - set value
-- `update(closure: ((_ currentValue: inout Value) -> Void)?)` - update value in closure
-- `updated(closure: ((_ currentValue: inout Value) -> Void)?)` - update value in closure and return updated value
+- `func update(closure: ((_ currentValue: inout Value) -> Void)?)` - update value in closure
+- `func updated(closure: ((_ currentValue: inout Value) -> Void)?)` - update value in closure and return updated value
 - `func perform(closure: ((Value) -> Void)?)` - do something with value without changing it
 - `func transform<Output>(closure: ((_ currentValue: Value) -> Output)?)` - transform value without changing original instance
     
