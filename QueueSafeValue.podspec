@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'QueueSafeValue'
-  s.version          = '0.1.1'
+  s.version          = '0.2'
   s.summary          = 'Implementation of thread safe property.'
   s.swift_version    = '5.0'
 # This description is used to generate tags and improve search results.
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+Implementation of thread safe property..
                        DESC
 
   s.homepage         = 'https://github.com/vasilybodnarchuk/QueueSafeValue'

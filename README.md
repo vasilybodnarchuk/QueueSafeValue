@@ -9,6 +9,44 @@
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
+#### Create QueueSafeValue
+
+```Swift
+let queueSafeValue = QueueSafeValue(value: 0)
+```
+___
+
+### Base structure of command
+
+`queueSafeValue.{schedule}.{order}.{action}`
+
+### Components:
+
+#### { schedule }
+
+> describes will func be executed synchronously or asynchronously. 
+
+*Available schedules*: 
+- `wait` - blocks the queue on which the given command is running until it completes
+
+#### { order }
+
+> describes when (in what order) the function will be executed. 
+
+*Available orders*: 
+- `performLast` - add a closure to the end of the command stack
+    
+#### { action }
+> describes what to do with value 
+
+*Available actions*: 
+- `func get() -> Value?` - gat value
+- `func set(value: Value)` - set value
+- `func update(closure: ((_ currentValue: inout Value) -> Void)?)` - update value in closure
+- `func updated(closure: ((_ currentValue: inout Value) -> Void)?)` - update value in closure and return updated value
+- `func perform(closure: ((Value) -> Void)?)` - do something with value without changing it
+- `func transform<Output>(closure: ((_ currentValue: Value) -> Output)?)` - transform value without changing original instance
+    
 ## Requirements
 
 ## Installation

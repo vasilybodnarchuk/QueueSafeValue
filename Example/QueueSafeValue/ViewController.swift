@@ -17,11 +17,11 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         print("1")
         //atomicValue.sync().set(value: false)
-        atomicValue.syncInCurrentQueue.update { (value) in
-            print(value)
-            value = false
-        }
-        print(atomicValue.syncInCurrentQueue.get())
+//        atomicValue.waitWhile.update { (value) in
+//            print(value)
+//            value = false
+//        }
+//        print(atomicValue.syncInCurrentQueue.get())
 //        atomicValue.waitUpdate { (value) in
 //            value = false
 //            sleep(10)

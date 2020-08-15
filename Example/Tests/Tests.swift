@@ -4,144 +4,169 @@ import Quick
 import Nimble
 import QueueSafeValue
 
-class TableOfContentsSpec: QuickSpec {
-    
-    override func spec() {
-        describe("Queue Safe Value") {
-            var queueSafeValue: QueueSafeValue<Int>!
-            var queue: DispatchQueue!
-            
-            beforeEach {
-                queueSafeValue = QueueSafeValue(value: 0)
-                queue = self.createQueue()
-            }
-            
-            context("secure simultaneous value access from different queues") {
-                
-                let iterationsCountPerQueue = 10000
-                let queues: [DispatchQueue] = [.global(qos: .userInitiated),
-                                               .global(qos: .userInteractive),
-                                               .global(qos: .utility),
-                                               .global(qos: .utility),
-                                               .global(qos: .utility),
-                                               .global(qos: .utility),
-                                               .global(qos: .default),
-                                               .global(qos: .unspecified),
-                                               .global(qos: .background)]
-                
-                testMultiQueueValueAsyncAccess(description: "update",
-                                               iterationsCountPerQueue: iterationsCountPerQueue,
-                                               queues: queues,
-                                               closure: { _ in
-                                                    queueSafeValue.syncInCurrentQueue.update { $0 += 1 }
-                                               },
-                                               completion: {
-                                                    expect(iterationsCountPerQueue * queues.count) == queueSafeValue.syncInCurrentQueue.get()!
-                                               })
-                
-                testMultiQueueValueAsyncAccess(description: "set and get",
-                                               iterationsCountPerQueue: iterationsCountPerQueue,
-                                               queues: queues,
-                                               closure: { step in
-                                                    queueSafeValue.syncInCurrentQueue.set(value: step)
-                                                    let valueInRange = 0...(iterationsCountPerQueue*queues.count) ~= queueSafeValue.syncInCurrentQueue.get()!
-                                                    expect(valueInRange).to(beTrue())
+class SimpleClass { var value = 0 }
 
-                                               },
-                                               completion: {
-                                                    expect(iterationsCountPerQueue * queues.count) == queueSafeValue.syncInCurrentQueue.get()!
-                                               })
+class TableOfContentsSpec: QuickSpec {
+    override func spec() {
+        testWaitWhileActions()
+        useCases()
+    }
+    
+    private func useCases() {
+        /// Create QueueSafeValue
+        let queueSafeValue = QueueSafeValue(value: 0)
+        
+        /// Base structure of command
+        queueSafeValue.wait.performLast.get()
+    }
+}
+
+// MARK: Tess sync actions
+
+extension TableOfContentsSpec {
+    
+    private func testWaitWhileActions() {
+        describe("Queue Safe Value") {
+            context("test wait actions") {
+                executeSeriallyInsideOneQueue(value: 0,
+                                              result: "expected that basic functionality works") { i, queueSafeValue in
+                                                queueSafeValue.wait.performLast.set(value: i)
+                                                var value = queueSafeValue.wait.performLast.get()
+                                                expect(value) == i
+                                                
+                                                let string = queueSafeValue.wait.performLast.transform { "\($0)" }
+                                                expect(string) == "\(i)"
+                                               
+                                                value = queueSafeValue.wait.performLast.updated { $0 += 1 }
+                                                expect(value) == i + 1
+                                                
+                                                queueSafeValue.wait.performLast.update { $0 += 1 }
+                                                value = queueSafeValue.wait.performLast.get()
+                                                expect(value) == i + 2
+                                                
+                                                value = nil
+                                                queueSafeValue.wait.performLast.perform { value = $0 }
+                                                expect(value) == i + 2
+                }
                 
-                testMultiQueueValueAsyncAccess(description: "set new value and return old",
-                                               iterationsCountPerQueue: iterationsCountPerQueue,
-                                               queues: queues,
-                                               closure: { step in
-                                                    let previousValue = queueSafeValue.syncInCurrentQueue.setNewValueAndReturnOld(new: step)!
-                                                    expect(previousValue) != step
-                                               },
-                                               completion: {
-                                                    expect(iterationsCountPerQueue * queues.count) == queueSafeValue.syncInCurrentQueue.get()!
-                                               })
+                executeAsynchronouslyInsideOneQueue(value: 0,
+                                                    result: "not expected to get deadlock") { i, queueSafeValue in
+                                                        var value1 = queueSafeValue.wait.performLast.get()
+                                                        expect(value1).notTo(beNil())
+                                                        
+                                                        queueSafeValue.wait.performLast.set(value: i)
+                                                        var value2 = queueSafeValue.wait.performLast.get()
+                                                        expect(value1).notTo(beNil())
+                                                        
+                                                        var string1: String!
+                                                        let string2 = queueSafeValue.wait.performLast.transform { value -> String in
+                                                            string1 = "\(value)"
+                                                            return "\(value)"
+                                                        }
+                                                        expect(string1) == string2
+                                                        
+                                                        value1 = nil
+                                                        value2 = queueSafeValue.wait.performLast.updated { value in
+                                                            value1 = value + 1
+                                                            value += 1
+                                                        }
+                                                        expect(value1) == value2
+                                                        
+                                                        value1 = nil
+                                                        queueSafeValue.wait.performLast.update {
+                                                            $0 += 1
+                                                            value1 = $0
+                                                        }
+                                                        expect(value1).notTo(beNil())
+                                                        
+                                                        value1 = nil
+                                                        queueSafeValue.wait.performLast.perform { value1 = $0 }
+                                                        expect(value1).notTo(beNil())
+                }
                 
-                testMultiQueueValueAsyncAccess(description: "all funcs",
-                                               iterationsCountPerQueue: iterationsCountPerQueue,
-                                               queues: queues,
-                                               closure: { _ in
-                                                    let value = queueSafeValue.syncInCurrentQueue.get()!
-                                                    queueSafeValue.syncInCurrentQueue.set(value: value + 1)
-                                                    expect(queueSafeValue.syncInCurrentQueue.get()!) != value
-                                                    _ = queueSafeValue.syncInCurrentQueue.map { "\($0)" }
-                                                    queueSafeValue.syncInCurrentQueue.update { expect(value) != $0 }
-                                               },
-                                               completion: {
-                                                   expect(iterationsCountPerQueue * queues.count) == queueSafeValue.syncInCurrentQueue.get()!
-                                               })
+                executeSeriallyInsideOneQueue(value: SimpleClass(),
+                                              result: "expected that basic functionality works") { i, queueSafeValue in
+                                                queueSafeValue.wait.performLast.update { $0.value = i }
+                                                expect(queueSafeValue.getRetainCount()) == 4
+                                                
+                                                var value = queueSafeValue.wait.performLast.get()!.value
+                                                expect(value) == i
+                                                expect(queueSafeValue.getRetainCount()) == 4
+                                                
+                                                let string = queueSafeValue.wait.performLast.transform { "\($0.value)" }
+                                                expect(string) == "\(i)"
+                                                expect(queueSafeValue.getRetainCount()) == 4
+                                                
+                                                var object = queueSafeValue.wait.performLast.updated(closure: { $0.value += 1 })
+                                                expect(object!.value) == i + 1
+                                                expect(queueSafeValue.getRetainCount()) == 5
+                                                object = nil
+                                                
+                                                value = i
+                                                queueSafeValue.wait.performLast.perform { value = $0.value }
+                                                expect(value) == i + 1
+                                                expect(queueSafeValue.getRetainCount()) == 4
+                }
                 
-            }
-            
-            context("secure value access from single queue") {
-                
-                it("locks current queue while setting value") {
-                    waitUntil(timeout: 10) { completionClosure in
-                        queue.async {
-                            var date1 = Date()
-                            for i in 0...100 {
-                                var date2 = Date()
-                                expect(date2) > date1
-                                date1 = date2
-                                queueSafeValue.syncInCurrentQueue.update { currentValue in
-                                    expect(i) == currentValue
-                                    currentValue += 1
-                                    usleep(50_000)
-                                }
-                                date2 = Date()
-                                expect(date2) > date1
-                                date1 = date2
-                            }
-                            completionClosure()
-                        }
-                    }
+                executeAsynchronouslyInsideOneQueue(value: SimpleClass(),
+                                                    result: "not expected to get deadlock") { i, queueSafeValue in
+                                                        var value1 = queueSafeValue.wait.performLast.get()?.value
+                                                        expect(value1).notTo(beNil())
+                                                        //
+                                                        //                                                 queueSafeValue.wait.performLast!.set(value: i)
+                                                        //                                                 var value2 = queueSafeValue.wait.performLast!.get()
+                                                        //                                                 expect(value1).notTo(beNil())
+                                                        //
+                                                        var string1: String!
+                                                        let string2 = queueSafeValue.wait.performLast.transform { object -> String in
+                                                            string1 = "\(object.value)"
+                                                            return "\(object.value)"
+                                                        }
+                                                        expect(string1) == string2
+                                                        
+                                                        value1 = nil
+                                                        let value2 = queueSafeValue.wait.performLast.updated { object in
+                                                            value1 = object.value + 1
+                                                            object.value += 1
+                                                            }?.value
+                                                        expect(value1).notTo(beNil())
+                                                        expect(value2).notTo(beNil())
+                                                        
+                                                        value1 = nil
+                                                        queueSafeValue.wait.performLast.update { value1 = $0.value }
+                                                        expect(value1).notTo(beNil())
+                                                        
+                                                        value1 = nil
+                                                        queueSafeValue.wait.performLast.perform { value1 = $0.value }
+                                                        expect(value1).notTo(beNil())
                 }
             }
         }
     }
-    
-    func testMultiQueueValueAsyncAccess(description: String,
-                                        iterationsCountPerQueue: Int,
-                                        queues: [DispatchQueue],
-                                        closure: @escaping (Int) -> Void,
-                                        completion: @escaping () -> Void) {
-        let dispatchGroup = DispatchGroup()
-        let semaphore = DispatchSemaphore(value: 1)
-        var count = 0
-        it(description) {
-            waitUntil(timeout: 100) { done in
-                dispatchGroup.notify(queue: .main) {
-                    completion()
-                    done()
-                }
-                
-                for _ in 0..<iterationsCountPerQueue {
-                    queues.forEach { queue in
-                        dispatchGroup.enter()
-                        queue.async {
-                            var value: Int!
-                            semaphore.wait()
-                            count += 1
-                            value = count
-                            semaphore.signal()
-                            
-                            closure(value)
-                            dispatchGroup.leave()
-                        }
-                    }
-                }
-                dispatchGroup.wait()
-            }
+
+    func executeAsynchronouslyInsideOneQueue<T>(value: T, result: String, iterations: Int = 10_000,
+                                                iterationClosure: @escaping (Int, QueueSafeValue<T>) -> Void) {
+        let description = "executed asynchronously inside one queue with wrapped value type \(type(of: value))"
+        Test(value: value, description: description,
+             queues: [.global(qos: .unspecified)],
+             iterationsCountPerQueue: iterations) { _ in
+                it(result) { }
+        }.run { iteration, queueSafeValue, startTime, endTime in
+            iterationClosure(iteration, queueSafeValue)
+            endTime = Date()
         }
     }
     
-    func createQueue(qos: DispatchQoS = .default) -> DispatchQueue {
-        DispatchQueue(label: "\(Date())", qos: qos, attributes: .concurrent)
+    func executeSeriallyInsideOneQueue<T>(value: T, result: String, iterations: Int = 10_000,
+                                          iterationClosure: @escaping (Int, QueueSafeValue<T>) -> Void) {
+        let description = "executed serially inside one queue with wrapped value type \(type(of: value))"
+        Test(value: value, description: description,
+             queues: [.global(qos: .unspecified)],
+             iterationsCountPerQueue: 1) { _ in
+                it(result) { }
+        }.run { _, queueSafeValue, startTime, endTime in
+            for i in 0..<iterations { iterationClosure(i, queueSafeValue) }
+            endTime = Date()
+        }
     }
 }
