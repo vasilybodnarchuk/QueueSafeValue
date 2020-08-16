@@ -11,7 +11,7 @@ import Foundation
 /// Main class that provides thread-safe access to the `value`
 public class QueueSafeValue<Value> {
 
-    /// Retains the original instance of the value and provides thread-safe access to it.
+    /// Retains the original instance of the `value` and provides thread-safe access to it.
     private let valueContainer: ValueContainer<Value>
     
     /**

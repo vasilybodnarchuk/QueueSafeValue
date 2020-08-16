@@ -1,5 +1,5 @@
 //
-//  QueueSafeWaitActions.swift
+//  LowPriorityAction.swift
 //  QueueSafeValue
 //
 //  Created by Vasily Bodnarchuk on 6/30/20.
@@ -8,20 +8,17 @@
 
 import Foundation
 
-/// Provides syntax sugar to access to a weak reference of `ValueContainer` object and restricts its functionality.
-public class QueueSafeAction { }
-
 extension QueueSafeAction {
     
     /**
-     Describes functions that can manipulate the value in the `ValueContainer` object.
-     All functions are executed in a serial queue.
+     Defiines functions that can manipulate the value in the `ValueContainer` object.
+     All functions are executed in a serial queue embedded in `ValueContainer` object.
      */
-    public class WaitAction<Value> {
+    public class LowPriorityAction<Value> {
         /// The type of closures to be pushed onto the stack and executed.
         typealias Closure = ValueContainer<Value>.Closure
         
-        /// Retains the original instance of the value and provides thread-safe access to it.
+        /// Retains the original instance of the `value` and provides thread-safe access to it.
         private weak var valueContainer: ValueContainer<Value>?
         
         /**

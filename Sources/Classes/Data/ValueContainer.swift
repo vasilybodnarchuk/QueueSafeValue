@@ -13,7 +13,7 @@ public class ValueContainer<Value> {
     /// The type of closures to be pushed onto the stack and executed.
     typealias Closure = (inout Value) -> Void
     
-    /// Queue where closures will be added (stacked).
+    /// `Built-in run queue` container. Keeps all actions (closures) that will be performed.
     private var stack: Stack<Closure>
     
     /// Provides safe access to the value. Protects value from simultaneous reading/writing.
