@@ -2,7 +2,8 @@
 //  QueueSafeValue.swift
 //  QueueSafeValue
 //
-//  Created by Vasily on 6/30/20.
+//  Created by Vasily Bodnarchuk on 6/30/20.
+//  Copyright (c) 2020 Vasily Bodnarchuk. All rights reserved.
 //
 
 import Foundation
@@ -21,7 +22,7 @@ public class QueueSafeValue<Value> {
     public init (value: Value) { valueContainer = ValueContainer(value: value) }
     
     /// Locks the current queue at runtime.
-    public var wait: QueueSafeSchedule<Value> { .init(valueContainer: valueContainer) }
+    public var wait: QueueSafeScheduler<Value> { .init(valueContainer: valueContainer) }
 }
 
 extension QueueSafeValue where Value: AnyObject {

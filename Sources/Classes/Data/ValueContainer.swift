@@ -2,7 +2,8 @@
 //  ValueContainer.swift
 //  QueueSafeValue
 //
-//  Created by Vasily on 8/8/20.
+//  Created by Vasily Bodnarchuk on 8/8/20.
+//  Copyright (c) 2020 Vasily Bodnarchuk. All rights reserved.
 //
 
 import Foundation

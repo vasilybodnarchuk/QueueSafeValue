@@ -1,14 +1,15 @@
 //
-//  QueueSafeSchedule.swift
+//  QueueSafeScheduler.swift
 //  QueueSafeValue
 //
-//  Created by Vasily on 8/8/20.
+//  Created by Vasily Bodnarchuk on 8/8/20.
+//  Copyright (c) 2020 Vasily Bodnarchuk. All rights reserved.
 //
 
 import Foundation
 
 /// Describes when (in what order) access to the `ValueContainer` object will be granted.
-public class QueueSafeSchedule<Value> {
+public class QueueSafeScheduler<Value> {
     
     /// Retains the original instance of the value and provides thread-safe access to it.
     private weak var valueContainer: ValueContainer<Value>?

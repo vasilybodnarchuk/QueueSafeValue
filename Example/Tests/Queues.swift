@@ -2,7 +2,7 @@
 //  Queues.swift
 //  QueueSafeValue_Tests
 //
-//  Created by Vasily on 8/2/20.
+//  Created by Vasily Bodnarchuk on 8/2/20.
 //  Copyright © 2020 CocoaPods. All rights reserved.
 //
 

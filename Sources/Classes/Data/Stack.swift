@@ -2,7 +2,8 @@
 //  Stack.swift
 //  Pods
 //
-//  Created by Vasily on 8/3/20.
+//  Created by Vasily Bodnarchuk on 8/3/20.
+//  Copyright (c) 2020 Vasily Bodnarchuk. All rights reserved.
 //
 
 import Foundation

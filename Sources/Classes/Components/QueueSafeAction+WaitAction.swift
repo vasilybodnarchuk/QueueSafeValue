@@ -2,7 +2,8 @@
 //  QueueSafeWaitActions.swift
 //  QueueSafeValue
 //
-//  Created by Vasily on 6/30/20.
+//  Created by Vasily Bodnarchuk on 6/30/20.
+//  Copyright (c) 2020 Vasily Bodnarchuk. All rights reserved.
 //
 
 import Foundation
