@@ -21,6 +21,9 @@ public class QueueSafeScheduler<Value> {
      */
     init(valueContainer: ValueContainer<Value>) { self.valueContainer = valueContainer }
     
-    /// Adds the available value manipulating functions to the end of the `built-in run queue` (that is integrated in `ValueContainer` object) and executes them.
-    public var lowPriority: QueueSafeAction.LowPriorityAction<Value> { .init(valueContainer: valueContainer) }
+    /// Performs functions in `built-in run queue` (that is integrated in `ValueContainer` object).
+    /// `lowPriority` means that every available function (which manipulates the value) will be added to the end of the `built-in run queue`.
+    /// The function with `lowPriority` will wait for all other higher priority functions to complete.
+    /// The function with `lowPriority` will execute sequentially, blocking the current queue in which it is executing.
+    public var lowPriority: QueueSafeAction.LowPriorityActions<Value> { .init(valueContainer: valueContainer) }
 }
