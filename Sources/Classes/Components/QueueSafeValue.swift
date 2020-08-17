@@ -10,7 +10,7 @@ import Foundation
 
 /// Main class that provides thread-safe access to the `value`
 public class QueueSafeValue<Value> {
-
+    
     /// Retains the original instance of the `value` and provides thread-safe access to it.
     private let valueContainer: ValueContainer<Value>
     
@@ -21,8 +21,11 @@ public class QueueSafeValue<Value> {
      */
     public init (value: Value) { valueContainer = ValueContainer(value: value) }
     
-    /// Locks the current queue at runtime.
-    public var wait: QueueSafeScheduler<Value> { .init(valueContainer: valueContainer) }
+    /**
+     Performs actions sequentially
+     - important: Locks the current queue at runtime.
+     */
+    public var wait: SerialActionScheduler<Value> { .init(valueContainer: valueContainer) }
 }
 
 extension QueueSafeValue where Value: AnyObject {

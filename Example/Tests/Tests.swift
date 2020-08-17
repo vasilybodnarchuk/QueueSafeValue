@@ -17,7 +17,7 @@ class TableOfContentsSpec: QuickSpec {
         let queueSafeValue = QueueSafeValue(value: 0)
         
         /// Base structure of command
-        queueSafeValue.wait.lowPriority.get()
+        //queueSafeValue.wait.lowPriority.
     }
 }
 
