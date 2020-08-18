@@ -6,8 +6,6 @@
 //  Copyright © 2020 CocoaPods. All rights reserved.
 //
 
-import Foundation
-
 import Quick
 import Nimble
 import QueueSafeValue

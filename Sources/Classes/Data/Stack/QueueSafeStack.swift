@@ -1,5 +1,5 @@
 //
-//  Stack.swift
+//  QueueSafeStack.swift
 //  Pods
 //
 //  Created by Vasily Bodnarchuk on 8/3/20.
@@ -8,24 +8,12 @@
 
 import Foundation
 
-protocol Stackable {
-    associatedtype Element
-    func peek() -> Element?
-    mutating func push(_ element: Element)
-    @discardableResult mutating func pop() -> Element?
-}
-
-struct Stack<Element>: Stackable {
+struct QueueSafeStack<Element>: Stackable {
     private let accessQueue: DispatchQueue!
     private var storage: [Element]
 
     init() {
-        let label = "accessQueue.\(type(of: self)).\(Date().timeIntervalSince1970)"
-        accessQueue = DispatchQueue(label: label,
-                                    qos: .unspecified,
-                                    attributes: [],
-                                    autoreleaseFrequency: .inherit,
-                                    target: nil)
+        accessQueue = DispatchQueue.createSerialAccessQueue()
         storage = [Element]()
     }
     
@@ -49,4 +37,4 @@ struct Stack<Element>: Stackable {
     }
 }
 
-extension Stack: CustomStringConvertible { var description: String { "\(storage)" } }
+extension QueueSafeStack: CustomStringConvertible { var description: String { "\(storage)" } }
