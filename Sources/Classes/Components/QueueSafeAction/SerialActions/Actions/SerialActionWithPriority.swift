@@ -24,14 +24,14 @@ public class SerialActionsWithPriority<Value> {
     
     /**
      Performs `closure` in defined order and blocks the queue at runtime.
-     - Important: Locks the current queue at runtime. Must be overridden.
+     - Important: Blocks a queue where this code runs until it completed.
      - Parameter closure: block to be executed
      */
     func _perform(closure: @escaping Closure) { fatalError() }
     
     /**
      Thread-safe value reading. Locks the current queue at runtime.
-     - Important: Locks the current queue at runtime.
+     - Important: Blocks a queue where this code runs until it completed.
      - Returns: original instance of a `value`.
      */
     public func get() -> Value? {
@@ -42,21 +42,21 @@ public class SerialActionsWithPriority<Value> {
     
     /**
      Thread-safe value writing. Locks the current queue at runtime.
-     - Important: Locks the current queue at runtime.
+     - Important: Blocks a queue where this code runs until it completed.
      - Parameter value: value to set
      */
     public func set(value: Value) { _perform { $0 = value } }
     
     /**
      Thread-safe value updating. Locks the current queue at runtime.
-     - Important: Locks the current queue at runtime.
+     - Important: Blocks the queue where this code runs until it completed.
      - Parameter closure: a block that updates the original `value` instance
      */
     public func update(closure: ((_ currentValue: inout Value) -> Void)?) { _perform { closure?(&$0) } }
     
     /**
      Thread-safe value updating.
-     - Important: Locks the current queue at runtime.
+     - Important: Blocks a queue where this code runs until it completed.
      - Parameter closure: A block that updates the original `value` instance.
      - Returns: An updated instance of the value.
      */
@@ -71,7 +71,7 @@ public class SerialActionsWithPriority<Value> {
     
     /**
      Thread-safe value manipulating. Can be used
-     - Important: Locks the current queue at runtime.
+     - Important: Blocks a queue where this code runs until it completed.
      - Parameter closure: A block that updates the original `value` instance.
      - Returns: An updated instance of the value.
      */
@@ -79,7 +79,7 @@ public class SerialActionsWithPriority<Value> {
     
     /**
      Thread-safe value transforming.
-     - Important: Locks the current queue at runtime.
+     - Important: Blocks a queue where this code runs until it completed.
      - Parameter closure: A block that transform the original `value` instance
      - Returns: An updated instance of the value.
      */

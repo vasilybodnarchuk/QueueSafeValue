@@ -21,10 +21,8 @@ public class QueueSafeValue<Value> {
      */
     public init (value: Value) { valueContainer = ValueContainer(value: value) }
     
-    /**
-     Performs actions sequentially
-     - important: Locks the current queue at runtime.
-     */
+    
+    /// Performs actions sequentially
     public var wait: SerialActionScheduler<Value> { .init(valueContainer: valueContainer) }
 }
 
