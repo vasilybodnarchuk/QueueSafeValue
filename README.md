@@ -27,21 +27,23 @@ ___
 > describes will func be executed synchronously or asynchronously. 
 
 *Available schedules*: 
-- `wait` - blocks the queue on which the given command is running until it completes
+- `wait` - performs action sequentially (Blocks the queue where this code runs until it completed).
 
 #### { priority }
 
 > describes when (in what order) the function will be executed. 
+> `QueueSafeValue` has a built-in stack where all closures will be pushed. Every closure on that stack will be executed sequentially.
+> `priority` means position of a closure in the stack.
 
 *Available orders*: 
-- `performLast` - add a closure to the end of the command stack
+- `lowPriority` - adds a closure to the end of a stack
     
 #### { action }
 > describes what to do with value 
 
 *Available actions*: 
 - `get` - returns wrapped value
-> func get() -> Value?`
+> `func get() -> Value?`
 - `set` - sets value
 > `func set(value: Value)`
 - `update` - updates value in closure
