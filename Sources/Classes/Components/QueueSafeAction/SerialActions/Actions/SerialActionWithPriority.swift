@@ -30,7 +30,7 @@ public class SerialActionsWithPriority<Value> {
     func _perform(closure: @escaping Closure) { fatalError() }
     
     /**
-     Thread-safe value reading. Locks the current queue at runtime.
+     Thread-safe value reading.
      - Important: Blocks a queue where this code runs until it completed.
      - Returns: original instance of a `value`.
      */
@@ -41,14 +41,14 @@ public class SerialActionsWithPriority<Value> {
     }
     
     /**
-     Thread-safe value writing. Locks the current queue at runtime.
+     Thread-safe value writing.
      - Important: Blocks a queue where this code runs until it completed.
      - Parameter value: value to set
      */
     public func set(value: Value) { _perform { $0 = value } }
     
     /**
-     Thread-safe value updating. Locks the current queue at runtime.
+     Thread-safe value updating.
      - Important: Blocks the queue where this code runs until it completed.
      - Parameter closure: a block that updates the original `value` instance
      */
@@ -70,7 +70,7 @@ public class SerialActionsWithPriority<Value> {
     }
     
     /**
-     Thread-safe value manipulating. Can be used
+     Thread-safe value manipulating.
      - Important: Blocks a queue where this code runs until it completed.
      - Parameter closure: A block that updates the original `value` instance.
      - Returns: An updated instance of the value.

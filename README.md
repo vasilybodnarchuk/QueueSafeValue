@@ -18,7 +18,7 @@ ___
 
 ### Base structure of command
 
-`queueSafeValue.{schedule}.{order}.{action}`
+`queueSafeValue.{schedule}.{priority}.{action}`
 
 ### Components:
 
@@ -29,7 +29,7 @@ ___
 *Available schedules*: 
 - `wait` - blocks the queue on which the given command is running until it completes
 
-#### { order }
+#### { priority }
 
 > describes when (in what order) the function will be executed. 
 
@@ -40,12 +40,18 @@ ___
 > describes what to do with value 
 
 *Available actions*: 
-- `func get() -> Value?` - gat value
-- `func set(value: Value)` - set value
-- `func update(closure: ((_ currentValue: inout Value) -> Void)?)` - update value in closure
-- `func updated(closure: ((_ currentValue: inout Value) -> Void)?)` - update value in closure and return updated value
-- `func perform(closure: ((Value) -> Void)?)` - do something with value without changing it
-- `func transform<Output>(closure: ((_ currentValue: Value) -> Output)?)` - transform value without changing original instance
+- `get` - returns wrapped value
+> func get() -> Value?`
+- `set` - sets value
+> `func set(value: Value)`
+- `update` - updates value in closure
+> `func update(closure: ((_ currentValue: inout Value) -> Void)?)`
+- `updated` - updates value in closure and returns updated value
+> `func updated(closure: ((_ currentValue: inout Value) -> Void)?)` 
+-  `perform` - do something with value without changing it
+> `func perform(closure: ((Value) -> Void)?)`
+- `transform` -  transforms value without changing original instance
+> `func transform<Output>(closure: ((_ currentValue: Value) -> Output)?)`
     
 ## Requirements
 
