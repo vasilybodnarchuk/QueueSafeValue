@@ -42,7 +42,7 @@ public class ValueProcessingSerialQueue {
 extension ValueProcessingSerialQueue {
 
     /**
-     Adds closure to the end of our `stack`.
+     Adds closure to the end of the `stack`.
      - Parameter closure: code that we want to perform.
      */
     public func append(closure: @escaping Closure) { stack.push(closure) }

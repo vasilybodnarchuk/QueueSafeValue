@@ -16,23 +16,22 @@ class ValueContainerSpec: QuickSpec {
     override func spec() {
         
         describe("Value container") {
-//            var valueContainer: ValueContainer<SimpleClass>!
-//            beforeEach {
-//                valueContainer = ValueContainer(value: SimpleClass())
-//            }
-            
             context("test a strong reference to the wrapped object") {
                 let vlaue = 10
                 var object: SimpleClass! = .init(value: vlaue)
                 let valueContainer = ValueContainer(value: object!)
                 
-                var retainCount = CFGetRetainCount(object)
-                expect(retainCount) == 3
-                expect(retainCount) == valueContainer.countObjectReferences()
-
+                let retainCount1 = CFGetRetainCount(object)
+                let retainCount2 = Int(valueContainer.countObjectReferences())
+                it("expected that reference count increased") {
+                    expect(retainCount1) == 3
+                    expect(retainCount1) == retainCount2
+                }
+                
                 object = nil
-                retainCount = valueContainer.countObjectReferences()
-                it("expected that reference count decreased") { expect(retainCount) == 2 }
+                let retainCount3 = valueContainer.countObjectReferences()
+                it("expected that reference count decreased") { expect(retainCount3) == 2 }
+                
                 let dispatchQueue = DispatchGroup()
                 dispatchQueue.enter()
                 var _value: Int!
@@ -42,22 +41,6 @@ class ValueContainerSpec: QuickSpec {
                 }
                 dispatchQueue.wait()
                 it("expected that value exists") { expect(_value) == vlaue }
-            }
-
-
-            it("test ") {
-//                var object: SimpleClass = .init()
-//                var retainCount = CFGetRetainCount(object)
-//                expect(retainCount) == 4
-//                let valueContainer = ValueContainer(value: object)
-//                retainCount = CFGetRetainCount(object)
-//                expect(retainCount) == 3
-//                retainCount = valueContainer.countReferencesToObject()
-//                expect(retainCount) == 3
-//                var object2 = object
-//                object = nil
-//                retainCount = valueContainer.countReferencesToObject()
-//                expect(retainCount) == 3
             }
         }
     }
