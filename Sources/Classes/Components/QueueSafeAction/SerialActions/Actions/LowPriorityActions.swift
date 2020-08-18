@@ -13,7 +13,7 @@ extension QueueSafeAction {
             guard let valueContainer = valueContainer else { return }
             let dispatchGroup = DispatchGroup()
             dispatchGroup.enter()
-            valueContainer.performLast { current in
+            valueContainer.appendAndPerform { current in
                 closure(&current)
                 dispatchGroup.leave()
             }

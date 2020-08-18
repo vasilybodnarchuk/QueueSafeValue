@@ -4,7 +4,6 @@ import Quick
 import Nimble
 import QueueSafeValue
 
-class SimpleClass { var value = 0 }
 
 class TableOfContentsSpec: QuickSpec {
     override func spec() {
@@ -87,25 +86,25 @@ extension TableOfContentsSpec {
                 executeSeriallyInsideOneQueue(value: SimpleClass(),
                                               result: "expected that basic functionality works") { i, queueSafeValue in
                                                 queueSafeValue.wait.lowPriority.update { $0.value = i }
-                                                expect(queueSafeValue.getRetainCount()) == 4
+                                                expect(queueSafeValue.countObjectReferences()) == 4
                                                 
                                                 var value = queueSafeValue.wait.lowPriority.get()!.value
                                                 expect(value) == i
-                                                expect(queueSafeValue.getRetainCount()) == 4
+                                                expect(queueSafeValue.countObjectReferences()) == 4
                                                 
                                                 let string = queueSafeValue.wait.lowPriority.transform { "\($0.value)" }
                                                 expect(string) == "\(i)"
-                                                expect(queueSafeValue.getRetainCount()) == 4
+                                                expect(queueSafeValue.countObjectReferences()) == 4
                                                 
                                                 var object = queueSafeValue.wait.lowPriority.updated(closure: { $0.value += 1 })
                                                 expect(object!.value) == i + 1
-                                                expect(queueSafeValue.getRetainCount()) == 5
+                                                expect(queueSafeValue.countObjectReferences()) == 5
                                                 object = nil
                                                 
                                                 value = i
                                                 queueSafeValue.wait.lowPriority.perform { value = $0.value }
                                                 expect(value) == i + 1
-                                                expect(queueSafeValue.getRetainCount()) == 4
+                                                expect(queueSafeValue.countObjectReferences()) == 4
                 }
                 
                 executeAsynchronouslyInsideOneQueue(value: SimpleClass(),

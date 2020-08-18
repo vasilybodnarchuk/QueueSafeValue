@@ -16,6 +16,8 @@
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		883AC02491EF659EEE772C2B /* Pods_QueueSafeValue_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 902AAF1CF7B013550256F17D /* Pods_QueueSafeValue_Tests.framework */; };
 		D9473A6524E0B6D300EBF278 /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9473A6224E0B6AB00EBF278 /* Test.swift */; };
+		D95E4B6F24EB3AF9009BC031 /* ValueContainerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B6C24EB3AC5009BC031 /* ValueContainerSpec.swift */; };
+		D95E4B7224EB3DE6009BC031 /* SimpleClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */; };
 		D9C1FE8524D7B30200B78489 /* Queues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C1FE8424D7B30200B78489 /* Queues.swift */; };
 /* End PBXBuildFile section */
 
@@ -48,6 +50,8 @@
 		A08F1BB9A3BC9D3BE0856FF0 /* Pods-QueueSafeValue_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QueueSafeValue_Tests.debug.xcconfig"; path = "Target Support Files/Pods-QueueSafeValue_Tests/Pods-QueueSafeValue_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		A9DE8AC7B55B14F9FDDF26BA /* QueueSafeValue.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = QueueSafeValue.podspec; path = ../QueueSafeValue.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		D9473A6224E0B6AB00EBF278 /* Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
+		D95E4B6C24EB3AC5009BC031 /* ValueContainerSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueContainerSpec.swift; sourceTree = "<group>"; };
+		D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleClass.swift; sourceTree = "<group>"; };
 		D9790B5D24AB851E00701A2B /* QueueSafeValue.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = QueueSafeValue.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9C1FE8424D7B30200B78489 /* Queues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Queues.swift; sourceTree = "<group>"; };
 		DA7406C9388422396093FD3F /* Pods-QueueSafeValue_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QueueSafeValue_Example.debug.xcconfig"; path = "Target Support Files/Pods-QueueSafeValue_Example/Pods-QueueSafeValue_Example.debug.xcconfig"; sourceTree = "<group>"; };
@@ -120,8 +124,8 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				D95E4B6E24EB3AED009BC031 /* Tests */,
 				D9C1FE8324D7B2E300B78489 /* Helpers */,
-				607FACEB1AFB9204008FA782 /* Tests.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
@@ -164,6 +168,16 @@
 				5E00FAF33FF90ADBD2C20CC9 /* Pods-QueueSafeValue_Tests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		D95E4B6E24EB3AED009BC031 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */,
+				D95E4B6C24EB3AC5009BC031 /* ValueContainerSpec.swift */,
+				607FACEB1AFB9204008FA782 /* Tests.swift */,
+			);
+			name = Tests;
 			sourceTree = "<group>";
 		};
 		D9C1FE8324D7B2E300B78489 /* Helpers */ = {
@@ -376,9 +390,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D95E4B6F24EB3AF9009BC031 /* ValueContainerSpec.swift in Sources */,
 				607FACEC1AFB9204008FA782 /* Tests.swift in Sources */,
 				D9C1FE8524D7B30200B78489 /* Queues.swift in Sources */,
 				D9473A6524E0B6D300EBF278 /* Test.swift in Sources */,
+				D95E4B7224EB3DE6009BC031 /* SimpleClass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

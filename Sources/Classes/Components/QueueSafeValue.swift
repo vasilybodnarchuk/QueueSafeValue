@@ -34,5 +34,5 @@ extension QueueSafeValue where Value: AnyObject {
      - Note: only for objects
      - Returns:retain count of wrapped value
      */
-    public func getRetainCount() -> CFIndex { valueContainer.getRetainCount() }
+    public func countObjectReferences() -> CFIndex { valueContainer.countObjectReferences() }
 }
