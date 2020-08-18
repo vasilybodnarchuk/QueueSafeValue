@@ -19,6 +19,7 @@
 		D95E4B6F24EB3AF9009BC031 /* ValueContainerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B6C24EB3AC5009BC031 /* ValueContainerSpec.swift */; };
 		D95E4B7224EB3DE6009BC031 /* SimpleClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */; };
 		D95E4B7924EB7D3E009BC031 /* ValueProcessingSerialQueueSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B7724EB7CCC009BC031 /* ValueProcessingSerialQueueSpec.swift */; };
+		D95E4B8824EC6C3A009BC031 /* QueueSafeStackSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B8624EC6C14009BC031 /* QueueSafeStackSpec.swift */; };
 		D9C1FE8524D7B30200B78489 /* Queues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C1FE8424D7B30200B78489 /* Queues.swift */; };
 /* End PBXBuildFile section */
 
@@ -54,6 +55,7 @@
 		D95E4B6C24EB3AC5009BC031 /* ValueContainerSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueContainerSpec.swift; sourceTree = "<group>"; };
 		D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleClass.swift; sourceTree = "<group>"; };
 		D95E4B7724EB7CCC009BC031 /* ValueProcessingSerialQueueSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueProcessingSerialQueueSpec.swift; sourceTree = "<group>"; };
+		D95E4B8624EC6C14009BC031 /* QueueSafeStackSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueSafeStackSpec.swift; sourceTree = "<group>"; };
 		D9790B5D24AB851E00701A2B /* QueueSafeValue.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = QueueSafeValue.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9C1FE8424D7B30200B78489 /* Queues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Queues.swift; sourceTree = "<group>"; };
 		DA7406C9388422396093FD3F /* Pods-QueueSafeValue_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QueueSafeValue_Example.debug.xcconfig"; path = "Target Support Files/Pods-QueueSafeValue_Example/Pods-QueueSafeValue_Example.debug.xcconfig"; sourceTree = "<group>"; };
@@ -179,6 +181,7 @@
 				607FACEB1AFB9204008FA782 /* Tests.swift */,
 				D95E4B6C24EB3AC5009BC031 /* ValueContainerSpec.swift */,
 				D95E4B7724EB7CCC009BC031 /* ValueProcessingSerialQueueSpec.swift */,
+				D95E4B8624EC6C14009BC031 /* QueueSafeStackSpec.swift */,
 			);
 			name = Tests;
 			sourceTree = "<group>";
@@ -394,6 +397,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D95E4B6F24EB3AF9009BC031 /* ValueContainerSpec.swift in Sources */,
+				D95E4B8824EC6C3A009BC031 /* QueueSafeStackSpec.swift in Sources */,
 				607FACEC1AFB9204008FA782 /* Tests.swift in Sources */,
 				D9C1FE8524D7B30200B78489 /* Queues.swift in Sources */,
 				D9473A6524E0B6D300EBF278 /* Test.swift in Sources */,

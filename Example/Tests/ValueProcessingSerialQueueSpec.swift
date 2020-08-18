@@ -14,7 +14,6 @@ class ValueProcessingSerialQueueSpec: QuickSpec {
     override func spec() {
         
         describe("Value Processing Serial Queue") {
-            
             var serialQueue: ValueProcessingSerialQueue!
             beforeEach { serialQueue = ValueProcessingSerialQueue() }
             
