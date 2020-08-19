@@ -9,7 +9,7 @@
 import Foundation
 
 /// Describes how access to the  `value` wrapped in `ValueContainer` object will be granted (synchronously or asynchronously) .
-public class SerialActionScheduler<Value>: ActionScheduler<Value>  {
+public class SerialActionScheduler<Value>: ActionScheduler<Value> {
     /// Performs functions in `built-in run queue` (that is integrated in `ValueContainer` object).
     /// `lowPriority` means that every available function (which manipulates the value) will be added to the end of the `built-in run queue`.
     /// The function with `lowPriority` will wait for all other higher priority functions to complete.

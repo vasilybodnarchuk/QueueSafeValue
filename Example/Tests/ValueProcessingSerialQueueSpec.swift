@@ -12,11 +12,11 @@ import QueueSafeValue
 
 class ValueProcessingSerialQueueSpec: QuickSpec {
     override func spec() {
-        
+
         describe("Value Processing Serial Queue") {
             var serialQueue: ValueProcessingSerialQueue!
             beforeEach { serialQueue = ValueProcessingSerialQueue() }
-            
+
             it("first waits for all closures to be added and then executes them in the correct order") {
                 print(serialQueue)
                 var array1 = [Int]()
@@ -28,7 +28,7 @@ class ValueProcessingSerialQueueSpec: QuickSpec {
                 serialQueue.perform()
                 expect(array1) == array2
             }
-            
+
             it("adds closures to the queue and immediately executes them in the correct order") {
                 print(serialQueue)
                 var array1 = [Int]()
@@ -43,4 +43,3 @@ class ValueProcessingSerialQueueSpec: QuickSpec {
         }
     }
 }
-

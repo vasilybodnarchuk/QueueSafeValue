@@ -8,16 +8,15 @@
 
 import Foundation
 
-
 /// A queue safe (thread safe) stack (`storage`)
 public class QueueSafeStack<Element>: Stackable {
-    
+
     /// Queue providing synchronous read / write to storage.
     private let accessQueue: DispatchQueue!
-    
+
     /// Collection of elements.
     private var storage: [Element]
-    
+
     /**
      Initialize object with properties.
      - Returns: A queue safe stack.
@@ -26,18 +25,18 @@ public class QueueSafeStack<Element>: Stackable {
         accessQueue = DispatchQueue.createSerialAccessQueue()
         storage = [Element]()
     }
-    
+
     /**
      Checks if the stack is empty.
      - Important: Blocks a queue where this code runs until it completed.
      - Returns: An element to be pushed onto a stack.
      */
     public var isEmpty: Bool {
-        var _isEmpty: Bool!
-        accessQueue.sync { _isEmpty = storage.isEmpty }
-        return _isEmpty
+        var result: Bool!
+        accessQueue.sync { result = storage.isEmpty }
+        return result
     }
-    
+
     /**
      Looks at the top `element` on the stack.
      - Important: Blocks a queue where this code runs until it completed.
@@ -48,14 +47,14 @@ public class QueueSafeStack<Element>: Stackable {
         accessQueue.sync { element = storage.first }
         return element
     }
-    
+
     /**
      Adds (appends) an `element` to a stack.
      - Important: Blocks a queue where this code runs until it completed.
      - Parameter element: An element to be pushed onto a stack.
      */
     public func push(_ element: Element) { accessQueue.sync { storage.insert(element, at: 0) } }
-    
+
     /**
      Get the first added `element` from a stack.
      - Important: Blocks a queue where this code runs until it completed.

@@ -19,7 +19,7 @@ class Test<T> {
     private let dispatchGroup: DispatchGroup
     private let description: String!
     private let resultClosure: ((Test<T>) -> Void)
-    
+
     init (value: T, description: String,
           queues: [DispatchQueue] = [],
           iterationsCountPerQueue: Int = 10_000,
@@ -59,7 +59,7 @@ extension Test {
                             count = iteration
                         }
                     }
-                    
+
                     self.dispatchGroup.notify(queue: .global(qos: .unspecified)) {
                         self.resultClosure(self)
                         if let retainCount2 = (self.queueSafeValue as? QueueSafeValue<SimpleClass>)?.countObjectReferences() {

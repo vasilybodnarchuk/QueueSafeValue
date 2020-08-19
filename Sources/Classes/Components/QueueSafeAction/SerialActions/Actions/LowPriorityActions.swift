@@ -7,9 +7,9 @@
 
 import Foundation
 
-extension QueueSafeAction {    
+extension QueueSafeAction {
     public class LowPriorityActions<Value>: SerialActionsWithPriority<Value> {
-        override func _perform(closure: @escaping Closure) {
+        override func perform(closure: @escaping Closure) {
             guard let valueContainer = valueContainer else { return }
             let dispatchGroup = DispatchGroup()
             dispatchGroup.enter()

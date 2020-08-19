@@ -19,7 +19,7 @@ class Queues {
             .global(qos: .utility)
         ]
     }()
-    
+
     class func getRandomArray() -> [DispatchQueue] {
         let count = (10..<20).randomElement()!
         return (0...count).map { _ in queues.randomElement()! }

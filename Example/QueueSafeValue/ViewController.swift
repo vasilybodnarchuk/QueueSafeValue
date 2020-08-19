@@ -12,7 +12,7 @@ import QueueSafeValue
 class ViewController: UIViewController {
 
     private var atomicValue = QueueSafeValue<Bool>(value: true)
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         print("1")
@@ -30,4 +30,3 @@ class ViewController: UIViewController {
 //        print(atomicValue.waitGet().notQueueSafeValue)
     }
 }
-

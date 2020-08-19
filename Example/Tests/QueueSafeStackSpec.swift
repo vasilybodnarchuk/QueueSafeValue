@@ -12,9 +12,9 @@ import QueueSafeValue
 
 class QueueSafeStackSpec: QuickSpec {
     override func spec() {
-        
+
         describe("Queue Safe Stack") {
-            
+
             var stack: QueueSafeStack<Int>!
             beforeEach { stack = .init() }
 
@@ -23,13 +23,13 @@ class QueueSafeStackSpec: QuickSpec {
                 stack.push(0)
                 expect(stack.isEmpty) == false
             }
-            
+
             it("test peek and push funcs") {
                 expect(stack.peek()).to(beNil())
                 stack.push(0)
                 expect(stack.peek()) == 0
             }
-            
+
             it("test pop and push funcs") {
                 expect(stack.pop()).to(beNil())
                 stack.push(0)
