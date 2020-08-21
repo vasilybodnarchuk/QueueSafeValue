@@ -11,22 +11,45 @@ import QueueSafeValue
 
 class ViewController: UIViewController {
 
-    private var atomicValue = QueueSafeValue<Bool>(value: true)
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("1")
-        //atomicValue.sync().set(value: false)
-//        atomicValue.waitWhile.update { (value) in
-//            print(value)
-//            value = false
-//        }
-//        print(atomicValue.syncInCurrentQueue.get())
-//        atomicValue.waitUpdate { (value) in
-//            value = false
-//            sleep(10)
-//        }
-//        print("2")
-//        print(atomicValue.waitGet().notQueueSafeValue)
+        getSample()
+        setSample()
+        updateSample()
+        updatedSample()
+        performSample()
+        transformSample()
+    }
+    
+    private func getSample() {
+        let atomicValue = QueueSafeValue(value: true)
+        print(atomicValue.wait.lowPriority.get())                   // Optional(true)
+    }
+    
+    private func setSample() {
+        let atomicValue = QueueSafeValue<Int>(value: 1)
+        atomicValue.wait.lowPriority.set(value: 2)
+        print(atomicValue.wait.lowPriority.get())                   // Optional(2)
+    }
+    
+    private func updateSample() {
+        let atomicValue = QueueSafeValue(value: 1)
+        atomicValue.wait.lowPriority.update { $0 = 3 }
+        print(atomicValue.wait.lowPriority.get())                   // Optional(3)
+    }
+    
+    private func updatedSample() {
+        let atomicValue = QueueSafeValue(value: 1)
+        print(atomicValue.wait.lowPriority.updated { $0 = 4 })       // Optional(4)
+    }
+    
+    private func performSample() {
+        let atomicValue = QueueSafeValue(value: 6)
+        atomicValue.wait.lowPriority.perform { print($0) }           // 6
+    }
+    
+    private func transformSample() {
+        let atomicValue = QueueSafeValue(value: 5)
+        print(atomicValue.wait.lowPriority.transform { "\($0)" })   // Optional("5")
     }
 }

@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/cocoapods/l/QueueSafeValue.svg?style=flat)](https://cocoapods.org/pods/QueueSafeValue)
 [![Platform](https://img.shields.io/cocoapods/p/QueueSafeValue.svg?style=flat)](https://cocoapods.org/pods/QueueSafeValue)
 
-## Example
+## Documentation
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
@@ -32,11 +32,11 @@ ___
 #### { priority }
 
 > describes when (in what order) the function will be executed. 
-> `QueueSafeValue` has a built-in stack where all closures will be pushed. Every closure on that stack will be executed sequentially.
-> `priority` means position of a closure in the stack.
+> `QueueSafeValue` has a built-in command stack where all closures will be pushed. Every closure on that stack will be executed sequentially.
+> `priority` means position of a closure in the command stack.
 
 *Available orders*: 
-- `lowPriority` - adds a closure to the end of a stack
+- `lowPriority` - adds a closure to the end of a command stack
     
 #### { action }
 > describes what to do with value 
@@ -54,6 +54,42 @@ ___
 > `func perform(closure: ((Value) -> Void)?)`
 - `transform` -  transforms value without changing original instance
 > `func transform<Output>(closure: ((_ currentValue: Value) -> Output)?)`
+
+## Examples
+
+```Swift
+private func getSample() {
+    let atomicValue = QueueSafeValue(value: true)
+    print(atomicValue.wait.lowPriority.get())                   // Optional(true)
+}
+
+private func setSample() {
+    let atomicValue = QueueSafeValue<Int>(value: 1)
+    atomicValue.wait.lowPriority.set(value: 2)
+    print(atomicValue.wait.lowPriority.get())                   // Optional(2)
+}
+
+private func updateSample() {
+    let atomicValue = QueueSafeValue(value: 1)
+    atomicValue.wait.lowPriority.update { $0 = 3 }
+    print(atomicValue.wait.lowPriority.get())                   // Optional(3)
+}
+
+private func updatedSample() {
+    let atomicValue = QueueSafeValue(value: 1)
+    print(atomicValue.wait.lowPriority.updated { $0 = 4 })       // Optional(4)
+}
+
+private func performSample() {
+    let atomicValue = QueueSafeValue(value: 6)
+    atomicValue.wait.lowPriority.perform { print($0) }           // 6
+}
+
+private func transformSample() {
+    let atomicValue = QueueSafeValue(value: 5)
+    print(atomicValue.wait.lowPriority.transform { "\($0)" })   // Optional("5")
+}
+```
     
 ## Requirements
 
