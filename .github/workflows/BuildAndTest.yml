@@ -1,0 +1,31 @@
+name: Build&Test
+
+on:
+  push:
+    branches: [ feature/fastlane ]
+ # pull_request:
+ #   branches: [ dev/0.3 ]
+
+jobs:
+  build:
+    runs-on: macOS-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Cocoapods
+      run: |
+        gem install cocoapods
+    - name: Install pods
+      run: |
+        pod install --project-directory=./Example
+    - name: Install Bundle
+      run: |
+        bundle install
+    - name: Setup Fastlane
+      run: |
+        brew install fastlane --verbose
+    - name: Build Example App
+      run: |
+        bundle exec fastlane build --verbose
+    - name: Run tests
+      run: |
+        bundle exec fastlane test --verbose   
