@@ -13,7 +13,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Install Cocoapods
       run: |
-        gem install Cocoapods
+        gem install cocoapods
     - name: Install pods
       run: |
         pod install --project-directory=./Example
