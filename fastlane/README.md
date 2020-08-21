@@ -20,7 +20,12 @@ or alternatively using `brew install fastlane`
 ```
 fastlane ios build
 ```
-Description of what the lane does
+Build Example app
+### ios test
+```
+fastlane ios test
+```
+
 
 ----
 

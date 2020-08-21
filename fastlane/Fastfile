@@ -16,7 +16,7 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "Description of what the lane does"
+  desc "Build Example app"
   lane :build do
     build_app(
       workspace: "Example/QueueSafeValue.xcworkspace",
@@ -24,8 +24,14 @@ platform :ios do
       silent: true,
       clean: true,
       skip_codesigning: true,
-      skip_archive: true,
+      skip_archive: true
     )
   end
-  
+
+  lane :test do
+    scan(
+      workspace: "Example/QueueSafeValue.xcworkspace",
+      scheme: "QueueSafeValue-Example"
+    )
+  end
 end
