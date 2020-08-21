@@ -2,9 +2,9 @@ name: Build&Test
 
 on:
   push:
-    branches: [ feature/fastlane ]
- # pull_request:
- #   branches: [ dev/0.3 ]
+    branches: [ staging, master ]
+  pull_request:
+    branches: [ staging, master ]
 
 jobs:
   iOS:
