@@ -7,7 +7,7 @@ on:
  #   branches: [ dev/0.3 ]
 
 jobs:
-  build:
+  iOS:
     runs-on: macOS-latest
     steps:
     - uses: actions/checkout@v1
