@@ -57,6 +57,7 @@
 		D95E4B7724EB7CCC009BC031 /* ValueProcessingSerialQueueSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueProcessingSerialQueueSpec.swift; sourceTree = "<group>"; };
 		D95E4B8624EC6C14009BC031 /* QueueSafeStackSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueSafeStackSpec.swift; sourceTree = "<group>"; };
 		D9790B5D24AB851E00701A2B /* QueueSafeValue.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = QueueSafeValue.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D98FA78524F03BFA0041DCFC /* QueueSafeValue_Example copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "QueueSafeValue_Example copy-Info.plist"; path = "/Users/vasily/Dropbox/developer/iOS/my_pods/QueueSafeValue/QueueSafeValue/Example/QueueSafeValue_Example copy-Info.plist"; sourceTree = "<absolute>"; };
 		D9C1FE8424D7B30200B78489 /* Queues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Queues.swift; sourceTree = "<group>"; };
 		DA7406C9388422396093FD3F /* Pods-QueueSafeValue_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QueueSafeValue_Example.debug.xcconfig"; path = "Target Support Files/Pods-QueueSafeValue_Example/Pods-QueueSafeValue_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		F15B106DF5F417738BC49742 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
@@ -91,6 +92,7 @@
 				607FACD11AFB9204008FA782 /* Products */,
 				C9985C94B5BFB80DB4A74022 /* Pods */,
 				B610F9515E83AA45B1276F0F /* Frameworks */,
+				D98FA78524F03BFA0041DCFC /* QueueSafeValue_Example copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
