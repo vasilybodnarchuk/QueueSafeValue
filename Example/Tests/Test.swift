@@ -2,7 +2,7 @@
 //  Test.swift
 //  QueueSafeValue_Example
 //
-//  Created by Vasily on 8/9/20.
+//  Created by Vasily Bodnarchuk on 8/9/20.
 //  Copyright © 2020 CocoaPods. All rights reserved.
 //
 
@@ -19,7 +19,7 @@ class Test<T> {
     private let dispatchGroup: DispatchGroup
     private let description: String!
     private let resultClosure: ((Test<T>) -> Void)
-    
+
     init (value: T, description: String,
           queues: [DispatchQueue] = [],
           iterationsCountPerQueue: Int = 10_000,
@@ -40,7 +40,7 @@ class Test<T> {
 
 extension Test {
     func run(closure: @escaping (Int, QueueSafeValue<T>, Date, inout Date) -> Void) {
-        let retainCount = (queueSafeValue as? QueueSafeValue<SimpleClass>)?.getRetainCount()
+        let retainCount = (queueSafeValue as? QueueSafeValue<SimpleClass>)?.countObjectReferences()
         describe(description) {
             waitUntil(timeout: 100) { done in
                 DispatchQueue.global(qos: .unspecified).async {
@@ -59,10 +59,10 @@ extension Test {
                             count = iteration
                         }
                     }
-                    
+
                     self.dispatchGroup.notify(queue: .global(qos: .unspecified)) {
                         self.resultClosure(self)
-                        if let retainCount2 = (self.queueSafeValue as? QueueSafeValue<SimpleClass>)?.getRetainCount() {
+                        if let retainCount2 = (self.queueSafeValue as? QueueSafeValue<SimpleClass>)?.countObjectReferences() {
                             it("expected to have the same retain count") {
                                 expect(retainCount) == retainCount2
                             }

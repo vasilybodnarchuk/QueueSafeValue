@@ -2,67 +2,47 @@
 //  ValueContainer.swift
 //  QueueSafeValue
 //
-//  Created by Vasily on 8/8/20.
+//  Created by Vasily Bodnarchuk on 8/8/20.
+//  Copyright (c) 2020 Vasily Bodnarchuk. All rights reserved.
 //
 
 import Foundation
 
-/// Main class where we keep an original value that we are going to read/write asynchronously.
+/// Class where we keep an original value that we are going to read/write asynchronously.
 public class ValueContainer<Value> {
-    /// The type of closures to be pushed onto the stack and executed.
-    typealias Closure = (inout Value) -> Void
-    
-    /// Queue where closures will be added (stacked).
-    private var stack: Stack<Closure>
-    
-    /// Provides safe access to the value. Protects value from simultaneous reading/writing.
-    private var accessQueue: DispatchQueue!
-    
-    /// Instance of the value that we are going to read/write from one or several threads
+
+    /// The type of closures to be passed onto the `serialQueue` and execute.
+    public typealias Closure = (inout Value) -> Void
+
+    /// The original instance of the value we are going to read / write synchronously or asynchronousl.
     private var value: Value
-    
+
+    /// Abstraction of a queue that stacks closures and executes them sequentially.
+    private var serialQueue: ValueProcessingSerialQueue
+
     /**
      Initialize object with properties.
      - Parameter value: Instance of the value that we are going to read/write from one or several DispatchQueue
      - Returns: Container that provides limited and thread safe access to the `value`.
      */
-    init (value: Value) {
+    public init (value: Value) {
         self.value = value
-        stack = Stack<Closure>()
-        let address = Unmanaged.passUnretained(self).toOpaque()
-        let label = "accessQueue.\(type(of: self)).\(address)"
-        accessQueue = DispatchQueue(label: label,
-                                    qos: .unspecified,
-                                    attributes: [.concurrent],
-                                    autoreleaseFrequency: .inherit,
-                                    target: nil)
+        serialQueue = ValueProcessingSerialQueue()
     }
 }
 
 // MARK: Performing closures in `stack`
 extension ValueContainer {
-    
     /**
-     Adds closure to the end of our `stack` and perform it queue order.
+     Adds closure to the end of `serialQueue` and perform it.
      - Parameter closure: code that we want to perform.
      */
-    func performLast(closure: @escaping Closure) {
-        stack.push(closure)
-        perform()
+    public func appendAndPerform(closure: @escaping Closure) {
+        serialQueue.append { closure(&self.value) }
+        serialQueue.perform()
     }
-    
+
     //func performNow(closure: Closure?) { accessQueue.sync { closure?(&self.value) } }
-    
-    /// Performs closures in that `Stack` in queue order. One by one.
-    private func perform() {
-        if stack.isEmpty { return }
-        guard let closure = stack.pop() else {
-            perform()
-            return
-        }
-        accessQueue.sync { closure(&self.value) }
-        perform()
-    }
 }
 
 extension ValueContainer where Value: AnyObject {
@@ -71,5 +51,5 @@ extension ValueContainer where Value: AnyObject {
      - Note: only for objects
      - Returns:retain count of wrapped value
      */
-    public func getRetainCount() -> CFIndex { CFGetRetainCount(value) }
+    public func countObjectReferences() -> CFIndex { CFGetRetainCount(value) }
 }

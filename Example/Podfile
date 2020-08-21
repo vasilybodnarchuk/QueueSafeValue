@@ -8,5 +8,6 @@ target 'QueueSafeValue_Example' do
 
     pod 'Quick', '~> 1.2.0'
     pod 'Nimble', '~> 7.0'
+    pod 'SwiftLint'
   end
 end
