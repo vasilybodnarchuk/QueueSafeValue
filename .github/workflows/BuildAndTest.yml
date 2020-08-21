@@ -22,10 +22,7 @@ jobs:
         bundle install
     - name: Setup Fastlane
       run: |
-        brew install fastlane --verbose
-    - name: Build Example App
-      run: |
-        bundle exec fastlane build --verbose
-    - name: Run tests
+        gem install fastlane -NV
+    - name: Build and Test
       run: |
         bundle exec fastlane test --verbose   
