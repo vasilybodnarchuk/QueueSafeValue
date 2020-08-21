@@ -11,9 +11,12 @@ jobs:
     runs-on: macOS-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Run fastlane setup
+    - name: Bundle Install
+      run: |
+        bundle install
+    - name: Fastlane setup
       run: |
         brew install fastlane --verbose
-    - name: Run fastlane build
+    - name: Fastlane build
       run: |
         bundle exec fastlane build --verbose
