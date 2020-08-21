@@ -1,6 +1,6 @@
 # QueueSafeValue
 
-[![CI Status](https://img.shields.io/travis/vasilybodnarchuk/QueueSafeValue.svg?style=flat)](https://travis-ci.org/vasilybodnarchuk/QueueSafeValue)
+![Build&Test](https://github.com/vasilybodnarchuk/QueueSafeValue/workflows/Build&Test/badge.svg)
 [![Version](https://img.shields.io/cocoapods/v/QueueSafeValue.svg?style=flat)](https://cocoapods.org/pods/QueueSafeValue)
 [![License](https://img.shields.io/cocoapods/l/QueueSafeValue.svg?style=flat)](https://cocoapods.org/pods/QueueSafeValue)
 [![Platform](https://img.shields.io/cocoapods/p/QueueSafeValue.svg?style=flat)](https://cocoapods.org/pods/QueueSafeValue)
