@@ -92,8 +92,8 @@ class LowPrioritySerialActionsSpec: QuickSpec {
         }
     }
     
-    private func testWeakReference(before: (QueueSafeAction.LowPriorityActions<Int>) -> Void,
-                                   after: @escaping (QueueSafeAction.LowPriorityActions<Int>) -> Void) {
+    private func testWeakReference(before: (QueueSafeAction.LowPrioritySerialActions<Int>) -> Void,
+                                   after: @escaping (QueueSafeAction.LowPrioritySerialActions<Int>) -> Void) {
         var queueSafeValue: QueueSafeValue<Int>! = .init(value: value)
         let lowPriorityAction = queueSafeValue.wait.lowPriority
         expect(CFGetRetainCount(lowPriorityAction)) == 3

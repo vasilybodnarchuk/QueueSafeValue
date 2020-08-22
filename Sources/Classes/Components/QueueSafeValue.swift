@@ -22,7 +22,7 @@ public class QueueSafeValue<Value> {
     public init (value: Value) { valueContainer = ValueContainer(value: value) }
 
     /// Performs actions sequentially
-    public var wait: SerialActionScheduler<Value> { .init(valueContainer: valueContainer) }
+    public var wait: SyncScheduler<Value> { .init(valueContainer: valueContainer) }
 }
 
 extension QueueSafeValue where Value: AnyObject {

@@ -14,8 +14,8 @@ class ValueProcessingSerialQueueSpec: QuickSpec {
     override func spec() {
 
         describe("Value Processing Serial Queue") {
-            var serialQueue: ValueProcessingSerialQueue!
-            beforeEach { serialQueue = ValueProcessingSerialQueue() }
+            var serialQueue: CommandQueue!
+            beforeEach { serialQueue = CommandQueue() }
 
             it("first waits for all closures to be added and then executes them in the correct order") {
                 var array1 = [Int]()
