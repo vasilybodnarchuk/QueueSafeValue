@@ -12,7 +12,6 @@ import QueueSafeValue
 
 class ValueContainerSpec: QuickSpec {
     override func spec() {
-
         describe("Value container") {
             context("test a strong reference to the wrapped object") {
                 let value1 = 10

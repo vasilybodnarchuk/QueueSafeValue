@@ -18,7 +18,6 @@ class ValueProcessingSerialQueueSpec: QuickSpec {
             beforeEach { serialQueue = ValueProcessingSerialQueue() }
 
             it("first waits for all closures to be added and then executes them in the correct order") {
-                print(serialQueue)
                 var array1 = [Int]()
                 var array2 = [Int]()
                 for _ in 0..<10_000 {
@@ -30,7 +29,6 @@ class ValueProcessingSerialQueueSpec: QuickSpec {
             }
 
             it("adds closures to the queue and immediately executes them in the correct order") {
-                print(serialQueue)
                 var array1 = [Int]()
                 var array2 = [Int]()
                 for _ in 0..<10_000 {

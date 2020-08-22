@@ -21,6 +21,7 @@
 		D95E4B7924EB7D3E009BC031 /* ValueProcessingSerialQueueSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B7724EB7CCC009BC031 /* ValueProcessingSerialQueueSpec.swift */; };
 		D95E4B8824EC6C3A009BC031 /* QueueSafeStackSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B8624EC6C14009BC031 /* QueueSafeStackSpec.swift */; };
 		D9C1FE8524D7B30200B78489 /* Queues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C1FE8424D7B30200B78489 /* Queues.swift */; };
+		D9CEFC0A24F083EA00C76B19 /* LowPrioritySerialActionsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CEFC0924F083EA00C76B19 /* LowPrioritySerialActionsSpec.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,7 @@
 		D9790B5D24AB851E00701A2B /* QueueSafeValue.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = QueueSafeValue.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D98FA78524F03BFA0041DCFC /* QueueSafeValue_Example copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "QueueSafeValue_Example copy-Info.plist"; path = "/Users/vasily/Dropbox/developer/iOS/my_pods/QueueSafeValue/QueueSafeValue/Example/QueueSafeValue_Example copy-Info.plist"; sourceTree = "<absolute>"; };
 		D9C1FE8424D7B30200B78489 /* Queues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Queues.swift; sourceTree = "<group>"; };
+		D9CEFC0924F083EA00C76B19 /* LowPrioritySerialActionsSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LowPrioritySerialActionsSpec.swift; sourceTree = "<group>"; };
 		DA7406C9388422396093FD3F /* Pods-QueueSafeValue_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QueueSafeValue_Example.debug.xcconfig"; path = "Target Support Files/Pods-QueueSafeValue_Example/Pods-QueueSafeValue_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		F15B106DF5F417738BC49742 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -179,6 +181,7 @@
 		D95E4B6E24EB3AED009BC031 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				D9CEFC0824F083D800C76B19 /* Actions */,
 				D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */,
 				607FACEB1AFB9204008FA782 /* Tests.swift */,
 				D95E4B6C24EB3AC5009BC031 /* ValueContainerSpec.swift */,
@@ -195,6 +198,14 @@
 				D9473A6224E0B6AB00EBF278 /* Test.swift */,
 			);
 			name = Helpers;
+			sourceTree = "<group>";
+		};
+		D9CEFC0824F083D800C76B19 /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				D9CEFC0924F083EA00C76B19 /* LowPrioritySerialActionsSpec.swift */,
+			);
+			path = Actions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -425,6 +436,7 @@
 				D9C1FE8524D7B30200B78489 /* Queues.swift in Sources */,
 				D9473A6524E0B6D300EBF278 /* Test.swift in Sources */,
 				D95E4B7224EB3DE6009BC031 /* SimpleClass.swift in Sources */,
+				D9CEFC0A24F083EA00C76B19 /* LowPrioritySerialActionsSpec.swift in Sources */,
 				D95E4B7924EB7D3E009BC031 /* ValueProcessingSerialQueueSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
