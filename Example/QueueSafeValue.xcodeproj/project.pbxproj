@@ -17,8 +17,6 @@
 		883AC02491EF659EEE772C2B /* Pods_QueueSafeValue_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 902AAF1CF7B013550256F17D /* Pods_QueueSafeValue_Tests.framework */; };
 		B81AC8F524F53E1F00A5CCC3 /* LowPriorityAsyncActionsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81AC8F424F53E1F00A5CCC3 /* LowPriorityAsyncActionsSpec.swift */; };
 		B81AC8F724F5431700A5CCC3 /* SpecableActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81AC8F624F5431700A5CCC3 /* SpecableActions.swift */; };
-		D9473A6524E0B6D300EBF278 /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9473A6224E0B6AB00EBF278 /* Test.swift */; };
-		D95E4B6F24EB3AF9009BC031 /* ValueContainerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B6C24EB3AC5009BC031 /* ValueContainerSpec.swift */; };
 		D95E4B7224EB3DE6009BC031 /* SimpleClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */; };
 		D95E4B7924EB7D3E009BC031 /* CommandQueueSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B7724EB7CCC009BC031 /* CommandQueueSpec.swift */; };
 		D95E4B8824EC6C3A009BC031 /* QueueSafeStackSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B8624EC6C14009BC031 /* QueueSafeStackSpec.swift */; };
@@ -56,8 +54,6 @@
 		A9DE8AC7B55B14F9FDDF26BA /* QueueSafeValue.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = QueueSafeValue.podspec; path = ../QueueSafeValue.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		B81AC8F424F53E1F00A5CCC3 /* LowPriorityAsyncActionsSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LowPriorityAsyncActionsSpec.swift; sourceTree = "<group>"; };
 		B81AC8F624F5431700A5CCC3 /* SpecableActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecableActions.swift; sourceTree = "<group>"; };
-		D9473A6224E0B6AB00EBF278 /* Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
-		D95E4B6C24EB3AC5009BC031 /* ValueContainerSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueContainerSpec.swift; sourceTree = "<group>"; };
 		D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleClass.swift; sourceTree = "<group>"; };
 		D95E4B7724EB7CCC009BC031 /* CommandQueueSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandQueueSpec.swift; sourceTree = "<group>"; };
 		D95E4B8624EC6C14009BC031 /* QueueSafeStackSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueSafeStackSpec.swift; sourceTree = "<group>"; };
@@ -196,7 +192,6 @@
 				D953038024F1B4B900FA6B99 /* Models */,
 				D9CEFC0824F083D800C76B19 /* Actions */,
 				607FACEB1AFB9204008FA782 /* Tests.swift */,
-				D95E4B6C24EB3AC5009BC031 /* ValueContainerSpec.swift */,
 				D95E4B7724EB7CCC009BC031 /* CommandQueueSpec.swift */,
 				D95E4B8624EC6C14009BC031 /* QueueSafeStackSpec.swift */,
 			);
@@ -207,7 +202,6 @@
 			isa = PBXGroup;
 			children = (
 				D9C1FE8424D7B30200B78489 /* Queues.swift */,
-				D9473A6224E0B6AB00EBF278 /* Test.swift */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -444,12 +438,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D95E4B6F24EB3AF9009BC031 /* ValueContainerSpec.swift in Sources */,
 				D95E4B8824EC6C3A009BC031 /* QueueSafeStackSpec.swift in Sources */,
 				B81AC8F524F53E1F00A5CCC3 /* LowPriorityAsyncActionsSpec.swift in Sources */,
 				607FACEC1AFB9204008FA782 /* Tests.swift in Sources */,
 				D9C1FE8524D7B30200B78489 /* Queues.swift in Sources */,
-				D9473A6524E0B6D300EBF278 /* Test.swift in Sources */,
 				D95E4B7224EB3DE6009BC031 /* SimpleClass.swift in Sources */,
 				D9CEFC0A24F083EA00C76B19 /* LowPrioritySerialActionsSpec.swift in Sources */,
 				B81AC8F724F5431700A5CCC3 /* SpecableActions.swift in Sources */,
