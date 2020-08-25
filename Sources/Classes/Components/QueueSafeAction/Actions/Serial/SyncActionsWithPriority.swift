@@ -1,13 +1,18 @@
 //
-//  ConcurrentActionsWithPriority.swift
+//  SyncActionsWithPriority.swift
 //  QueueSafeValue
 //
-//  Created by Vasily Bodnarchuk on 8/21/20.
+//  Created by Vasily Bodnarchuk on 6/30/20.
+//  Copyright (c) 2020 Vasily Bodnarchuk. All rights reserved.
 //
 
 import Foundation
 
-public class ConcurrentActionsWithPriority<Value>: ActionsWithPriority<Value> {
+/**
+ Describes the available functions that can manipulate a `value`, wrapped in a `ValueContainer` object.
+ All functions will run synchronously on the queue that calls them.
+ */
+public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
 
     /**
      Thread-safe value reading.
@@ -16,7 +21,7 @@ public class ConcurrentActionsWithPriority<Value>: ActionsWithPriority<Value> {
      */
     public func get() -> Value? {
         var result: Value?
-        perform { result = $0 }
+        executeCommand { result = $0 }
         return result
     }
 
@@ -29,14 +34,7 @@ public class ConcurrentActionsWithPriority<Value>: ActionsWithPriority<Value> {
 
     /**
      Thread-safe value updating.
-     - Important: Blocks the queue where this code runs until it completed.
-     - Parameter closure: a block that updates the original `value` instance
-     */
-    public func update(closure: ((_ currentValue: inout Value) -> Void)?) { executeCommand { closure?(&$0) } }
-
-    /**
-     Thread-safe value updating.
-     - Important: Blocks a queue where this code runs until it completed.
+     - Important: Blocks a queue where this code runs until it completed..
      - Parameter closure: A block that updates the original `value` instance.
      - Returns: An updated instance of the value.
      */
@@ -50,17 +48,9 @@ public class ConcurrentActionsWithPriority<Value>: ActionsWithPriority<Value> {
     }
 
     /**
-     Thread-safe value manipulating.
-     - Important: Blocks a queue where this code runs until it completed.
-     - Parameter closure: A block that updates the original `value` instance.
-     - Returns: An updated instance of the value.
-     */
-    public func perform(closure: ((Value) -> Void)?) { executeCommand { closure?($0) } }
-
-    /**
      Thread-safe value transforming.
-     - Important: Blocks a queue where this code runs until it completed.
-     - Parameter closure: A block that transform the original `value` instance
+     - Important: Blocks a queue where this code runs until it completed..
+     - Parameter closure: A block that transform the original `value` instance.
      - Returns: An updated instance of the value.
      */
     public func transform<Output>(closure: ((_ currentValue: Value) -> Output)?) -> Output? {

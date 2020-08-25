@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Abstraction of a queue that stacks closures and executes them sequentially
+/// A queue that stacks closures and executes them sequentially
 public class CommandQueue {
 
     /// The type of closures to be pushed onto the stack and executed.
@@ -30,6 +30,7 @@ public class CommandQueue {
 }
 
 // MARK: Performing closures in `stack`
+
 extension CommandQueue {
 
     /**

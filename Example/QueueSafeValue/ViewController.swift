@@ -13,12 +13,21 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        getSample()
-        setSample()
-        updateSample()
-        updatedSample()
-        performSample()
-        transformSample()
+//        getSample()
+//        setSample()
+//        updateSample()
+//        updatedSample()
+//        performSample()
+//        transformSample()
+
+//        QueueSafeValue(value: 0).wait.lowPriority.updated {
+//            print("!!!!!! \($0)")
+//        }
+        let queueSafeValue = QueueSafeValue(value: 0)
+        queueSafeValue.async(performIn: .unspecified).lowPriority.get {
+            print("!!!!!! \($0)")
+        }
+        print("end")
     }
     
     private func getSample() {

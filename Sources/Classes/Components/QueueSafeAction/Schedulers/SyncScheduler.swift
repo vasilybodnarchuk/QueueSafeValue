@@ -9,12 +9,12 @@
 import Foundation
 
 /// Describes the order in which sync access to the `value` enclosed in the `ValueContainer `object will be granted.
-public class SyncScheduler<Value>: ActionScheduler<Value> {
+public class SyncScheduler<Value>: Scheduler<Value> {
 
     /**
-    Schedules function execution in a `command queue` that is integrated into the `ValueContainer` object.
-    Each function is pushed onto the command stack and executed in FIFO order.
-    The `lowPriority` function will be placed at the end of the command queue.
-    */
-    public var lowPriority: QueueSafeAction.LowPrioritySerialActions<Value> { .init(valueContainer: valueContainer) }
+     Schedules function execution in a `command queue` that is integrated into the `ValueContainer` object.
+     Each function is pushed onto the command stack and executed in FIFO order.
+     The `lowPriority` function will be placed at the end of the `command queue`.
+     */
+    public var lowPriority: LowPrioritySyncActions<Value> { .init(valueContainer: valueContainer) }
 }

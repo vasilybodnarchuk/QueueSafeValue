@@ -178,11 +178,19 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		D953038024F1B4B900FA6B99 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		D95E4B6E24EB3AED009BC031 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				D953038024F1B4B900FA6B99 /* Models */,
 				D9CEFC0824F083D800C76B19 /* Actions */,
-				D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */,
 				607FACEB1AFB9204008FA782 /* Tests.swift */,
 				D95E4B6C24EB3AC5009BC031 /* ValueContainerSpec.swift */,
 				D95E4B7724EB7CCC009BC031 /* ValueProcessingSerialQueueSpec.swift */,
