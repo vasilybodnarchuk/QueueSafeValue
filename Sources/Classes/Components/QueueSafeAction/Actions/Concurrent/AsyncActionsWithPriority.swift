@@ -33,7 +33,7 @@ public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
      - Important: Will be executed asynchronously on the queue where this function was called.
      - Parameter closure: block that returns `value`.
      */
-    public func get(closure: ((Value) -> Void)?) { executeCommand { closure?($0) } }
+//    public func get(closure: ((Value) -> Void)?) { executeCommand { closure?($0) } }
 
     /**
      Thread-safe (queue-safe) value writing.
@@ -42,11 +42,15 @@ public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
         - value: value to set.
         - completion: block that returns updated `value`.
      */
-    public func set(value: Value, completion: ((Value) -> Void)?) {
-        executeCommand {
-            $0 = value
-            completion?($0)
-        }
-    }
+//    public func set(value: Value, completion: ((Result<Value, Error>) -> Void)?) {
+//        do {
+//            try executeCommand {
+//                $0 = value
+//                completion?($)
+//            }
+//        } catch let error {
+//
+//        }
+//    }
 
 }

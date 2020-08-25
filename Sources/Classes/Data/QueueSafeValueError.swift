@@ -7,6 +7,7 @@
 
 import Foundation
 
-enum QueueSafeValueError: Error {
+public enum QueueSafeValueError: Error {
     case valueContainerDeinited
+    case valueAccessFunctionWasNotPerformedOrDeinited
 }

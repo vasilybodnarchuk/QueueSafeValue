@@ -9,8 +9,15 @@ import Foundation
 
 /// An inheritance class that describes the interface for sync / async actions.
 public class ActionsWithPriority<Value> {
+
+    /// Same as `value` type. Used to improve readability
+    public typealias UpdatedValue = Value
+    
+    /// Same as `value` type. Used to improve readability
+    public typealias CurrentValue = Value
+
     /// The type of closures to be pushed onto the stack and executed.
-    typealias Closure = ValueContainer<Value>.Closure
+    typealias Closure = (Result<Value, QueueSafeValueError>) -> Void
 
     /// Retains the original instance of the `value` and provides thread-safe access to it.
     private(set) weak var valueContainer: ValueContainer<Value>?
@@ -26,21 +33,5 @@ public class ActionsWithPriority<Value> {
      Performs `closure` synchronously or asynchronously in defined order.
      - Parameter closure: block to be executed.
      */
-    func executeCommand(closure: @escaping Closure) { fatalError() }
-
-    /**
-     Thread-safe (queue-safe) value updating.
-     - Important: If synchronous execution is scheduled, blocks the queue on which this code is running until it completes.
-     - Parameter closure: a block that updates the original `value` instance, wrapped in a `ValueContainer` object.
-     */
-    public func update(closure: ((_ currentValue: inout Value) -> Void)?) {
-        executeCommand { closure?(&$0) }
-    }
-
-    /**
-     Thread-safe (queue-safe) value manipulating.
-     - Important: If synchronous execution is scheduled, blocks the queue on which this code is running until it completes.
-     - Parameter closure: A block that updates the original `value` instance, wrapped in a `ValueContainer` object.
-     */
-    public func perform(closure: ((Value) -> Void)?) { executeCommand { closure?($0) } }
+    func executeCommand(closure: @escaping ValueContainer<Value>.Closure) throws { fatalError() }
 }
