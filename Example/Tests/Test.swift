@@ -43,7 +43,7 @@ extension Test {
         let retainCount = (queueSafeValue as? QueueSafeValue<SimpleClass>)?.countObjectReferences()
         describe(description) {
             waitUntil(timeout: 100) { done in
-                DispatchQueue.global(qos: .unspecified).async {
+                DispatchQueue.global(qos: .default).async {
                     var count = 0
                     for iteration in 0..<self.iterationsCountPerQueue {
                         self.queues.enumerated().forEach { (index, queue) in
@@ -60,7 +60,7 @@ extension Test {
                         }
                     }
 
-                    self.dispatchGroup.notify(queue: .global(qos: .unspecified)) {
+                    self.dispatchGroup.notify(queue: .global(qos: .default)) {
                         self.resultClosure(self)
                         if let retainCount2 = (self.queueSafeValue as? QueueSafeValue<SimpleClass>)?.countObjectReferences() {
                             it("expected to have the same retain count") {

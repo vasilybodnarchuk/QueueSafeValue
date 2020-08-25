@@ -7,10 +7,10 @@
 
 import Foundation
 
-/// A queue that stacks closures and executes them sequentially
+/// A queue that stacks closures and executes them sequentially.
 public class CommandQueue {
 
-    /// The type of closures to be pushed onto the stack and executed.
+    /// The type of closures to be pushed onto the `stack` and executed.
     public typealias Closure = () -> Void
 
     /// Queue that performs stacked closures synchronously.

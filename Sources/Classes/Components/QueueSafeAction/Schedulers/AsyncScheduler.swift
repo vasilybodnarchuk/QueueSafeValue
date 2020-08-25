@@ -21,7 +21,7 @@ public class AsyncScheduler<Value>: Scheduler<Value> {
         - queue: a queue in which access to the `value` will be granted.
      - Returns: An object that describes when (in what order) the `value` enclosed in the `ValueContainer` will be accessed.
      */
-    init(valueContainer: ValueContainer<Value>, queue: DispatchQueue = .global(qos: .unspecified)) {
+    init(valueContainer: ValueContainer<Value>, queue: DispatchQueue = .global(qos: .default)) {
         self.queue = queue
         super.init(valueContainer: valueContainer)
     }
@@ -32,6 +32,6 @@ public class AsyncScheduler<Value>: Scheduler<Value> {
      The `lowPriority` function will be placed at the end of the `command queue`.
      */
     public var lowPriority: LowPriorityAsyncActions<Value> {
-        .init(valueContainer: valueContainer, queue: queue)
+        .init(valueContainer: valueContainer, grantAccessIn: queue)
     }
 }

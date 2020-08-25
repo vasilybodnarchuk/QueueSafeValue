@@ -24,7 +24,7 @@ class ViewController: UIViewController {
 //            print("!!!!!! \($0)")
 //        }
         let queueSafeValue = QueueSafeValue(value: 0)
-        queueSafeValue.async(performIn: .unspecified).lowPriority.get {
+        queueSafeValue.async(performIn: .global()).lowPriority.get {
             print("!!!!!! \($0)")
         }
         print("end")

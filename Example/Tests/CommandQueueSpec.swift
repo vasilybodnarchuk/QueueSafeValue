@@ -1,5 +1,5 @@
 //
-//  ValueProcessingSerialQueueSpec.swift
+//  CommandQueueSpec.swift
 //  QueueSafeValue_Example
 //
 //  Created by Vasily Bodnarchuk on 8/17/20.
@@ -10,10 +10,10 @@ import Quick
 import Nimble
 import QueueSafeValue
 
-class ValueProcessingSerialQueueSpec: QuickSpec {
+class CommandQueueSpec: QuickSpec {
     override func spec() {
 
-        describe("Value Processing Serial Queue") {
+        describe("Command Queue") {
             var serialQueue: CommandQueue!
             beforeEach { serialQueue = CommandQueue() }
 

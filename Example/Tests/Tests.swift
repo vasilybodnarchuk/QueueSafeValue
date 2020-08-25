@@ -133,7 +133,7 @@ extension TableOfContentsSpec {
                                                 iterationClosure: @escaping (Int, QueueSafeValue<T>) -> Void) {
         let description = "executed asynchronously inside one queue with wrapped value type \(type(of: value))"
         Test(value: value, description: description,
-             queues: [.global(qos: .unspecified)],
+             queues: [.global()],
              iterationsCountPerQueue: iterations) { _ in
                 it(result) { }
         }.run { iteration, queueSafeValue, _, endTime in
@@ -146,7 +146,7 @@ extension TableOfContentsSpec {
                                           iterationClosure: @escaping (Int, QueueSafeValue<T>) -> Void) {
         let description = "executed serially inside one queue with wrapped value type \(type(of: value))"
         Test(value: value, description: description,
-             queues: [.global(qos: .unspecified)],
+             queues: [.global()],
              iterationsCountPerQueue: 1) { _ in
                 it(result) { }
         }.run { _, queueSafeValue, _, endTime in

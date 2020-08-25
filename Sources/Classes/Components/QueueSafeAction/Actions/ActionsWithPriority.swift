@@ -33,7 +33,9 @@ public class ActionsWithPriority<Value> {
      - Important: If synchronous execution is scheduled, blocks the queue on which this code is running until it completes.
      - Parameter closure: a block that updates the original `value` instance, wrapped in a `ValueContainer` object.
      */
-    public func update(closure: ((_ currentValue: inout Value) -> Void)?) { executeCommand { closure?(&$0) } }
+    public func update(closure: ((_ currentValue: inout Value) -> Void)?) {
+        executeCommand { closure?(&$0) }
+    }
 
     /**
      Thread-safe (queue-safe) value manipulating.
