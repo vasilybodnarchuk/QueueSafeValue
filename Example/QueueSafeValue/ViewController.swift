@@ -37,7 +37,7 @@ class ViewController: UIViewController {
     
     private func setSample() {
         let atomicValue = QueueSafeValue<Int>(value: 1)
-        atomicValue.wait.lowPriority.set(value: 2)
+        atomicValue.wait.lowPriority.set(newValue: 2)
         print(String(describing: atomicValue.wait.lowPriority.get()))                   // success(2)
     }
     

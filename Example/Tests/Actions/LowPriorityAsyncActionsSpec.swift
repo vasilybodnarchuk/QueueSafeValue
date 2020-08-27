@@ -19,35 +19,31 @@ class LowPriorityAsyncActionsSpec: QuickSpec, SpecableActions {
 
     override func spec() {
         describe("Low Priority Async Actions") {
-            //testWeakReferenceAndCoreFunctionality()
+            testWeakReferenceAndCoreFunctionality()
         }
     }
 }
 
 // MARK: Test weak reference and core functionality
-//
+
 extension LowPriorityAsyncActionsSpec {
-//    private func testWeakReferenceAndCoreFunctionality() {
-//        context("test weak reference and core functionality") {
-//            it("get func") {
-//                self.testWeakReference(before: { action, done in
-//                    print("!!!!!!!!!!! 1")
-//
-//                    action.get { value in
-//                        print("!!!!!!!!!!! 2")
-//                        expect(value) == self.value
-//                        done()
-//                    }
-//                }) { action, done in
-//                    print("!!!!!!!!!!! 3")
-//                    action.get { value in
-//                        print("!!!!!!!!!!! 4")
-//                        expect(value).to(beNil())
-//                        done()
-//                    }
-//                }
-//            }
-//
+    private func testWeakReferenceAndCoreFunctionality() {
+        context("test weak reference and core functionality") {
+            it("get func") {
+                self.testWeakReference(before: { action, done in
+                    action.get { value in
+                        expect(value) == .success(self.value)
+                        done()
+                    }
+                    
+                }) { action, done in
+                    action.get { value in
+                        expect(value) == .failure(.valueContainerDeinited)
+                        done()
+                    }
+                }
+            }
+
 //            it("set func") {
 //                let newValue = self.value + 1
 //                self.testWeakReference(before: {
@@ -111,6 +107,6 @@ extension LowPriorityAsyncActionsSpec {
 //                    expect(result).to(beNil())
 //                })
 //            }
-//        }
-//    }
+        }
+    }
 }

@@ -41,10 +41,10 @@ extension LowPrioritySerialActionsSpec {
             it("set func") {
                 let newValue = self.value + 1
                 self.testWeakReference(before: {
-                    $0.set(value: newValue)
+                    $0.set(newValue: newValue)
                     expect($0.get()) == .success(newValue)
                 }, after: {
-                    $0.set(value: newValue)
+                    $0.set(newValue: newValue)
                     expect($0.get()) == .failure(.valueContainerDeinited)
                 })
             }

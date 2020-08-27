@@ -37,16 +37,41 @@ extension SpecableActions where Actions: SyncActionsWithPriority<Value> {
 extension SpecableActions where Actions: AsyncActionsWithPriority<Value> {
     typealias Completion = () -> Void
     func testWeakReference(before: @escaping (Actions, @escaping Completion) -> Void,
-                           after: @escaping (Actions,  @escaping Completion) -> Void) {
+                           after: @escaping (Actions, @escaping Completion) -> Void) {
         var queueSafeValue: QueueSafeValue<Value>! = .init(value: value)
         let lowPriorityAction = actions(from: queueSafeValue)
         expect(CFGetRetainCount(lowPriorityAction)) == 3
+        
         let closure: () -> Void = {
-            expect(CFGetRetainCount(lowPriorityAction)) == 5
-            waitUntil(timeout: 1) { after(lowPriorityAction, $0) }
+            var wasCompleted = false
+            print("!!!!! 1 \(wasCompleted)")
+            expect(CFGetRetainCount(lowPriorityAction)) == 4
+            waitUntil(timeout: 1) { done in
+                print("!!!!! 2 \(wasCompleted)")
+                after(lowPriorityAction) {
+                    usleep(1_000)
+                    wasCompleted = true
+                    print("!!!!! 3 \(wasCompleted)")
+                    done()
+                }
+                print("!!!!! 4 \(wasCompleted)")
+                expect(wasCompleted) == true
+            }
+            print("!!!!! 5 \(wasCompleted)")
+            expect(wasCompleted) == true
             expect(CFGetRetainCount(lowPriorityAction)) == 4
         }
-        waitUntil(timeout: 1) { before(lowPriorityAction, $0) }
+        
+        var wasCompleted = false
+        waitUntil(timeout: 1) { done in
+            before(lowPriorityAction) {
+                usleep(1_000)
+                wasCompleted = true
+                done()
+            }
+            expect(wasCompleted) == false
+        }
+        expect(wasCompleted) == true
         queueSafeValue = nil
         closure()
     }

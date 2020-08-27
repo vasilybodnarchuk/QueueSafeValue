@@ -9,5 +9,8 @@ import Foundation
 
 public enum QueueSafeValueError: Error {
     case valueContainerDeinited
-    case valueAccessFunctionWasNotPerformedOrDeinited
+    case valueAccessFuncWasNotPerformed
+    case unexpected(error: Error)
 }
+
+extension QueueSafeValueError: Equatable {}

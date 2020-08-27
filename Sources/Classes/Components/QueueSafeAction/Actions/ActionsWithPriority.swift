@@ -12,7 +12,7 @@ public class ActionsWithPriority<Value> {
 
     /// Same as `value` type. Used to improve readability
     public typealias UpdatedValue = Value
-    
+
     /// Same as `value` type. Used to improve readability
     public typealias CurrentValue = Value
 
