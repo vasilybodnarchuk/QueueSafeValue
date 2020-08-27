@@ -19,19 +19,15 @@ public class ActionsWithPriority<Value> {
     /// The type of closures to be pushed onto the stack and executed.
     typealias Closure = (Result<Value, QueueSafeValueError>) -> Void
 
+    typealias Container = ValueContainer<Value>
+    
     /// Retains the original instance of the `value` and provides thread-safe access to it.
-    private(set) weak var valueContainer: ValueContainer<Value>?
+    private(set) weak var valueContainer: Container?
 
     /**
      Initialize object with properties.
      - Parameter valueContainer: an object that stores the original `value` instance and provides thread-safe (queue-safe) access to it.
      - Returns: An object that defines `value` manipulating functions enclosed in a `ValueContainer` object and provides thread-safe (queue-safe) access to this `value `.
      */
-    init (valueContainer: ValueContainer<Value>?) { self.valueContainer = valueContainer }
-
-    /**
-     Performs `closure` synchronously or asynchronously in defined order.
-     - Parameter closure: block to be executed.
-     */
-    func executeCommand(closure: @escaping ValueContainer<Value>.Closure) throws { fatalError() }
+    init (valueContainer: Container?) { self.valueContainer = valueContainer }
 }

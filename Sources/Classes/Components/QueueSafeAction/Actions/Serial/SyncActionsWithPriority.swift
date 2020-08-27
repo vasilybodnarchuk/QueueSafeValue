@@ -19,15 +19,7 @@ public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
      - Important: Blocks a queue where this code runs until it completed.
      - Returns: enum instance that contains `CurrentValue` or `QueueSafeValueError`.
      */
-    public func get() -> Result<CurrentValue, QueueSafeValueError> {
-        do {
-            var currentValue: CurrentValue!
-            try executeCommand { currentValue = $0 }
-            return .success(currentValue)
-        } catch let error {
-            return .failure(error.toQueueSafeValueError())
-        }
-    }
+    public func get() -> Result<CurrentValue, QueueSafeValueError> { execute { $0 } }
 
     /**
      Thread-safe (queue-safe) `value` writing.
@@ -37,15 +29,9 @@ public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
      */
     @discardableResult
     public func set(newValue: Value) -> Result<UpdatedValue, QueueSafeValueError> {
-        do {
-            var updatedValue: UpdatedValue!
-            try executeCommand {
-                $0 = newValue
-                updatedValue = $0
-            }
-            return .success(updatedValue)
-        } catch let error {
-            return .failure(error.toQueueSafeValueError())
+        execute { currentValue in
+            currentValue = newValue
+            return currentValue
         }
     }
 
@@ -58,15 +44,9 @@ public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
      */
     @discardableResult
     public func update(closure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError> {
-        do {
-            var updatedValue: UpdatedValue!
-            try executeCommand {
-                closure?(&$0)
-                updatedValue = $0
-            }
-            return .success(updatedValue)
-        } catch let error {
-            return .failure(error.toQueueSafeValueError())
+        execute { currentValue in
+            closure?(&currentValue)
+            return currentValue
         }
     }
 
@@ -77,13 +57,7 @@ public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
      - Returns: enum instance that contains `TransformedValue` or `QueueSafeValueError`.
      */
     public func transform<TransformedValue>(closure: ((CurrentValue) -> TransformedValue)?) -> Result<TransformedValue, QueueSafeValueError> {
-        do {
-            var transformedValue: TransformedValue!
-            try executeCommand { transformedValue = closure?($0) }
-            return .success(transformedValue)
-        } catch let error {
-            return .failure(error.toQueueSafeValueError())
-        }
+        execute { closure!($0) }
     }
 
     /**
@@ -91,19 +65,43 @@ public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
      - Important: Blocks a queue where this code runs until it completed.
      - Parameter closure: A block that updates the original `value` instance, wrapped in a `ValueContainer` object.
      */
-//    public func perform(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
-//        do {
-//            try executeCommand { closure?(.success($0)) }
-//        } catch let error {
-//            closure?(.failure(error.toQueueSafeValueError()))
-//        }
-//    }
-
     public func perform(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
-        do {
-            try executeCommand { closure?(.success($0)) }
-        } catch let error {
-            closure?(.failure(error.toQueueSafeValueError()))
+        let result = execute { currentValue -> Void in
+            closure?(.success(currentValue))
+            return Void()
+        }
+        switch result {
+        case .failure(let error): closure?(.failure(error))
+        default: break
         }
     }
+    
+    /**
+     Performs `command` synchronously in defined order.
+     - Parameter command: A block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object.
+     - Returns: enum instance that contains `ResultValue` or `QueueSafeValueError`.
+     */
+
+    @discardableResult
+    func execute<ResultValue>(command: @escaping (inout CurrentValue) -> ResultValue) -> Result<ResultValue, QueueSafeValueError> {
+        guard let valueContainer = valueContainer else { return .failure(.valueContainerDeinited) }
+        let dispatchGroup = DispatchGroup()
+        dispatchGroup.enter()
+        var resultValue: ResultValue!
+        executeInCommandStack(valueContainer: valueContainer) { currentValue in
+            resultValue = command(&currentValue)
+            dispatchGroup.leave()
+        }
+        dispatchGroup.wait()
+        return .success(resultValue)
+    }
+
+    /**
+     Defines performing order.
+     - Important: Blocks a queue where this code runs until it completed.  Must be redefined (overridden).
+     - Parameters:
+        - valueContainer: an object that stores the original `value` instance and provides thread-safe (queue-safe) access to it.
+        - command: A block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object.
+     */
+    func executeInCommandStack(valueContainer: Container, command: @escaping Container.Closure) { fatalError() }
 }

@@ -10,14 +10,9 @@ import Foundation
 
 /// Defines the available sync functions that can manipulate a `value` enclosed in a `ValueContainer` and executes them in `low priority` order.
 public class LowPrioritySyncActions<Value>: SyncActionsWithPriority<Value> {
-    override func executeCommand(closure: @escaping ValueContainer<Value>.Closure) throws {
-        guard let valueContainer = valueContainer else { throw QueueSafeValueError.valueContainerDeinited }
-        let dispatchGroup = DispatchGroup()
-        dispatchGroup.enter()
-        valueContainer.appendAndPerform { current in
-            closure(&current)
-            dispatchGroup.leave()
-        }
-        dispatchGroup.wait()
+    
+    /// Override func. Read the documentation in the parent class
+    override func executeInCommandStack(valueContainer: Container, command: @escaping Container.Closure) {
+        valueContainer.appendAndPerform(closure: command)
     }
 }

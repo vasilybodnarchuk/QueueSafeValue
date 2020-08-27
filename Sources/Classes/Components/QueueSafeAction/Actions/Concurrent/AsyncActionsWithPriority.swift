@@ -59,4 +59,24 @@ public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
         }
     }
     
+//    override func execute(command: @escaping ValueContainer<Value>.Closure,
+//                          completion: (Result<ValueContainer<Value>.Closure, Qu>) -> ) throws {
+//        guard let valueContainer = valueContainer else { throw QueueSafeValueError.valueContainerDeinited }
+//        let dispatchGroup = DispatchGroup()
+//        dispatchGroup.enter()
+//        valueContainer.appendAndPerform { current in
+//            closure(&current)
+//            dispatchGroup.leave()
+//        }
+//        dispatchGroup.wait()
+//    }
+    
+    func executeCommand(closure: @escaping ValueContainer<Value>.Closure) throws {
+        guard let valueContainer = valueContainer else { throw QueueSafeValueError.valueContainerDeinited }
+        queue.async {
+            valueContainer.appendAndPerform { current in
+                closure(&current)
+            }
+        }
+    }
 }
