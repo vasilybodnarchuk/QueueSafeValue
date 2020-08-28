@@ -34,18 +34,12 @@ extension LowPriorityAsyncActionsSpec {
 
             it("get func") {
                 self.testWeakReference(before: { action, dispatchGroup in
-                    dispatchGroup.enter()
-                    action.get { instance in
-                        expect(instance) == .success(self.createDefultInstance())
-                        dispatchGroup.leave()
-                    }
+                    self.expectResult(.success(self.createDefultInstance()),
+                                      action: action, dispatchGroup: dispatchGroup)
 
                 }) { action, dispatchGroup in
-                    dispatchGroup.enter()
-                    action.get { instance in
-                        expect(instance) == .failure(.valueContainerDeinited)
-                        dispatchGroup.leave()
-                    }
+                    self.expectResult(.failure(.valueContainerDeinited),
+                                       action: action, dispatchGroup: dispatchGroup)
                 }
             }
 
@@ -53,26 +47,19 @@ extension LowPriorityAsyncActionsSpec {
                 let resultInstance = self.createInstance(value: 3)
                 self.testWeakReference(before: { action, dispatchGroup in
                     dispatchGroup.enter()
-                    dispatchGroup.enter()
                     action.set(newValue: resultInstance) { _ in
                         dispatchGroup.leave()
                     }
-
-                    action.get { instance in
-                        expect(instance) == .success(resultInstance)
-                        dispatchGroup.leave()
-                    }
+                    self.expectResult(.success(resultInstance),
+                                      action: action, dispatchGroup: dispatchGroup)
 
                 }) { action, dispatchGroup in
                     dispatchGroup.enter()
-                    dispatchGroup.enter()
                     action.set(newValue: resultInstance) { _ in
                         dispatchGroup.leave()
                     }
-                    action.get { instance in
-                        expect(instance) == .failure(.valueContainerDeinited)
-                        dispatchGroup.leave()
-                    }
+                    self.expectResult(.failure(.valueContainerDeinited),
+                                      action: action, dispatchGroup: dispatchGroup)
                 }
             }
             
@@ -80,11 +67,11 @@ extension LowPriorityAsyncActionsSpec {
                 let newValue = 4
                 self.testWeakReference(before: { action, dispatchGroup in
                     dispatchGroup.enter()
-                    dispatchGroup.enter()
                     let resultInstance = self.createInstance(value: newValue)
                     var valueUpdated = false
                     action.update(closure: { instance in
                         valueUpdated = true
+                        expect(self.createDefultInstance().value) == instance.value
                         instance.value = newValue
                     }) { result in
                         expect(result) == .success(resultInstance)
@@ -92,13 +79,11 @@ extension LowPriorityAsyncActionsSpec {
                         dispatchGroup.leave()
                     }
 
-                    action.get { instance in
-                        expect(instance) == .success(resultInstance)
-                        dispatchGroup.leave()
-                    }
+                    self.expectResult(.success(resultInstance),
+                                      action: action, dispatchGroup: dispatchGroup)
+
 
                 }) { action, dispatchGroup in
-                    dispatchGroup.enter()
                     dispatchGroup.enter()
                     var valueUpdated = false
                     action.update(closure: { instance in
@@ -109,12 +94,42 @@ extension LowPriorityAsyncActionsSpec {
                         expect(valueUpdated) == false
                         dispatchGroup.leave()
                     }
-                    action.get { instance in
-                        expect(instance) == .failure(.valueContainerDeinited)
-                        dispatchGroup.leave()
-                    }
+                    self.expectResult(.failure(.valueContainerDeinited),
+                                      action: action, dispatchGroup: dispatchGroup)
                 }
             }
+            
+            it("perform func") {
+                let resultInstance = self.createDefultInstance()
+                self.testWeakReference(before: { action, dispatchGroup in
+                    dispatchGroup.enter()
+                    action.perform(closure: { result in
+                        dispatchGroup.leave()
+                        expect(result) == .success(resultInstance)
+                    })
+                    self.expectResult(.success(resultInstance),
+                                      action: action, dispatchGroup: dispatchGroup)
+
+                }) { action, dispatchGroup in
+                    dispatchGroup.enter()
+                    action.perform { result in
+                        dispatchGroup.leave()
+                        expect(result) == .failure(.valueContainerDeinited)
+                    }
+                    self.expectResult(.failure(.valueContainerDeinited),
+                                      action: action, dispatchGroup: dispatchGroup)
+                }
+            }
+        }
+    }
+    
+    private func expectResult(_ result: Result<LowPriorityAsyncActionsSpec.Value, QueueSafeValueError>,
+                              action: LowPriorityAsyncActions<LowPriorityAsyncActionsSpec.Value>,
+                              dispatchGroup: DispatchGroup) {
+        dispatchGroup.enter()
+        action.get { result in
+            expect(result) == result
+            dispatchGroup.leave()
         }
     }
 }

@@ -30,8 +30,8 @@ public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
 
     /**
      Thread-safe (queue-safe) value reading.
-     - Important: Will be executed asynchronously on the queue where this function was called.
-     - Parameter closure: block that returns `value`.
+     - Important: Will be executed asynchronously in own queue.
+     - Parameter closure: a closure that returns an enum instance with the value `CurrentValue` or` QueueSafeValueError`.
      */
     public func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
         execute(command: { $0 }, completion: closure)
@@ -39,10 +39,10 @@ public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
 
     /**
      Thread-safe (queue-safe) `value` writing.
-     - Important: Will be executed asynchronously on the queue where this function was called.
+     - Important: Will be executed asynchronously in own queue.
      - Parameters:
         - newValue: value to set.
-        - completion: block that returns updated `value`.
+        - completion: a closure that returns an enum instance with the value `UpdatedValue` or` QueueSafeValueError`.
      */
     public func set(newValue: Value, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) {
         execute(command: {
@@ -50,14 +50,14 @@ public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
             return $0
         }, completion: completion)
     }
-    
+
     /**
      Thread-safe (queue-safe) `value` updating.
-     - Parameter closure: A block that updates the original `value` instance.
+     - Parameters:
+        - closure: A closure that updates the original `value` instance.
+        - completion: a closure that returns an enum instance with the value `UpdatedValue` or` QueueSafeValueError`.
      - Attention: `closure` will not be run if any ` QueueSafeValueError` occurs.
-     - Returns: enum instance that contains `UpdatedValue` or `QueueSafeValueError`.
      */
-
     public func update(closure: ((inout CurrentValue) -> Void)?,
                        completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) {
         execute(command: {
@@ -67,9 +67,27 @@ public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
     }
 
     /**
-     Performs `command` synchronously in defined order.
-     - Parameter command: A block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object.
-     - Returns: enum instance that contains `ResultValue` or `QueueSafeValueError`.
+     Thread-safe (queue-safe) `value` manipulating.
+     - Important: Blocks a queue where this code runs until it completed.
+     - Parameter closure: A block that updates the original `value` instance, wrapped in a `ValueContainer` object.
+     */
+    public func perform(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
+        execute(command: { currentValue -> Void in
+            closure?(.success(currentValue))
+            return Void()
+        }, completion: { result in
+            switch result {
+            case .failure(let error): closure?(.failure(error))
+            default: break
+            }
+        })
+    }
+
+    /**
+     Performs `command` asynchronously  in embeded `queue` in defined order.
+     - Parameters:
+        - command: A block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object and returns `ResultValue`
+        - completion: a closure that returns an enum instance with the value `ResultValue` or` QueueSafeValueError`.
      */
 
     func execute<ResultValue>(command: @escaping (inout CurrentValue) -> ResultValue,
