@@ -18,7 +18,7 @@ public class ActionsWithPriority<Value> {
 
     /// The type of container that stores original instance of `value`.
     typealias Container = ValueContainer<Value>
-    
+
     /// Retains the original instance of the `value` and provides thread-safe access to it.
     private(set) weak var valueContainer: Container?
 

@@ -22,6 +22,7 @@ extension SpecableActions where Actions: SyncActionsWithPriority<Value> {
                            after: @escaping (Actions) -> Void) {
         var queueSafeValue: QueueSafeValue<Value>! = .init(value: value)
         let lowPriorityAction = actions(from: queueSafeValue)
+        defer { expect(CFGetRetainCount(lowPriorityAction)) == 3 }
         expect(CFGetRetainCount(lowPriorityAction)) == 3
         let closure: () -> Void = {
             expect(CFGetRetainCount(lowPriorityAction)) == 4
@@ -29,45 +30,60 @@ extension SpecableActions where Actions: SyncActionsWithPriority<Value> {
             expect(CFGetRetainCount(lowPriorityAction)) == 4
         }
         before(lowPriorityAction)
+        expect(CFGetRetainCount(lowPriorityAction)) == 4
         queueSafeValue = nil
         closure()
     }
 }
 
 extension SpecableActions where Actions: AsyncActionsWithPriority<Value> {
-    typealias Completion = () -> Void
-    func testWeakReference(before: @escaping (Actions, @escaping Completion) -> Void,
-                           after: @escaping (Actions, @escaping Completion) -> Void) {
+    func testWeakReference(before: @escaping (Actions, DispatchGroup) -> Void,
+                           after: @escaping (Actions, DispatchGroup) -> Void) {
         var queueSafeValue: QueueSafeValue<Value>! = .init(value: value)
         let lowPriorityAction = actions(from: queueSafeValue)
         expect(CFGetRetainCount(lowPriorityAction)) == 3
         
+        let completionDispatchGroup = DispatchGroup()
+        completionDispatchGroup.enter()
+        completionDispatchGroup.enter()
+        completionDispatchGroup.notify(queue: .main) { expect(CFGetRetainCount(lowPriorityAction)) == 3 }
+        
         let closure: () -> Void = {
             var wasCompleted = false
-            expect(CFGetRetainCount(lowPriorityAction)) == 4
-            waitUntil(timeout: 1) { done in
-                after(lowPriorityAction) {
-                    usleep(1_000)
+            waitUntil(timeout: 10) { done in
+                let dispatchGroup = DispatchGroup()
+                dispatchGroup.enter()
+                dispatchGroup.notify(queue: .main) {
                     wasCompleted = true
                     done()
                 }
+                after(lowPriorityAction, dispatchGroup)
+                dispatchGroup.leave()
                 expect(wasCompleted) == false
             }
             expect(wasCompleted) == true
-            expect(CFGetRetainCount(lowPriorityAction)) == 4
+            expect(CFGetRetainCount(lowPriorityAction)) == 5
+            completionDispatchGroup.leave()
         }
         
         var wasCompleted = false
-        waitUntil(timeout: 1) { done in
-            before(lowPriorityAction) {
-                usleep(1_000)
+        waitUntil(timeout: 10) { done in
+            let dispatchGroup = DispatchGroup()
+            dispatchGroup.enter()
+            dispatchGroup.notify(queue: .main) {
                 wasCompleted = true
                 done()
             }
+            before(lowPriorityAction, dispatchGroup)
+            dispatchGroup.leave()
             expect(wasCompleted) == false
         }
         expect(wasCompleted) == true
+        expect(CFGetRetainCount(lowPriorityAction)) == 5
         queueSafeValue = nil
+        completionDispatchGroup.leave()
+
         closure()
+        completionDispatchGroup.wait()
     }
 }
