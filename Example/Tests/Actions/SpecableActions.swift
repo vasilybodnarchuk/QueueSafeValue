@@ -11,48 +11,52 @@ import Nimble
 import QueueSafeValue
 
 protocol SpecableActions: class {
-    associatedtype Value
+    associatedtype Value: AnyObject
     associatedtype Actions: AnyObject
-    var value: Value { get }
+    func createInstance(value: Int) -> Value
     func actions(from queueSafeValue: QueueSafeValue<Value>) -> Actions
+}
+
+
+extension SpecableActions {
+    func createDefultInstance() -> Value { createInstance(value: 0) }
 }
 
 extension SpecableActions where Actions: SyncActionsWithPriority<Value> {
     func testWeakReference(before: (Actions) -> Void,
                            after: @escaping (Actions) -> Void) {
-        var queueSafeValue: QueueSafeValue<Value>! = .init(value: value)
+        let object = createDefultInstance()
+        expect(2) == CFGetRetainCount(object)
+        var queueSafeValue: QueueSafeValue<Value>! = .init(value: object)
+        expect(3) == CFGetRetainCount(object)
         let lowPriorityAction = actions(from: queueSafeValue)
-        defer { expect(CFGetRetainCount(lowPriorityAction)) == 3 }
-        expect(CFGetRetainCount(lowPriorityAction)) == 3
-        let closure: () -> Void = {
-            expect(CFGetRetainCount(lowPriorityAction)) == 4
+        var closure: (() -> Void)? = {
+            expect(3) == CFGetRetainCount(object)
             after(lowPriorityAction)
-            expect(CFGetRetainCount(lowPriorityAction)) == 4
+            expect(3) == CFGetRetainCount(object)
         }
         before(lowPriorityAction)
-        expect(CFGetRetainCount(lowPriorityAction)) == 4
         queueSafeValue = nil
-        closure()
+        closure?()
+        closure = nil
+        expect(2) == CFGetRetainCount(object)
     }
 }
 
 extension SpecableActions where Actions: AsyncActionsWithPriority<Value> {
     func testWeakReference(before: @escaping (Actions, DispatchGroup) -> Void,
                            after: @escaping (Actions, DispatchGroup) -> Void) {
-        var queueSafeValue: QueueSafeValue<Value>! = .init(value: value)
+        let object = createDefultInstance()
+        expect(2) == CFGetRetainCount(object)
+        var queueSafeValue: QueueSafeValue<Value>! = .init(value: object)
+        expect(3) == CFGetRetainCount(object)
         let lowPriorityAction = actions(from: queueSafeValue)
-        expect(CFGetRetainCount(lowPriorityAction)) == 3
-        
-        let completionDispatchGroup = DispatchGroup()
-        completionDispatchGroup.enter()
-        completionDispatchGroup.enter()
-        completionDispatchGroup.notify(queue: .main) { expect(CFGetRetainCount(lowPriorityAction)) == 3 }
-        
-        let closure: () -> Void = {
+                
+        var closure: (() -> Void)? = {
             var wasCompleted = false
+            let dispatchGroup = DispatchGroup()
+            dispatchGroup.enter()
             waitUntil(timeout: 10) { done in
-                let dispatchGroup = DispatchGroup()
-                dispatchGroup.enter()
                 dispatchGroup.notify(queue: .main) {
                     wasCompleted = true
                     done()
@@ -61,11 +65,11 @@ extension SpecableActions where Actions: AsyncActionsWithPriority<Value> {
                 dispatchGroup.leave()
                 expect(wasCompleted) == false
             }
+            dispatchGroup.wait()
             expect(wasCompleted) == true
-            expect(CFGetRetainCount(lowPriorityAction)) == 5
-            completionDispatchGroup.leave()
         }
         
+
         var wasCompleted = false
         waitUntil(timeout: 10) { done in
             let dispatchGroup = DispatchGroup()
@@ -79,11 +83,10 @@ extension SpecableActions where Actions: AsyncActionsWithPriority<Value> {
             expect(wasCompleted) == false
         }
         expect(wasCompleted) == true
-        expect(CFGetRetainCount(lowPriorityAction)) == 5
         queueSafeValue = nil
-        completionDispatchGroup.leave()
-
-        closure()
-        completionDispatchGroup.wait()
+        closure?()
+        closure = nil
+        expect(2) == CFGetRetainCount(object)
     }
 }
+

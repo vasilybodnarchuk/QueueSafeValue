@@ -11,8 +11,8 @@ import Nimble
 import QueueSafeValue
 
 class LowPrioritySerialActionsSpec: QuickSpec, SpecableActions {
-    typealias Value = Int
-    var value = 100
+    typealias Value = SimpleClass
+    func createInstance(value: Int) -> SimpleClass { .init(value: value) }
     func actions(from queueSafeValue: QueueSafeValue<Value>) -> LowPrioritySyncActions<Value> {
         queueSafeValue.wait.lowPriority
     }
@@ -32,14 +32,14 @@ extension LowPrioritySerialActionsSpec {
         context("test weak reference and core functionality") {
             it("get func") {
                 self.testWeakReference(before: {
-                    expect($0.get()) == .success(self.value)
+                    expect($0.get()) == .success(self.createInstance(value: 0))
                 }, after: {
                     expect($0.get()) == .failure(.valueContainerDeinited)
                 })
             }
             
             it("set func") {
-                let newValue = self.value + 1
+                let newValue = SimpleClass(value: 2)
                 self.testWeakReference(before: {
                     $0.set(newValue: newValue)
                     expect($0.get()) == .success(newValue)
@@ -50,7 +50,7 @@ extension LowPrioritySerialActionsSpec {
             }
 
             it("update func") {
-                let newValue = self.value + 2
+                let newValue = self.createInstance(value: 2)
                 self.testWeakReference(before: {
                     $0.update { $0 = newValue }
                     expect($0.get()) == .success(newValue)
@@ -66,7 +66,7 @@ extension LowPrioritySerialActionsSpec {
                 self.testWeakReference(before: {
                     var wasExecuted = false
                     $0.perform { _ in wasExecuted = true  }
-                    expect($0.get()) == .success(self.value)
+                    expect($0.get()) == .success(self.createDefultInstance())
                     expect(wasExecuted) == true
                 }, after: {
                     var wasExecuted = false
@@ -79,8 +79,8 @@ extension LowPrioritySerialActionsSpec {
             it("transform func") {
                 self.testWeakReference(before: {
                     let result = $0.transform { "\($0)" }
-                    expect($0.get()) == .success(self.value)
-                    expect(result) == .success("\(self.value)")
+                    expect($0.get()) == .success(self.createDefultInstance())
+                    expect(result) == .success("\(self.createDefultInstance())")
                 }, after: {
                     let result = $0.transform { "\($0)" }
                     expect($0.get()) == .failure(.valueContainerDeinited)
