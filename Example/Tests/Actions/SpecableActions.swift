@@ -44,20 +44,15 @@ extension SpecableActions where Actions: AsyncActionsWithPriority<Value> {
         
         let closure: () -> Void = {
             var wasCompleted = false
-            print("!!!!! 1 \(wasCompleted)")
             expect(CFGetRetainCount(lowPriorityAction)) == 4
             waitUntil(timeout: 1) { done in
-                print("!!!!! 2 \(wasCompleted)")
                 after(lowPriorityAction) {
                     usleep(1_000)
                     wasCompleted = true
-                    print("!!!!! 3 \(wasCompleted)")
                     done()
                 }
-                print("!!!!! 4 \(wasCompleted)")
-                expect(wasCompleted) == true
+                expect(wasCompleted) == false
             }
-            print("!!!!! 5 \(wasCompleted)")
             expect(wasCompleted) == true
             expect(CFGetRetainCount(lowPriorityAction)) == 4
         }

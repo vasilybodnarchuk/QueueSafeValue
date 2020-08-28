@@ -24,7 +24,7 @@ public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
     /**
      Thread-safe (queue-safe) `value` writing.
      - Important: Blocks a queue where this code runs until it completed.
-     - Parameter value: value to set
+     - Parameter newValue: value to set
      - Returns: enum instance that contains `UpdatedValue` or `QueueSafeValueError`.
      */
     @discardableResult
@@ -75,7 +75,7 @@ public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
         default: break
         }
     }
-    
+
     /**
      Performs `command` synchronously in defined order.
      - Parameter command: A block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object.

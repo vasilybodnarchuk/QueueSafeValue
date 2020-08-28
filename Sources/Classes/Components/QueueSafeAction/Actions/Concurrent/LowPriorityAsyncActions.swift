@@ -11,4 +11,8 @@ import Foundation
 /// Defines the available async functions that can manipulate a `value` enclosed in a `ValueContainer` and executes them in `low priority` order.
 public class LowPriorityAsyncActions<Value>: AsyncActionsWithPriority<Value> {
 
+    /// Override func. Read the documentation in the parent class
+    override func executeInCommandStack(valueContainer: Container, command: @escaping Container.Closure) {
+        valueContainer.appendAndPerform(closure: command)
+    }
 }

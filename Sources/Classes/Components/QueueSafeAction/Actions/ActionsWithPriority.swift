@@ -16,9 +16,7 @@ public class ActionsWithPriority<Value> {
     /// Same as `value` type. Used to improve readability
     public typealias CurrentValue = Value
 
-    /// The type of closures to be pushed onto the stack and executed.
-    typealias Closure = (Result<Value, QueueSafeValueError>) -> Void
-
+    /// The type of container that stores original instance of `value`.
     typealias Container = ValueContainer<Value>
     
     /// Retains the original instance of the `value` and provides thread-safe access to it.
