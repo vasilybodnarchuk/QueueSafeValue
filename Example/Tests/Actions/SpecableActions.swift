@@ -51,12 +51,12 @@ extension SpecableActions where Actions: AsyncActionsWithPriority<Value> {
         var queueSafeValue: QueueSafeValue<Value>! = .init(value: object)
         expect(3) == CFGetRetainCount(object)
         let lowPriorityAction = actions(from: queueSafeValue)
-                
+
         var closure: (() -> Void)? = {
             var wasCompleted = false
             let dispatchGroup = DispatchGroup()
             dispatchGroup.enter()
-            waitUntil(timeout: 10) { done in
+            waitUntil(timeout: 1) { done in
                 dispatchGroup.notify(queue: .main) {
                     wasCompleted = true
                     done()
@@ -68,10 +68,9 @@ extension SpecableActions where Actions: AsyncActionsWithPriority<Value> {
             dispatchGroup.wait()
             expect(wasCompleted) == true
         }
-        
 
         var wasCompleted = false
-        waitUntil(timeout: 10) { done in
+        waitUntil(timeout: 1) { done in
             let dispatchGroup = DispatchGroup()
             dispatchGroup.enter()
             dispatchGroup.notify(queue: .main) {

@@ -44,9 +44,24 @@ public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
         - newValue: value to set.
         - completion: block that returns updated `value`.
      */
-    public func set(newValue: Value, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)?) {
+    public func set(newValue: Value, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) {
         execute(command: {
             $0 = newValue
+            return $0
+        }, completion: completion)
+    }
+    
+    /**
+     Thread-safe (queue-safe) `value` updating.
+     - Parameter closure: A block that updates the original `value` instance.
+     - Attention: `closure` will not be run if any ` QueueSafeValueError` occurs.
+     - Returns: enum instance that contains `UpdatedValue` or `QueueSafeValueError`.
+     */
+
+    public func update(closure: ((inout CurrentValue) -> Void)?,
+                       completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) {
+        execute(command: {
+            closure?(&$0)
             return $0
         }, completion: completion)
     }

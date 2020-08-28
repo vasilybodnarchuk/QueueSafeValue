@@ -35,58 +35,84 @@ extension LowPriorityAsyncActionsSpec {
             it("get func") {
                 self.testWeakReference(before: { action, dispatchGroup in
                     dispatchGroup.enter()
-                    action.get { value in
-                        expect(value) == .success(self.createDefultInstance())
+                    action.get { instance in
+                        expect(instance) == .success(self.createDefultInstance())
                         dispatchGroup.leave()
                     }
 
                 }) { action, dispatchGroup in
                     dispatchGroup.enter()
-                    action.get { value in
-                        expect(value) == .failure(.valueContainerDeinited)
+                    action.get { instance in
+                        expect(instance) == .failure(.valueContainerDeinited)
                         dispatchGroup.leave()
                     }
                 }
             }
 
             it("set func") {
-                let newValue = SimpleClass(value: 3)
-                var countPerformedClosures = 0
+                let resultInstance = self.createInstance(value: 3)
                 self.testWeakReference(before: { action, dispatchGroup in
                     dispatchGroup.enter()
                     dispatchGroup.enter()
-                    expect(countPerformedClosures) == 0
-                    action.set(newValue: newValue) { _ in
-                        expect(countPerformedClosures) == 0
-                        countPerformedClosures += 1
+                    action.set(newValue: resultInstance) { _ in
                         dispatchGroup.leave()
                     }
-                    expect(countPerformedClosures) == 0
 
-                    action.get { value in
-                        expect(value) == .success(newValue)
-                        expect(countPerformedClosures) == 1
-                        countPerformedClosures += 1
+                    action.get { instance in
+                        expect(instance) == .success(resultInstance)
                         dispatchGroup.leave()
                     }
-                    expect(countPerformedClosures) == 0
 
                 }) { action, dispatchGroup in
                     dispatchGroup.enter()
                     dispatchGroup.enter()
-                    expect(countPerformedClosures) == 2
-                    action.set(newValue: newValue) { _ in
-                        expect(countPerformedClosures) == 2
-                        countPerformedClosures += 1
+                    action.set(newValue: resultInstance) { _ in
                         dispatchGroup.leave()
                     }
-                    expect(countPerformedClosures) == 2
-                    action.get { value in
-                        expect(value) == .failure(.valueContainerDeinited)
-                        expect(countPerformedClosures) == 3
+                    action.get { instance in
+                        expect(instance) == .failure(.valueContainerDeinited)
                         dispatchGroup.leave()
                     }
-                    expect(countPerformedClosures) == 2
+                }
+            }
+            
+            it("update func") {
+                let newValue = 4
+                self.testWeakReference(before: { action, dispatchGroup in
+                    dispatchGroup.enter()
+                    dispatchGroup.enter()
+                    let resultInstance = self.createInstance(value: newValue)
+                    var valueUpdated = false
+                    action.update(closure: { instance in
+                        valueUpdated = true
+                        instance.value = newValue
+                    }) { result in
+                        expect(result) == .success(resultInstance)
+                        expect(valueUpdated) == true
+                        dispatchGroup.leave()
+                    }
+
+                    action.get { instance in
+                        expect(instance) == .success(resultInstance)
+                        dispatchGroup.leave()
+                    }
+
+                }) { action, dispatchGroup in
+                    dispatchGroup.enter()
+                    dispatchGroup.enter()
+                    var valueUpdated = false
+                    action.update(closure: { instance in
+                        valueUpdated = true
+                        instance.value = newValue
+                    }) { result in
+                        expect(result) == .failure(.valueContainerDeinited)
+                        expect(valueUpdated) == false
+                        dispatchGroup.leave()
+                    }
+                    action.get { instance in
+                        expect(instance) == .failure(.valueContainerDeinited)
+                        dispatchGroup.leave()
+                    }
                 }
             }
         }
