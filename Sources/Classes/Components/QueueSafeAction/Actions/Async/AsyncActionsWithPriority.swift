@@ -30,7 +30,7 @@ public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
 
     /**
      Thread-safe (queue-safe) value reading.
-     - Important: Will be executed asynchronously in own queue.
+     - Important: Will be executed asynchronously in own `queue`.
      - Parameter closure: a closure that returns an enum instance with the value `CurrentValue` or` QueueSafeValueError`.
      */
     public func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
@@ -39,7 +39,7 @@ public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
 
     /**
      Thread-safe (queue-safe) `value` writing.
-     - Important: Will be executed asynchronously in own queue.
+     - Important: Will be executed asynchronously in own `queue`.
      - Parameters:
         - newValue: value to set.
         - completion: a closure that returns an enum instance with the value `UpdatedValue` or` QueueSafeValueError`.
@@ -53,6 +53,7 @@ public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
 
     /**
      Thread-safe (queue-safe) `value` updating.
+     - Important: Will be executed asynchronously in own `queue`.
      - Parameters:
         - closure: A closure that updates the original `value` instance.
         - completion: a closure that returns an enum instance with the value `UpdatedValue` or` QueueSafeValueError`.
@@ -67,24 +68,8 @@ public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
     }
 
     /**
-     Thread-safe (queue-safe) `value` manipulating.
-     - Important: Blocks a queue where this code runs until it completed.
-     - Parameter closure: A block that updates the original `value` instance, wrapped in a `ValueContainer` object.
-     */
-    public func perform(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
-        execute(command: { currentValue -> Void in
-            closure?(.success(currentValue))
-            return Void()
-        }, completion: { result in
-            switch result {
-            case .failure(let error): closure?(.failure(error))
-            default: break
-            }
-        })
-    }
-
-    /**
      Performs `command` asynchronously  in embeded `queue` in defined order.
+     - Important: Will be executed asynchronously in own `queue`.
      - Parameters:
         - command: A block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object and returns `ResultValue`
         - completion: a closure that returns an enum instance with the value `ResultValue` or` QueueSafeValueError`.

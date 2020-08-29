@@ -10,54 +10,49 @@ import UIKit
 import QueueSafeValue
 
 class ViewController: UIViewController {
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        getSample()
-        setSample()
-        updateSample()
-        updatedSample()
-        performSample()
-        transformSample()
-
-//        QueueSafeValue(value: 0).wait.lowPriority.updated {
-//            print("!!!!!! \($0)")
-//        }
-//        let queueSafeValue = QueueSafeValue(value: 0)
-//        queueSafeValue.async(performIn: .global()).lowPriority.get {
-//            print("!!!!!! \($0)")
-//        }
-//        print("end")
+        runSyncActions()
     }
     
-    private func getSample() {
+}
+
+/// MARK: Sync actions
+
+extension ViewController {
+    func runSyncActions() {
+        syncGetActionSample()
+        syncSetActionSample()
+        syncUpdateActionSample()
+        syncPerformActionSample()
+        syncTransformActionSample()
+    }
+    
+    private func syncGetActionSample() {
         let atomicValue = QueueSafeValue(value: true)
         print(String(describing: atomicValue.wait.lowPriority.get()))                   // success(true)
+        print(QueueSafeValue(value: true).wait.lowPriority.get())
     }
     
-    private func setSample() {
+    private func syncSetActionSample() {
         let atomicValue = QueueSafeValue<Int>(value: 1)
         atomicValue.wait.lowPriority.set(newValue: 2)
         print(String(describing: atomicValue.wait.lowPriority.get()))                   // success(2)
     }
     
-    private func updateSample() {
-//        let atomicValue = QueueSafeValue(value: 1)
-//        atomicValue.wait.lowPriority.update { $0 = 3 }
-//        print(String(describing: atomicValue.wait.lowPriority.get()))                   // success(3)
+    private func syncUpdateActionSample() {
+        let atomicValue = QueueSafeValue(value: 1)
+        atomicValue.wait.lowPriority.update { $0 = 3 }
+        print(String(describing: atomicValue.wait.lowPriority.get()))                   // success(3)
     }
     
-    private func updatedSample() {
-//        let atomicValue = QueueSafeValue(value: 1)
-//        print(String(describing: atomicValue.wait.lowPriority.updated { $0 = 4 }))       // success(4)
-    }
-    
-    private func performSample() {
+    private func syncPerformActionSample() {
         let atomicValue = QueueSafeValue(value: 6)
         atomicValue.wait.lowPriority.perform { print($0) }           // Optional(6)
     }
     
-    private func transformSample() {
+    private func syncTransformActionSample() {
         let atomicValue = QueueSafeValue(value: 5)
         print(String(describing: atomicValue.wait.lowPriority.transform { "\($0)" }))   // success("5")
     }

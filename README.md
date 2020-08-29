@@ -41,19 +41,26 @@ ___
 #### { action }
 > describes what to do with value 
 
-*Available actions*: 
+*Available sync actions*: 
 - `get` - returns wrapped value
-> `func get() -> Value?`
+> `func get() -> Result<CurrentValue, QueueSafeValueError> { execute { $0 } }`
 - `set` - sets value
-> `func set(value: Value)`
+> `func set(newValue: Value) -> Result<UpdatedValue, QueueSafeValueError>`
 - `update` - updates value in closure
-> `func update(closure: ((_ currentValue: inout Value) -> Void)?)`
-- `updated` - updates value in closure and returns updated value
-> `func updated(closure: ((_ currentValue: inout Value) -> Void)?)` 
+> `func update(closure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>`
 -  `perform` - do something with value without changing it
-> `func perform(closure: ((Value) -> Void)?)`
+> `func perform(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)`
 - `transform` -  transforms value without changing original instance
-> `func transform<Output>(closure: ((_ currentValue: Value) -> Output)?)`
+> `func transform<TransformedValue>(closure: ((CurrentValue) -> TransformedValue)?) -> Result<TransformedValue, QueueSafeValueError>`
+
+*Available async actions*: 
+- `get` - asynchronously returns the `value` in a `closure`
+> `func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)`
+- `set` - asynchronously sets `value`
+> `func set(newValue: Value, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)`
+- `update` - asynchronously updates `value` in closure. 
+> `func update(closure: ((inout CurrentValue) -> Void)?,
+completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)`
 
 ## Examples
 
@@ -92,6 +99,9 @@ private func transformSample() {
 ```
     
 ## Requirements
+
+iOS 8.0+
+Xcode 10 +
 
 ## Installation
 

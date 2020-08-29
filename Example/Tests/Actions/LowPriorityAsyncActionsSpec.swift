@@ -98,28 +98,6 @@ extension LowPriorityAsyncActionsSpec {
                                       action: action, dispatchGroup: dispatchGroup)
                 }
             }
-            
-            it("perform func") {
-                let resultInstance = self.createDefultInstance()
-                self.testWeakReference(before: { action, dispatchGroup in
-                    dispatchGroup.enter()
-                    action.perform(closure: { result in
-                        dispatchGroup.leave()
-                        expect(result) == .success(resultInstance)
-                    })
-                    self.expectResult(.success(resultInstance),
-                                      action: action, dispatchGroup: dispatchGroup)
-
-                }) { action, dispatchGroup in
-                    dispatchGroup.enter()
-                    action.perform { result in
-                        dispatchGroup.leave()
-                        expect(result) == .failure(.valueContainerDeinited)
-                    }
-                    self.expectResult(.failure(.valueContainerDeinited),
-                                      action: action, dispatchGroup: dispatchGroup)
-                }
-            }
         }
     }
     
