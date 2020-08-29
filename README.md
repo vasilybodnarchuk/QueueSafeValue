@@ -42,25 +42,44 @@ ___
 > describes what to do with value 
 
 *Available sync actions*: 
-- `get` - returns wrapped value
-> `func get() -> Result<CurrentValue, QueueSafeValueError> { execute { $0 } }`
-- `set` - sets value
-> `func set(newValue: Value) -> Result<UpdatedValue, QueueSafeValueError>`
-- `update` - updates value in closure
-> `func update(closure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>`
--  `perform` - do something with value without changing it
-> `func perform(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)`
+
+- `get` - returns `CurrentValue` or `QueueSafeValueError`
+```Swift
+func get() -> Result<CurrentValue, QueueSafeValueError> { execute { $0 } }
+```
+- `get` - returns `CurrentValue` or `QueueSafeValueError` in closure
+```Swift
+func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
+```
+
+- `set` - sets `value`
+```Swift
+func set(newValue: Value) -> Result<UpdatedValue, QueueSafeValueError>
+```
+- `update` - updates `CurrentValue` in closure. Useful when processing a value from multiple code codes
+```Swift
+func update(closure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
+```
+
 - `transform` -  transforms value without changing original instance
-> `func transform<TransformedValue>(closure: ((CurrentValue) -> TransformedValue)?) -> Result<TransformedValue, QueueSafeValueError>`
+```Swift
+func transform<TransformedValue>(closure: ((CurrentValue) -> TransformedValue)?) -> Result<TransformedValue, QueueSafeValueError>
+```
 
 *Available async actions*: 
+
 - `get` - asynchronously returns the `value` in a `closure`
-> `func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)`
+```Swift
+func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
+```
 - `set` - asynchronously sets `value`
-> `func set(newValue: Value, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)`
+```Swift
+`func set(newValue: Value, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)
+```
 - `update` - asynchronously updates `value` in closure. 
-> `func update(closure: ((inout CurrentValue) -> Void)?,
-completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)`
+```Swift
+func update(closure: ((inout CurrentValue) -> Void)?, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)
+```
 
 ## Examples
 

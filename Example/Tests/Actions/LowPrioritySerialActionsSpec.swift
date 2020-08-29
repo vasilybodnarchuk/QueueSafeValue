@@ -37,7 +37,21 @@ extension LowPrioritySerialActionsSpec {
                     expect($0.get()) == .failure(.valueContainerDeinited)
                 })
             }
-            
+
+            it("get in closure func") {
+                self.testWeakReference(before: {
+                    var wasExecuted = false
+                    $0.get { _ in wasExecuted = true  }
+                    expect($0.get()) == .success(self.createDefultInstance())
+                    expect(wasExecuted) == true
+                }, after: {
+                    var wasExecuted = false
+                    $0.get { _ in wasExecuted = true }
+                    expect($0.get()) == .failure(.valueContainerDeinited)
+                    expect(wasExecuted) == true
+                })
+            }
+
             it("set func") {
                 let newValue = SimpleClass(value: 2)
                 self.testWeakReference(before: {
@@ -59,20 +73,6 @@ extension LowPrioritySerialActionsSpec {
                     $0.update { _ in wasExecuted = true }
                     expect($0.get()) == .failure(.valueContainerDeinited)
                     expect(wasExecuted) == false
-                })
-            }
-
-            it("perform func") {
-                self.testWeakReference(before: {
-                    var wasExecuted = false
-                    $0.perform { _ in wasExecuted = true  }
-                    expect($0.get()) == .success(self.createDefultInstance())
-                    expect(wasExecuted) == true
-                }, after: {
-                    var wasExecuted = false
-                    $0.perform { _ in wasExecuted = true }
-                    expect($0.get()) == .failure(.valueContainerDeinited)
-                    expect(wasExecuted) == true
                 })
             }
 

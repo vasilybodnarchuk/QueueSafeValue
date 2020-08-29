@@ -23,9 +23,9 @@ class ViewController: UIViewController {
 extension ViewController {
     func runSyncActions() {
         syncGetActionSample()
+        syncGet2ActionSample()
         syncSetActionSample()
         syncUpdateActionSample()
-        syncPerformActionSample()
         syncTransformActionSample()
     }
     
@@ -33,6 +33,11 @@ extension ViewController {
         let atomicValue = QueueSafeValue(value: true)
         print(String(describing: atomicValue.wait.lowPriority.get()))                   // success(true)
         print(QueueSafeValue(value: true).wait.lowPriority.get())
+    }
+    
+    private func syncGet2ActionSample() {
+        let atomicValue = QueueSafeValue(value: 6)
+        atomicValue.wait.lowPriority.get { print($0) }                                  // Optional(6)
     }
     
     private func syncSetActionSample() {
@@ -45,11 +50,6 @@ extension ViewController {
         let atomicValue = QueueSafeValue(value: 1)
         atomicValue.wait.lowPriority.update { $0 = 3 }
         print(String(describing: atomicValue.wait.lowPriority.get()))                   // success(3)
-    }
-    
-    private func syncPerformActionSample() {
-        let atomicValue = QueueSafeValue(value: 6)
-        atomicValue.wait.lowPriority.perform { print($0) }           // Optional(6)
     }
     
     private func syncTransformActionSample() {

@@ -16,14 +16,30 @@ public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
 
     /**
      Thread-safe (queue-safe) `value` reading.
-     - Important: Blocks a queue where this code runs until it completed.
+     - Important: Runs synchronously (Blocks a queue where this code runs until it completed).
      - Returns: enum instance that contains `CurrentValue` or `QueueSafeValueError`.
      */
     public func get() -> Result<CurrentValue, QueueSafeValueError> { execute { $0 } }
 
     /**
+     Thread-safe (queue-safe) `value` reading in closure.
+     - Important: Runs synchronously (Blocks a queue where this code runs until it completed).
+     - Parameter closure: A block that updates the original `value` instance, wrapped in a `ValueContainer` object.
+     */
+    public func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
+        let result = execute { currentValue -> Void in
+            closure?(.success(currentValue))
+            return Void()
+        }
+        switch result {
+        case .failure(let error): closure?(.failure(error))
+        default: break
+        }
+    }
+    
+    /**
      Thread-safe (queue-safe) `value` writing.
-     - Important: Blocks a queue where this code runs until it completed.
+     - Important: Runs synchronously (Blocks a queue where this code runs until it completed).
      - Parameter newValue: value to set
      - Returns: enum instance that contains `UpdatedValue` or `QueueSafeValueError`.
      */
@@ -36,8 +52,8 @@ public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
     }
 
     /**
-     Thread-safe (queue-safe) `value` updating.
-     - Important: Blocks a queue where this code runs until it completed..
+     Thread-safe (queue-safe) `value` updating. 
+     - Important: Runs synchronously (Blocks a queue where this code runs until it completed).
      - Parameter closure: A block that updates the original `value` instance.
      - Attention: `closure` will not be run if any ` QueueSafeValueError` occurs.
      - Returns: enum instance that contains `UpdatedValue` or `QueueSafeValueError`.
@@ -52,28 +68,12 @@ public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
 
     /**
      Thread-safe  (queue-safe) `value` transforming.
-     - Important: Blocks a queue where this code runs until it completed.
+     - Important: Runs synchronously (Blocks a queue where this code runs until it completed).
      - Parameter closure: A block that transform the original `value` instance.
      - Returns: enum instance that contains `TransformedValue` or `QueueSafeValueError`.
      */
     public func transform<TransformedValue>(closure: ((CurrentValue) -> TransformedValue)?) -> Result<TransformedValue, QueueSafeValueError> {
         execute { closure!($0) }
-    }
-
-    /**
-     Thread-safe (queue-safe) `value` manipulating.
-     - Important: Blocks a queue where this code runs until it completed.
-     - Parameter closure: A block that updates the original `value` instance, wrapped in a `ValueContainer` object.
-     */
-    public func perform(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
-        let result = execute { currentValue -> Void in
-            closure?(.success(currentValue))
-            return Void()
-        }
-        switch result {
-        case .failure(let error): closure?(.failure(error))
-        default: break
-        }
     }
 
     /**

@@ -52,7 +52,7 @@ public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
     }
 
     /**
-     Thread-safe (queue-safe) `value` updating.
+     Thread-safe (queue-safe) `value` updating. 
      - Important: Will be executed asynchronously in own `queue`.
      - Parameters:
         - closure: A closure that updates the original `value` instance.
