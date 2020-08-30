@@ -17,8 +17,8 @@ public class ValueContainer<Value> {
     /// The original instance of the value we are going to read / write synchronously or asynchronousl.
     private var value: Value
 
-    /// Abstraction of a queue that stacks closures and executes them sequentially.
-    private var serialQueue: ValueProcessingSerialQueue
+    /// A queue that stacks closures and executes them sequentially.
+    private var commandQueue: CommandQueue
 
     /**
      Initialize object with properties.
@@ -27,7 +27,7 @@ public class ValueContainer<Value> {
      */
     public init (value: Value) {
         self.value = value
-        serialQueue = ValueProcessingSerialQueue()
+        commandQueue = CommandQueue()
     }
 }
 
@@ -38,8 +38,8 @@ extension ValueContainer {
      - Parameter closure: code that we want to perform.
      */
     public func appendAndPerform(closure: @escaping Closure) {
-        serialQueue.append { closure(&self.value) }
-        serialQueue.perform()
+        commandQueue.append { closure(&self.value) }
+        commandQueue.perform()
     }
 
     //func performNow(closure: Closure?) { accessQueue.sync { closure?(&self.value) } }

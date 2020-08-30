@@ -12,3 +12,8 @@ class SimpleClass {
     var value: Int
     init (value: Int = 0) { self.value = value }
 }
+
+extension SimpleClass: Equatable {
+    static func == (lhs: SimpleClass, rhs: SimpleClass) -> Bool { lhs.value == rhs.value }
+}
+

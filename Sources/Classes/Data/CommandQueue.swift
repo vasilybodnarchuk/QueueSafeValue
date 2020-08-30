@@ -1,5 +1,5 @@
 //
-//  ValueProcessingSerialQueue.swift
+//  CommandQueue.swift
 //  QueueSafeValue
 //
 //  Created by Vasily Bodnarchuk on 8/17/20.
@@ -7,10 +7,10 @@
 
 import Foundation
 
-/// Abstraction of a queue that stacks closures and executes them sequentially
-public class ValueProcessingSerialQueue {
+/// A queue that stacks closures and executes them sequentially.
+public class CommandQueue {
 
-    /// The type of closures to be pushed onto the stack and executed.
+    /// The type of closures to be pushed onto the `stack` and executed.
     public typealias Closure = () -> Void
 
     /// Queue that performs stacked closures synchronously.
@@ -30,7 +30,8 @@ public class ValueProcessingSerialQueue {
 }
 
 // MARK: Performing closures in `stack`
-extension ValueProcessingSerialQueue {
+
+extension CommandQueue {
 
     /**
      Adds closure to the end of the `stack`.
