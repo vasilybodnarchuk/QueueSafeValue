@@ -9,36 +9,33 @@
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
-#### Create QueueSafeValue
-
-```Swift
-let queueSafeValue = QueueSafeValue(value: 0)
-```
 ___
 
-### Base structure of command
+#### Base structure of command
 
 `queueSafeValue.{schedule}.{priority}.{action}`
 
 ### Components:
 
-#### { schedule }
+#### 🇸​​​​​🇨​​​​​🇭​​​​​🇪​​​​​🇩​​​​​🇺​​​​​🇱​​​​​🇪​​​​​
 
 > describes will func be executed synchronously or asynchronously. 
 
 *Available schedules*: 
-- `wait` - performs action sequentially (Blocks the queue where this code runs until it completed).
+- `wait` - (sync) performs action sequentially. Blocks the queue where this code runs until it completed.
+- `async` - performs a function asynchronously of the queue that calls this function.
 
-#### { priority }
+#### 🇵​​​​​🇷​​​​​🇮​​​​​🇴​​​​​🇷​​​​​🇮​​​​​🇹​​​​​🇾​​​​​
 
 > describes when (in what order) the function will be executed. 
-> `QueueSafeValue` has a built-in command stack where all closures will be pushed. Every closure on that stack will be executed sequentially.
+> `QueueSafeValue` has a built-in `command stack` where all closures will be pushed. 
+> Every closure on that stack will be executed sequentially.
 > `priority` means position of a closure in the command stack.
 
 *Available orders*: 
 - `lowPriority` - adds a closure to the end of a command stack
     
-#### { action }
+#### 🇦​​​​​🇨​​​​​🇹​​​​​🇮​​​​​🇴​​​​​🇳​​​​​
 > describes what to do with value 
 
 *Available sync actions*: 
@@ -209,12 +206,22 @@ extension Examples {
 
 ## Installation
 
+#### Step 1:
+
 QueueSafeValue is available through [CocoaPods](https://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
 pod 'QueueSafeValue'
 ```
+
+#### Step 2:
+
+run `pod install` in your project root folder
+
+#### Step 3:
+
+To use the installed `QueueSafeValue` framework, simply `import the QueueSafeValue` in the swift file in which you are going to apply it.
 
 ## Author
 
