@@ -2,7 +2,7 @@ name: Build&Test
 
 on:
   push:
-    branches: [ staging, master ]
+    branches: [ master ]
   pull_request:
     branches: [ staging, master ]
 
@@ -23,9 +23,10 @@ jobs:
     - name: Check Podspec
       run: |
         pod lib lint  
-    - name: Setup Fastlane
+    - name: Setup/Update Fastlane
       run: |
         gem install fastlane -NV
+        bundle update fastlane
     - name: Build and Test
       run: |
         bundle exec fastlane test --verbose   
