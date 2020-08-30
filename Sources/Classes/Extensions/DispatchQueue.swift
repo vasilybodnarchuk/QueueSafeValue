@@ -11,7 +11,7 @@ extension DispatchQueue {
     class func createSerialAccessQueue() -> DispatchQueue {
         let label = "accessQueue.\(type(of: self)).\(Date().timeIntervalSince1970)"
         return DispatchQueue(label: label,
-                             qos: .unspecified,
+                             qos: .default,
                              attributes: [],
                              autoreleaseFrequency: .inherit,
                              target: nil)

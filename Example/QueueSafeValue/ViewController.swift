@@ -10,46 +10,126 @@ import UIKit
 import QueueSafeValue
 
 class ViewController: UIViewController {
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        getSample()
-        setSample()
-        updateSample()
-        updatedSample()
-        performSample()
-        transformSample()
+        Examples().run()
+    }
+}
+
+class Examples {
+    func run() {
+        runSyncActions()
+        runAsyncActions()
+    }
+}
+
+extension Examples {
+    private func log<Value>(title: String, result: (Result<Value, QueueSafeValueError>)) {
+        var description = "\"\(title)\" func result: "
+        switch result {
+        case .failure(let error): description += "\(error)"
+        case .success(let value): description += "\(value)"
+        }
+        print(description + " or \(result)")
+    }
+}
+
+/// MARK: Sync actions
+
+extension Examples {
+    func runSyncActions() {
+        syncGetActionSample()
+        syncGetInClosureActionSample()
+        syncSetActionSample()
+        syncUpdateActionSample()
+        syncTransformActionSample()
     }
     
-    private func getSample() {
-        let atomicValue = QueueSafeValue(value: true)
-        print(atomicValue.wait.lowPriority.get())                   // Optional(true)
+    private func syncGetActionSample() {
+        let queueSafeValue = QueueSafeValue(value: true)
+        DispatchQueue.global(qos: .utility).async {
+            let result = queueSafeValue.wait.lowPriority.get()
+            self.log(title: "Sync lowPriority get", result: result)
+        }
     }
     
-    private func setSample() {
-        let atomicValue = QueueSafeValue<Int>(value: 1)
-        atomicValue.wait.lowPriority.set(value: 2)
-        print(atomicValue.wait.lowPriority.get())                   // Optional(2)
+    private func syncGetInClosureActionSample() {
+        let queueSafeValue = QueueSafeValue(value: 6)
+        DispatchQueue.global(qos: .unspecified).async {
+            queueSafeValue.wait.lowPriority.get { result in
+                self.log(title: "Sync lowPriority get in closure", result: result)
+            }
+        }
     }
     
-    private func updateSample() {
-        let atomicValue = QueueSafeValue(value: 1)
-        atomicValue.wait.lowPriority.update { $0 = 3 }
-        print(atomicValue.wait.lowPriority.get())                   // Optional(3)
+    private func syncSetActionSample() {
+        let queueSafeValue = QueueSafeValue<Int>(value: 1)
+        DispatchQueue.global(qos: .userInitiated).async {
+            let result = queueSafeValue.wait.lowPriority.set(newValue: 2)
+            self.log(title: "Sync lowPriority set", result: result)
+        }
     }
     
-    private func updatedSample() {
-        let atomicValue = QueueSafeValue(value: 1)
-        print(atomicValue.wait.lowPriority.updated { $0 = 4 })       // Optional(4)
+    private func syncUpdateActionSample() {
+        let queueSafeValue = QueueSafeValue(value: 1)
+        DispatchQueue.main.async {
+            let result = queueSafeValue.wait.lowPriority.update { currentValue in
+                currentValue = 3
+            }
+            self.log(title: "Sync lowPriority update", result: result)
+        }
     }
     
-    private func performSample() {
-        let atomicValue = QueueSafeValue(value: 6)
-        atomicValue.wait.lowPriority.perform { print($0) }           // 6
+    private func syncTransformActionSample() {
+        let queueSafeValue = QueueSafeValue(value: 5)
+        DispatchQueue.global(qos: .background).async {
+            let result = queueSafeValue.wait.lowPriority.transform { "\($0)" }
+            self.log(title: "Sync lowPriority transform", result: result)
+        }
+    }
+}
+
+/// MARK: Async actions
+
+extension Examples {
+    func runAsyncActions() {
+        asyncGetActionSample()
+        asyncSetActionSample()
+        asyncUpdateActionSample()
+    }
+
+    private func asyncGetActionSample() {
+        let queueSafeValue = QueueSafeValue(value: true)
+        queueSafeValue.async(performIn: .global(qos: .utility)).lowPriority.get { result in
+            self.log(title: "Async lowPriority get", result: result)
+        }
     }
     
-    private func transformSample() {
-        let atomicValue = QueueSafeValue(value: 5)
-        print(atomicValue.wait.lowPriority.transform { "\($0)" })   // Optional("5")
+    private func asyncSetActionSample() {
+        let queueSafeValue = QueueSafeValue(value: 7)
+        
+        // Without completion block
+        queueSafeValue.async(performIn: .main).lowPriority.set(newValue: 8)
+        
+        // With completion block
+        queueSafeValue.async(performIn: .main).lowPriority.set(newValue: 9) { result in
+            self.log(title: "Async lowPriority set", result: result)
+        }
+    }
+    
+    private func asyncUpdateActionSample() {
+        let queueSafeValue = QueueSafeValue<Int>(value: 1)
+        // Without completion block
+        queueSafeValue.async(performIn: .background).lowPriority.update(closure: { currentValue in
+            currentValue = 10
+        })
+        
+        // With completion block
+        queueSafeValue.async(performIn: .background).lowPriority.update(closure: { currentValue in
+            currentValue = 11
+        }, completion: { result in
+            self.log(title: "Async lowPriority update", result: result)
+        })
     }
 }

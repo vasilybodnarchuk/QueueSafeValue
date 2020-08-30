@@ -1,5 +1,5 @@
 //
-//  ValueProcessingSerialQueueSpec.swift
+//  CommandQueueSpec.swift
 //  QueueSafeValue_Example
 //
 //  Created by Vasily Bodnarchuk on 8/17/20.
@@ -10,15 +10,14 @@ import Quick
 import Nimble
 import QueueSafeValue
 
-class ValueProcessingSerialQueueSpec: QuickSpec {
+class CommandQueueSpec: QuickSpec {
     override func spec() {
 
-        describe("Value Processing Serial Queue") {
-            var serialQueue: ValueProcessingSerialQueue!
-            beforeEach { serialQueue = ValueProcessingSerialQueue() }
+        describe("Command Queue") {
+            var serialQueue: CommandQueue!
+            beforeEach { serialQueue = CommandQueue() }
 
             it("first waits for all closures to be added and then executes them in the correct order") {
-                print(serialQueue)
                 var array1 = [Int]()
                 var array2 = [Int]()
                 for _ in 0..<10_000 {
@@ -30,7 +29,6 @@ class ValueProcessingSerialQueueSpec: QuickSpec {
             }
 
             it("adds closures to the queue and immediately executes them in the correct order") {
-                print(serialQueue)
                 var array1 = [Int]()
                 var array2 = [Int]()
                 for _ in 0..<10_000 {
