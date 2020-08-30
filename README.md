@@ -5,11 +5,9 @@
 [![License](https://img.shields.io/cocoapods/l/QueueSafeValue.svg?style=flat)](https://cocoapods.org/pods/QueueSafeValue)
 [![Platform](https://img.shields.io/cocoapods/p/QueueSafeValue.svg?style=flat)](https://cocoapods.org/pods/QueueSafeValue)
 
+Framework that provides thread-safe (queue-safe) access to the value. 
+
 ## Documentation
-
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
-
-___
 
 #### Base structure of command
 
@@ -33,50 +31,56 @@ ___
 > `priority` means position of a closure in the command stack.
 
 *Available orders*: 
-- `lowPriority` - adds a closure to the end of a command stack
+- `lowPriority` - adds a closure to the end of a `command stack`
     
 #### 🇦​​​​​🇨​​​​​🇹​​​​​🇮​​​​​🇴​​​​​🇳​​​​​
 > describes what to do with value 
 
 *Available sync actions*: 
 
-- `get` - returns `CurrentValue` or `QueueSafeValueError`
+1. `get` - returns `CurrentValue` or `QueueSafeValueError`
 ```Swift
 func get() -> Result<CurrentValue, QueueSafeValueError>
 ```
-- `get` - returns `CurrentValue` or `QueueSafeValueError` in closure
+
+2. `get` - returns `CurrentValue` or `QueueSafeValueError` in closure
 ```Swift
 func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
 ```
 
-- `set` - sets `value`
+3. `set` - sets `value`
 ```Swift
 func set(newValue: Value) -> Result<UpdatedValue, QueueSafeValueError>
 ```
-- `update` - updates `CurrentValue` in closure.  Useful when processing / updating a value consists of multiple lines of code.
+
+4. `update` - updates `CurrentValue` in closure.  Useful when processing / updating a value consists of multiple lines of code.
 ```Swift
 func update(closure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
 ```
 
-- `transform` -  transforms value without changing original instance
+5. `transform` -  transforms value without changing original instance
 ```Swift
 func transform<TransformedValue>(closure: ((CurrentValue) -> TransformedValue)?) -> Result<TransformedValue, QueueSafeValueError>
 ```
 
 *Available async actions*: 
 
-- `get` - asynchronously returns the `value` in a `closure`
+1. `get` - asynchronously returns the `value` in a `closure`
 ```Swift
 func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
 ```
-- `set` - asynchronously sets `value`
+
+2. `set` - asynchronously sets `value`
 ```Swift
 `func set(newValue: Value, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)
 ```
-- `update` - asynchronously updates `value` in closure. 
+
+3. `update` - asynchronously updates `value` in closure. 
 ```Swift
 func update(closure: ((inout CurrentValue) -> Void)?, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)
 ```
+
+___
 
 ## Examples
 
@@ -202,7 +206,8 @@ extension Examples {
 ## Requirements
 
 - iOS 8.0+
-- Xcode 10 +
+- Xcode 10+
+- Swift 5.1+
 
 ## Installation
 
