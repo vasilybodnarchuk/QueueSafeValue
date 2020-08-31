@@ -13,8 +13,8 @@ public class CommandQueue {
     /// The type of closures to be pushed onto the `stack` and executed.
     public typealias Closure = () -> Void
 
-    /// Queue that performs stacked closures synchronously.
-    private var accessQueue: DispatchQueue!
+    /// A semaphore that allows only one command to be executed at a time.
+    private var dispatchSemaphore: DispatchSemaphore!
 
     /// Container in which all closures are stored.
     private var stack: QueueSafeStack<Closure>
@@ -24,8 +24,8 @@ public class CommandQueue {
      - Returns: Abstraction of a queue that stacks closures and executes them sequentially .
      */
     public init () {
+        dispatchSemaphore = DispatchSemaphore(value: 1)
         stack = QueueSafeStack<Closure>()
-        accessQueue = DispatchQueue.createSerialAccessQueue()
     }
 }
 
@@ -46,7 +46,9 @@ extension CommandQueue {
             perform()
             return
         }
-        accessQueue.sync { closure() }
+        dispatchSemaphore.wait()
+        closure()
+        dispatchSemaphore.signal()
         perform()
     }
 }

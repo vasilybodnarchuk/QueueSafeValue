@@ -13,25 +13,36 @@ import QueueSafeValue
 class LowPriorityAsyncActionsSpec: QuickSpec, SpecableActions {
     typealias Value = SimpleClass
     func createInstance(value: Int) -> SimpleClass { .init(value: value) }
+   
     func actions(from queueSafeValue: QueueSafeValue<Value>) -> LowPriorityAsyncActions<Value> {
         queueSafeValue.async(performIn: .default).lowPriority
     }
-
+    
+//    func actions(from queueSafeValue: QueueSafeValue<Value>) -> LowPriorityAsyncActions<Value> {
+//        queueSafeValue.async(performIn: .default).lowPriority
+//    }
+    
     override func spec() {
         describe("Low Priority Async Actions") {
-            testWeakReferenceAndCoreFunctionality()
+            testBasicFunctionality()
+            checkQueueWhereActionIsRunning()
         }
     }
     
     private func delay() { usleep(10_000) }
 }
 
-// MARK: Test weak reference and core functionality
+
+/**
+ Test basic functionality:
+ - checks basic functionality, for example: `func set` sets a value,` func get` returns a value ...
+ - verifies that `actions` are performed asynchronously
+ - checks that the number of references to wrapped `value` ​​does not increase
+ */
 
 extension LowPriorityAsyncActionsSpec {
-    private func testWeakReferenceAndCoreFunctionality() {
-        context("test weak reference and core functionality") {
-
+    private func testBasicFunctionality() {
+        context("test basic functionality") {
             it("get func") {
                 self.testWeakReference(before: { action, dispatchGroup in
                     self.expectResult(.success(self.createDefultInstance()),
@@ -108,6 +119,64 @@ extension LowPriorityAsyncActionsSpec {
         action.get { result in
             expect(result) == result
             dispatchGroup.leave()
+        }
+    }
+}
+
+/// Check that asynchronous actions are running on the correct queues.
+
+extension LowPriorityAsyncActionsSpec {
+
+    func checkQueueWhereActionIsRunning() {
+        testActionIsRunningOnCorrectQueue(funcName: "set") { actions, done in
+            actions.set(newValue: self.createDefultInstance()) { _ in done() }
+        }
+        
+        testActionIsRunningOnCorrectQueue(funcName: "get") { actions, done in
+            actions.get { _ in done() }
+        }
+        
+        testActionIsRunningOnCorrectQueue(funcName: "update") { actions, done in
+            actions.update(closure: { _ in done() })
+        }
+        
+        testActionIsRunningOnCorrectQueue(funcName: "update completion") { actions, done in
+            actions.update(closure: { _ in
+                
+            }, completion: { result in
+                expect(result) == .success(self.createDefultInstance())
+                done()
+            })
+        }
+        
+        testActionIsRunningOnCorrectQueue(funcName: "update failed completion", deinitQueueSafeValueBeforeRunClosure: true) { actions, done in
+            actions.update(closure: { _ in
+                
+            }, completion: { result in
+                expect(result) == .failure(.valueContainerDeinited)
+                done()
+            })
+        }
+    }
+    
+    private func testActionIsRunningOnCorrectQueue(funcName: String,
+                                                   deinitQueueSafeValueBeforeRunClosure: Bool = false,
+                                                   closure: @escaping (LowPriorityAsyncActions<Value>, _ done: @escaping () -> Void) -> Void) {
+        it("checks \(funcName) function is being executed on the correct queue") {
+            let queues = Queues.getUniqueRandomQueues(count: 2)
+            expect(queues[0]) != queues[1]
+            var queueSafeValue: QueueSafeValue! = QueueSafeValue(value: self.createDefultInstance())
+            let actions = queueSafeValue.async(performIn: queues[1]).lowPriority
+            if deinitQueueSafeValueBeforeRunClosure { queueSafeValue = nil }
+            waitUntil(timeout: 1) { done in
+                queues[0].async {
+                    expect(DispatchQueue.current) == queues[0]
+                    closure(actions) {
+                        expect(DispatchQueue.current) == queues[1]
+                        done()
+                    }
+                }
+            }
         }
     }
 }

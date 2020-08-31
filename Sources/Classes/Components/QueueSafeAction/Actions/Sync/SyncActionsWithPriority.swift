@@ -36,7 +36,7 @@ public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
         default: break
         }
     }
-    
+
     /**
      Thread-safe (queue-safe) `value` writing.
      - Important: Runs synchronously (Blocks a queue where this code runs until it completed).

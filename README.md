@@ -15,7 +15,7 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
 ### Components:
 
-#### 🇸​​​​​🇨​​​​​🇭​​​​​🇪​​​​​🇩​​​​​🇺​​​​​🇱​​​​​🇪​​​​​
+## 🇸​​​​​🇨​​​​​🇭​​​​​🇪​​​​​🇩​​​​​🇺​​​​​🇱​​​​​🇪​​​​​
 
 > describes will func be executed synchronously or asynchronously. 
 
@@ -23,7 +23,7 @@ Framework that provides thread-safe (queue-safe) access to the value.
 - `wait` - (sync) performs action sequentially. Blocks the queue where this code runs until it completed.
 - `async` - performs a function asynchronously of the queue that calls this function.
 
-#### 🇵​​​​​🇷​​​​​🇮​​​​​🇴​​​​​🇷​​​​​🇮​​​​​🇹​​​​​🇾​​​​​
+## 🇵​​​​​🇷​​​​​🇮​​​​​🇴​​​​​🇷​​​​​🇮​​​​​🇹​​​​​🇾​​​​​
 
 > describes when (in what order) the function will be executed. 
 > `QueueSafeValue` has a built-in `command stack` where all closures will be pushed. 
@@ -33,10 +33,11 @@ Framework that provides thread-safe (queue-safe) access to the value.
 *Available orders*: 
 - `lowPriority` - adds a closure to the end of a `command stack`
     
-#### 🇦​​​​​🇨​​​​​🇹​​​​​🇮​​​​​🇴​​​​​🇳​​​​​
+## 🇦​​​​​🇨​​​​​🇹​​​​​🇮​​​​​🇴​​​​​🇳​​​​​
+
 > describes what to do with value 
 
-*Available sync actions*: 
+### Available sync actions: 
 
 1. `get` - returns `CurrentValue` or `QueueSafeValueError`
 ```Swift
@@ -63,7 +64,7 @@ func update(closure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, Qu
 func transform<TransformedValue>(closure: ((CurrentValue) -> TransformedValue)?) -> Result<TransformedValue, QueueSafeValueError>
 ```
 
-*Available async actions*: 
+### Available async actions: 
 
 1. `get` - asynchronously returns the `value` in a `closure`
 ```Swift

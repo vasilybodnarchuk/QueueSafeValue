@@ -19,17 +19,22 @@ class LowPrioritySerialActionsSpec: QuickSpec, SpecableActions {
     
     override func spec() {
         describe("Low Priority Serial Actions") {
-            testWeakReferenceAndCoreFunctionality()
+            testBasicFunctionality()
         }
     }
 }
 
-// MARK: Test weak reference and core functionality
+/**
+ Test basic functionality:
+ - checks basic functionality, for example: `func set` sets a value,` func get` returns a value ...
+ - verifies that `actions` are performed synchronously
+ - checks that the number of references to wrapped `value` ​​does not increase
+ */
 
 extension LowPrioritySerialActionsSpec {
 
-    private func testWeakReferenceAndCoreFunctionality() {
-        context("test weak reference and core functionality") {
+    private func testBasicFunctionality() {
+        context("test basic functionality") {
             it("get func") {
                 self.testWeakReference(before: {
                     expect($0.get()) == .success(self.createInstance(value: 0))
