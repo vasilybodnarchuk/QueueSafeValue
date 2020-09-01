@@ -1,5 +1,5 @@
 //
-//  SpecableSerialActions.swift
+//  SpecableSyncActions.swift
 //  QueueSafeValue_Tests
 //
 //  Created by Vasily Bodnarchuk on 9/1/20.
@@ -10,13 +10,13 @@ import Quick
 import Nimble
 import QueueSafeValue
 
-protocol SpecableSerialActions: SpecableActions where Actions: SyncActionsWithPriority<Value>, Value == SimpleClass {
+protocol SpecableSyncActions: SpecableActions where Actions == SyncActionsWithPriority<Value>,
+                                                    Value == SimpleClass {
 }
 
-extension SpecableSerialActions {
-    func createInstance(value: Int) -> SimpleClass { .init(value: value) }
+extension SpecableSyncActions {
     func runTests() {
-        describe("Low Priority Serial Actions") {
+        describe(testedObjectName) {
             testBasicFunctionality()
             checkQueueWhereActionIsRunning()
         }
@@ -29,7 +29,7 @@ extension SpecableSerialActions {
  - verifies that `actions` are performed synchronously
  - checks that the number of references to wrapped `value` ​​does not increase
  */
-extension SpecableSerialActions {
+extension SpecableSyncActions {
     private func testBasicFunctionality() {
         context("test basic functionality") {
             it("get func") {
@@ -91,11 +91,30 @@ extension SpecableSerialActions {
             }
         }
     }
+    
+    private func testWeakReference(before: (Actions) -> Void,
+                           after: @escaping (Actions) -> Void) {
+        let object = createDefultInstance()
+        expect(2) == CFGetRetainCount(object)
+        var queueSafeValue: QueueSafeValue<Value>! = .init(value: object)
+        expect(3) == CFGetRetainCount(object)
+        let lowPriorityAction = actions(from: queueSafeValue)
+        var closure: (() -> Void)? = {
+            expect(3) == CFGetRetainCount(object)
+            after(lowPriorityAction)
+            expect(3) == CFGetRetainCount(object)
+        }
+        before(lowPriorityAction)
+        queueSafeValue = nil
+        closure?()
+        closure = nil
+        expect(2) == CFGetRetainCount(object)
+    }
 }
 
 /// Check that actions are running on the correct DispatchQueues.
 
-extension SpecableSerialActions {
+extension SpecableSyncActions {
 
     private func checkQueueWhereActionIsRunning() {
         queueCheckingWhereClosureIsRuning(funcName: "get with completion") { actions, done in

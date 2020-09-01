@@ -1,8 +1,8 @@
 //
-//  LowPriorityAsyncActionsSpec.swift
+//  SpecableAsyncActions.swift
 //  QueueSafeValue_Tests
 //
-//  Created by Vasily Bodnarchuk on 8/25/20.
+//  Created by Vasily Bodnarchuk on 9/1/20.
 //  Copyright © 2020 CocoaPods. All rights reserved.
 //
 
@@ -10,28 +10,22 @@ import Quick
 import Nimble
 import QueueSafeValue
 
-class LowPriorityAsyncActionsSpec: QuickSpec, SpecableActions {
-    typealias Value = SimpleClass
-    func createInstance(value: Int) -> SimpleClass { .init(value: value) }
-   
-    func actions(from queueSafeValue: QueueSafeValue<Value>) -> LowPriorityAsyncActions<Value> {
-        actions(from: queueSafeValue, queue: .global(qos: .default))
-    }
-    
-    private func actions(from queueSafeValue: QueueSafeValue<Value>, queue: DispatchQueue) -> LowPriorityAsyncActions<Value> {
-        queueSafeValue.async(performIn: queue).lowPriority
-    }
-    
-    override func spec() {
-        describe("Low Priority Async Actions") {
+protocol SpecableAsyncActions: SpecableActions where Actions == LowPriorityAsyncActions<Value>,
+                                                     Value == SimpleClass  {
+}
+
+extension SpecableAsyncActions {
+    func runTests() {
+        describe(testedObjectName) {
             testBasicFunctionality()
             checkQueueWhereActionIsRunning()
         }
     }
-    
-    private func delay() { usleep(10_000) }
-}
 
+    func actions(from queueSafeValue: QueueSafeValue<Value>, queue: DispatchQueue) -> Actions {
+        queueSafeValue.async(performIn: queue).lowPriority
+    }
+}
 
 /**
  Test basic functionality:
@@ -40,7 +34,7 @@ class LowPriorityAsyncActionsSpec: QuickSpec, SpecableActions {
  - checks that the number of references to wrapped `value` ​​does not increase
  */
 
-extension LowPriorityAsyncActionsSpec {
+extension SpecableAsyncActions {
     private func testBasicFunctionality() {
         context("test basic functionality") {
             it("get func") {
@@ -112,8 +106,8 @@ extension LowPriorityAsyncActionsSpec {
         }
     }
     
-    private func expectResult(_ result: Result<LowPriorityAsyncActionsSpec.Value, QueueSafeValueError>,
-                              action: LowPriorityAsyncActions<LowPriorityAsyncActionsSpec.Value>,
+    private func expectResult(_ result: Result<Value, QueueSafeValueError>,
+                              action: Actions,
                               dispatchGroup: DispatchGroup) {
         dispatchGroup.enter()
         action.get { result in
@@ -125,9 +119,9 @@ extension LowPriorityAsyncActionsSpec {
 
 /// Check that actions are running on the correct queues.
 
-extension LowPriorityAsyncActionsSpec {
+extension SpecableAsyncActions {
 
-    func checkQueueWhereActionIsRunning() {
+    private func checkQueueWhereActionIsRunning() {
         queueCheckingWhereClosureIsRuning(funcName: "successful set") { actions, done in
             actions.set(newValue: self.createDefultInstance()) { result in
                 expect(result) == .success(self.createDefultInstance())
@@ -201,3 +195,4 @@ extension LowPriorityAsyncActionsSpec {
         }
     }
 }
+

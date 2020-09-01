@@ -15,6 +15,7 @@ protocol SpecableActions: class {
     associatedtype Actions: AnyObject
     func createInstance(value: Int) -> Value
     func actions(from queueSafeValue: QueueSafeValue<Value>) -> Actions
+    var testedObjectName: String { get }
 }
 
 
@@ -22,25 +23,8 @@ extension SpecableActions {
     func createDefultInstance() -> Value { createInstance(value: 0) }
 }
 
-extension SpecableActions where Actions: SyncActionsWithPriority<Value> {
-    func testWeakReference(before: (Actions) -> Void,
-                           after: @escaping (Actions) -> Void) {
-        let object = createDefultInstance()
-        expect(2) == CFGetRetainCount(object)
-        var queueSafeValue: QueueSafeValue<Value>! = .init(value: object)
-        expect(3) == CFGetRetainCount(object)
-        let lowPriorityAction = actions(from: queueSafeValue)
-        var closure: (() -> Void)? = {
-            expect(3) == CFGetRetainCount(object)
-            after(lowPriorityAction)
-            expect(3) == CFGetRetainCount(object)
-        }
-        before(lowPriorityAction)
-        queueSafeValue = nil
-        closure?()
-        closure = nil
-        expect(2) == CFGetRetainCount(object)
-    }
+extension SpecableActions where Value == SimpleClass   {
+    func createInstance(value: Int) -> SimpleClass { .init(value: value) }
 }
 
 extension SpecableActions where Actions: AsyncActionsWithPriority<Value> {

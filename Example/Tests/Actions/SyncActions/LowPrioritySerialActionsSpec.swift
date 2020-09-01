@@ -9,9 +9,9 @@
 import Quick
 import QueueSafeValue
 
-class LowPrioritySerialActionsSpec: QuickSpec, SpecableSerialActions {
-    typealias Value = SimpleClass
-    func actions(from queueSafeValue: QueueSafeValue<Value>) -> LowPrioritySyncActions<Value> {
+class LowPrioritySerialActionsSpec: QuickSpec, SpecableSyncActions {
+    var testedObjectName: String { "Low Priority Serial Actions" }
+    func actions(from queueSafeValue: QueueSafeValue<Value>) -> Actions {
         queueSafeValue.wait.lowPriority
     }
     
