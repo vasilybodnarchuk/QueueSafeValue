@@ -1,8 +1,8 @@
 //
-//  LowPrioritySerialActionsSpec.swift
+//  SpecableSerialActions.swift
 //  QueueSafeValue_Tests
 //
-//  Created by Vasily Bodnarchuk on 8/21/20.
+//  Created by Vasily Bodnarchuk on 9/1/20.
 //  Copyright © 2020 CocoaPods. All rights reserved.
 //
 
@@ -10,30 +10,26 @@ import Quick
 import Nimble
 import QueueSafeValue
 
-class LowPrioritySerialActionsSpec: QuickSpec, SpecableActions {
-    typealias Value = SimpleClass
+protocol SpecableSerialActions: SpecableActions where Actions: SyncActionsWithPriority<Value>, Value == SimpleClass {
+}
+
+extension SpecableSerialActions {
     func createInstance(value: Int) -> SimpleClass { .init(value: value) }
-    func actions(from queueSafeValue: QueueSafeValue<Value>) -> LowPrioritySyncActions<Value> {
-        queueSafeValue.wait.lowPriority
-    }
-    
-    override func spec() {
+    func runTests() {
         describe("Low Priority Serial Actions") {
             testBasicFunctionality()
             checkQueueWhereActionIsRunning()
         }
     }
 }
-
+    
 /**
  Test basic functionality:
  - checks basic functionality, for example: `func set` sets a value,` func get` returns a value ...
  - verifies that `actions` are performed synchronously
  - checks that the number of references to wrapped `value` ​​does not increase
  */
-
-extension LowPrioritySerialActionsSpec {
-
+extension SpecableSerialActions {
     private func testBasicFunctionality() {
         context("test basic functionality") {
             it("get func") {
@@ -99,9 +95,9 @@ extension LowPrioritySerialActionsSpec {
 
 /// Check that actions are running on the correct DispatchQueues.
 
-extension LowPrioritySerialActionsSpec {
+extension SpecableSerialActions {
 
-    func checkQueueWhereActionIsRunning() {
+    private func checkQueueWhereActionIsRunning() {
         queueCheckingWhereClosureIsRuning(funcName: "get with completion") { actions, done in
             actions.get { _ in done() }
         }
@@ -118,7 +114,7 @@ extension LowPrioritySerialActionsSpec {
         }
     }
     
-    func queueCheckingWhereClosureIsRuning(funcName: String,
+    private func queueCheckingWhereClosureIsRuning(funcName: String,
                                            closure: @escaping (Actions, _ done: @escaping () -> Void) -> Void) {
         it("check that closure of \(funcName) function is being executed on the correct queue") {
             let queue = Queues.random
