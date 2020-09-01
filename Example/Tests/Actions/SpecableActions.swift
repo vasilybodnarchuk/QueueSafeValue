@@ -6,7 +6,7 @@
 //  Copyright © 2020 CocoaPods. All rights reserved.
 //
 
-import Foundation
+import Quick
 import Nimble
 import QueueSafeValue
 
@@ -88,4 +88,3 @@ extension SpecableActions where Actions: AsyncActionsWithPriority<Value> {
         expect(2) == CFGetRetainCount(object)
     }
 }
-

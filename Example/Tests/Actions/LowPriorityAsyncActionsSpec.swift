@@ -15,12 +15,12 @@ class LowPriorityAsyncActionsSpec: QuickSpec, SpecableActions {
     func createInstance(value: Int) -> SimpleClass { .init(value: value) }
    
     func actions(from queueSafeValue: QueueSafeValue<Value>) -> LowPriorityAsyncActions<Value> {
-        queueSafeValue.async(performIn: .default).lowPriority
+        actions(from: queueSafeValue, queue: .global(qos: .default))
     }
     
-//    func actions(from queueSafeValue: QueueSafeValue<Value>) -> LowPriorityAsyncActions<Value> {
-//        queueSafeValue.async(performIn: .default).lowPriority
-//    }
+    private func actions(from queueSafeValue: QueueSafeValue<Value>, queue: DispatchQueue) -> LowPriorityAsyncActions<Value> {
+        queueSafeValue.async(performIn: queue).lowPriority
+    }
     
     override func spec() {
         describe("Low Priority Async Actions") {
@@ -123,24 +123,44 @@ extension LowPriorityAsyncActionsSpec {
     }
 }
 
-/// Check that asynchronous actions are running on the correct queues.
+/// Check that actions are running on the correct queues.
 
 extension LowPriorityAsyncActionsSpec {
 
     func checkQueueWhereActionIsRunning() {
-        testActionIsRunningOnCorrectQueue(funcName: "set") { actions, done in
-            actions.set(newValue: self.createDefultInstance()) { _ in done() }
+        queueCheckingWhereClosureIsRuning(funcName: "successful set") { actions, done in
+            actions.set(newValue: self.createDefultInstance()) { result in
+                expect(result) == .success(self.createDefultInstance())
+                done()
+            }
         }
         
-        testActionIsRunningOnCorrectQueue(funcName: "get") { actions, done in
-            actions.get { _ in done() }
+        queueCheckingWhereClosureIsRuning(funcName: "failed set", deinitQueueSafeValueBeforeRunClosure: true) { actions, done in
+            actions.set(newValue: self.createDefultInstance()) { result in
+                expect(result) == .failure(.valueContainerDeinited)
+                done()
+            }
         }
         
-        testActionIsRunningOnCorrectQueue(funcName: "update") { actions, done in
+        queueCheckingWhereClosureIsRuning(funcName: "successful get") { actions, done in
+            actions.get { result in
+                expect(result) == .success(self.createDefultInstance())
+                done()
+            }
+        }
+        
+        queueCheckingWhereClosureIsRuning(funcName: "failed get", deinitQueueSafeValueBeforeRunClosure: true) { actions, done in
+            actions.get { result in
+                expect(result) == .failure(.valueContainerDeinited)
+                done()
+            }
+        }
+        
+        queueCheckingWhereClosureIsRuning(funcName: "update") { actions, done in
             actions.update(closure: { _ in done() })
         }
         
-        testActionIsRunningOnCorrectQueue(funcName: "update completion") { actions, done in
+        queueCheckingWhereClosureIsRuning(funcName: "successful update completion") { actions, done in
             actions.update(closure: { _ in
                 
             }, completion: { result in
@@ -149,7 +169,7 @@ extension LowPriorityAsyncActionsSpec {
             })
         }
         
-        testActionIsRunningOnCorrectQueue(funcName: "update failed completion", deinitQueueSafeValueBeforeRunClosure: true) { actions, done in
+        queueCheckingWhereClosureIsRuning(funcName: "failed update completion", deinitQueueSafeValueBeforeRunClosure: true) { actions, done in
             actions.update(closure: { _ in
                 
             }, completion: { result in
@@ -159,20 +179,21 @@ extension LowPriorityAsyncActionsSpec {
         }
     }
     
-    private func testActionIsRunningOnCorrectQueue(funcName: String,
+    private func queueCheckingWhereClosureIsRuning(funcName: String,
                                                    deinitQueueSafeValueBeforeRunClosure: Bool = false,
-                                                   closure: @escaping (LowPriorityAsyncActions<Value>, _ done: @escaping () -> Void) -> Void) {
-        it("checks \(funcName) function is being executed on the correct queue") {
+                                                   closure: @escaping (Actions, _ done: @escaping () -> Void) -> Void) {
+        it("check that closure of \(funcName) function is being executed on the correct queue") {
             let queues = Queues.getUniqueRandomQueues(count: 2)
             expect(queues[0]) != queues[1]
             var queueSafeValue: QueueSafeValue! = QueueSafeValue(value: self.createDefultInstance())
-            let actions = queueSafeValue.async(performIn: queues[1]).lowPriority
+            let actions = self.actions(from: queueSafeValue, queue: queues[1])
             if deinitQueueSafeValueBeforeRunClosure { queueSafeValue = nil }
             waitUntil(timeout: 1) { done in
                 queues[0].async {
                     expect(DispatchQueue.current) == queues[0]
                     closure(actions) {
-                        expect(DispatchQueue.current) == queues[1]
+                        let queue = DispatchQueue.current
+                        expect(queue) == queues[1]
                         done()
                     }
                 }

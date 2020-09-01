@@ -20,6 +20,7 @@ class LowPrioritySerialActionsSpec: QuickSpec, SpecableActions {
     override func spec() {
         describe("Low Priority Serial Actions") {
             testBasicFunctionality()
+            checkQueueWhereActionIsRunning()
         }
     }
 }
@@ -91,6 +92,46 @@ extension LowPrioritySerialActionsSpec {
                     expect($0.get()) == .failure(.valueContainerDeinited)
                     expect(result) == .failure(.valueContainerDeinited)
                 })
+            }
+        }
+    }
+}
+
+/// Check that actions are running on the correct DispatchQueues.
+
+extension LowPrioritySerialActionsSpec {
+
+    func checkQueueWhereActionIsRunning() {
+        queueCheckingWhereClosureIsRuning(funcName: "get with completion") { actions, done in
+            actions.get { _ in done() }
+        }
+        
+        queueCheckingWhereClosureIsRuning(funcName: "update") { actions, done in
+            actions.update { result in done() }
+        }
+        
+        queueCheckingWhereClosureIsRuning(funcName: "transform") { actions, done in
+            _ = actions.transform { value -> Value in
+                done()
+                return value
+            }
+        }
+    }
+    
+    func queueCheckingWhereClosureIsRuning(funcName: String,
+                                           closure: @escaping (Actions, _ done: @escaping () -> Void) -> Void) {
+        it("check that closure of \(funcName) function is being executed on the correct queue") {
+            let queue = Queues.random
+            let queueSafeValue = QueueSafeValue(value: self.createDefultInstance())
+            let actions = self.actions(from: queueSafeValue)
+            waitUntil(timeout: 1) { done in
+                queue.async {
+                    expect(DispatchQueue.current) == queue
+                    closure(actions) {
+                        expect(DispatchQueue.current) == queue
+                        done()
+                    }
+                }
             }
         }
     }
