@@ -1,5 +1,5 @@
 //
-//  SpecableSyncActions.swift
+//  SpecableSyncedCommands.swift
 //  QueueSafeValue_Tests
 //
 //  Created by Vasily Bodnarchuk on 9/1/20.
@@ -10,15 +10,15 @@ import Quick
 import Nimble
 import QueueSafeValue
 
-protocol SpecableSyncActions: SpecableActions where Actions == SyncedCommandsWithPriority<Value>,
-                                                    Value == SimpleClass {
+protocol SpecableSyncedCommands: SpecableCommands where Commands == SyncedCommandsWithPriority<Value>,
+                                                        Value == SimpleClass {
 }
 
-extension SpecableSyncActions {
+extension SpecableSyncedCommands {
     func runTests() {
         describe(testedObjectName) {
             testBasicFunctionality()
-            checkQueueWhereActionIsRunning()
+            checkQueueWhereCommandIsRunning()
         }
     }
 }
@@ -26,10 +26,10 @@ extension SpecableSyncActions {
 /**
  Test basic functionality:
  - checks basic functionality, for example: `func set` sets a value,` func get` returns a value ...
- - verifies that `actions` are performed synchronously
+ - verifies that `commands` are performed synchronously
  - checks that the number of references to wrapped `value` ​​does not increase
  */
-extension SpecableSyncActions {
+extension SpecableSyncedCommands {
     private func testBasicFunctionality() {
         context("test basic functionality") {
             it("get func") {
@@ -92,19 +92,19 @@ extension SpecableSyncActions {
         }
     }
     
-    private func testWeakReference(before: (Actions) -> Void,
-                           after: @escaping (Actions) -> Void) {
+    private func testWeakReference(before: (Commands) -> Void,
+                                   after: @escaping (Commands) -> Void) {
         let object = createDefultInstance()
         expect(2) == CFGetRetainCount(object)
         var queueSafeValue: QueueSafeValue<Value>! = .init(value: object)
         expect(3) == CFGetRetainCount(object)
-        let lowPriorityAction = actions(from: queueSafeValue)
+        let lowPriorityCommand = commands(from: queueSafeValue)
         var closure: (() -> Void)? = {
             expect(3) == CFGetRetainCount(object)
-            after(lowPriorityAction)
+            after(lowPriorityCommand)
             expect(3) == CFGetRetainCount(object)
         }
-        before(lowPriorityAction)
+        before(lowPriorityCommand)
         queueSafeValue = nil
         closure?()
         closure = nil
@@ -112,21 +112,21 @@ extension SpecableSyncActions {
     }
 }
 
-/// Check that actions are running on the correct DispatchQueues.
+/// Check that `commands` are running on the correct DispatchQueues.
 
-extension SpecableSyncActions {
+extension SpecableSyncedCommands {
 
-    private func checkQueueWhereActionIsRunning() {
-        queueCheckingWhereClosureIsRuning(funcName: "get with completion") { actions, done in
-            actions.get { _ in done() }
+    private func checkQueueWhereCommandIsRunning() {
+        queueCheckingWhereClosureIsRuning(funcName: "get with completion") { commands, done in
+            commands.get { _ in done() }
         }
         
-        queueCheckingWhereClosureIsRuning(funcName: "update") { actions, done in
-            actions.update { result in done() }
+        queueCheckingWhereClosureIsRuning(funcName: "update") { commands, done in
+            commands.update { result in done() }
         }
         
-        queueCheckingWhereClosureIsRuning(funcName: "transform") { actions, done in
-            _ = actions.transform { value -> Value in
+        queueCheckingWhereClosureIsRuning(funcName: "transform") { commands, done in
+            _ = commands.transform { value -> Value in
                 done()
                 return value
             }
@@ -134,15 +134,15 @@ extension SpecableSyncActions {
     }
     
     private func queueCheckingWhereClosureIsRuning(funcName: String,
-                                           closure: @escaping (Actions, _ done: @escaping () -> Void) -> Void) {
+                                           closure: @escaping (Commands, _ done: @escaping () -> Void) -> Void) {
         it("check that closure of \(funcName) function is being executed on the correct queue") {
             let queue = Queues.random
             let queueSafeValue = QueueSafeValue(value: self.createDefultInstance())
-            let actions = self.actions(from: queueSafeValue)
+            let commands = self.commands(from: queueSafeValue)
             waitUntil(timeout: 1) { done in
                 queue.async {
                     expect(DispatchQueue.current) == queue
-                    closure(actions) {
+                    closure(commands) {
                         expect(DispatchQueue.current) == queue
                         done()
                     }

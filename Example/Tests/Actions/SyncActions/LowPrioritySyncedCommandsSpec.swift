@@ -1,5 +1,5 @@
 //
-//  LowPrioritySyncActionsSpec.swift
+//  LowPrioritySyncedCommandsSpec.swift
 //  QueueSafeValue_Tests
 //
 //  Created by Vasily Bodnarchuk on 8/21/20.
@@ -9,9 +9,9 @@
 import Quick
 import QueueSafeValue
 
-class LowPrioritySyncActionsSpec: QuickSpec, SpecableSyncActions {
-    var testedObjectName: String { "Low Priority Sync Actions" }
-    func actions(from queueSafeValue: QueueSafeValue<Value>) -> Actions {
+class LowPrioritySyncedCommandsSpec: QuickSpec, SpecableSyncedCommands {
+    var testedObjectName: String { "Low Priority Synced Commands" }
+    func commands(from queueSafeValue: QueueSafeValue<Value>) -> Commands {
         queueSafeValue.wait.lowPriority
     }
     

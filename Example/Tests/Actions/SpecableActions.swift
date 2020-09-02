@@ -1,5 +1,5 @@
 //
-//  SpecableActions.swift
+//  SpecableCommands.swift
 //  QueueSafeValue_Tests
 //
 //  Created by Vasily Bodnarchuk on 8/25/20.
@@ -10,18 +10,18 @@ import Quick
 import Nimble
 import QueueSafeValue
 
-protocol SpecableActions: class {
+protocol SpecableCommands: class {
     associatedtype Value: AnyObject
-    associatedtype Actions: AnyObject
+    associatedtype Commands: AnyObject
     func createInstance(value: Int) -> Value
-    func actions(from queueSafeValue: QueueSafeValue<Value>) -> Actions
+    func commands(from queueSafeValue: QueueSafeValue<Value>) -> Commands
     var testedObjectName: String { get }
 }
 
-extension SpecableActions {
+extension SpecableCommands {
     func createDefultInstance() -> Value { createInstance(value: 0) }
 }
 
-extension SpecableActions where Value == SimpleClass   {
+extension SpecableCommands where Value == SimpleClass   {
     func createInstance(value: Int) -> SimpleClass { .init(value: value) }
 }
