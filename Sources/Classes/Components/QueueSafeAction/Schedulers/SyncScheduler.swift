@@ -19,5 +19,5 @@ public class SyncScheduler<Value>: Scheduler<Value> {
     public var lowPriority: LowPrioritySyncedCommands<Value> { .init(valueContainer: valueContainer) }
 
     /// Executes the command as soon as possible. Don't use `Command stack`.
-    public var now: ImmediatelyRunningSyncedCommands<Value> { .init(valueContainer: valueContainer) }
+    public var immediately: ImmediatelyRunningSyncedCommands<Value> { .init(valueContainer: valueContainer) }
 }

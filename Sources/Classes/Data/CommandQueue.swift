@@ -46,7 +46,7 @@ extension CommandQueue {
             perform()
             return
         }
-        performNow(closure: closure)
+        performImmediately(closure: closure)
         perform()
     }
 
@@ -55,7 +55,7 @@ extension CommandQueue {
      - Parameter closure: code that we want to perform.
      */
 
-    public func performNow(closure: @escaping Closure) {
+    public func performImmediately(closure: @escaping Closure) {
         dispatchSemaphore.wait()
         closure()
         dispatchSemaphore.signal()

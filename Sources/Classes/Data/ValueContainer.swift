@@ -47,7 +47,7 @@ extension ValueContainer {
      - Parameter closure: closure (block) to be performed.
      */
     func performNow(closure: @escaping Closure) {
-        commandQueue.performNow { closure(&self.value) }
+        commandQueue.performImmediately { closure(&self.value) }
     }
 }
 

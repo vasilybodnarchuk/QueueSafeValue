@@ -36,7 +36,7 @@ public class AsyncScheduler<Value>: Scheduler<Value> {
     }
 
     /// Executes the command as soon as possible. Don't use `Command stack`.
-    public var now: ImmediatelyRunningAsyncedCommands<Value> {
+    public var immediately: ImmediatelyRunningAsyncedCommands<Value> {
         .init(valueContainer: valueContainer, grantAccessIn: queue)
     }
 }

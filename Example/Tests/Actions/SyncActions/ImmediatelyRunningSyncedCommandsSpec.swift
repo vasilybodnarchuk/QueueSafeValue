@@ -12,7 +12,7 @@ import QueueSafeValue
 class ImmediatelyRunningSyncedCommandsSpec: QuickSpec, SpecableSyncedCommands {
     var testedObjectName: String { "Immediately Running Synced Commands" }
     func commands(from queueSafeValue: QueueSafeValue<Value>) -> Commands {
-        queueSafeValue.wait.now
+        queueSafeValue.wait.immediately
     }
     
     override func spec() { runTests() }

@@ -32,16 +32,16 @@ class CommandQueueSpec: QuickSpec {
                 }
             }
             
-            context("perfoms closures now") {
+            context("performs closures immediately") {
                 it("synchronously") {
                     self.testInLoop(syncedIteration: { commandQueue, command in
-                        commandQueue.performNow { command() }
+                        commandQueue.performImmediately { command() }
                     })
                 }
                 
                 it("asynchronously") {
                     self.testInLoop(asyncedIteration: { commandQueue, dispatchGroup, command in
-                        commandQueue.performNow { command() }
+                        commandQueue.performImmediately { command() }
                         dispatchGroup.leave()
                     })
                 }
