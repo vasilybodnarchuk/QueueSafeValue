@@ -1,5 +1,5 @@
 //
-//  SyncActionsWithPriority.swift
+//  SyncedCommandsWithPriority.swift
 //  QueueSafeValue
 //
 //  Created by Vasily Bodnarchuk on 6/30/20.
@@ -12,7 +12,7 @@ import Foundation
  Describes the available functions that can manipulate a `value`, wrapped in a `ValueContainer` object.
  All functions will run synchronously on the queue that calls them.
  */
-public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
+public class SyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
 
     /**
      Thread-safe (queue-safe) `value` reading.

@@ -46,9 +46,18 @@ extension CommandQueue {
             perform()
             return
         }
+        performNow(closure: closure)
+        perform()
+    }
+
+    /**
+     Immediate thread-safe (queue-safe) execution of the closure.
+     - Parameter closure: code that we want to perform.
+     */
+
+    public func performNow(closure: @escaping Closure) {
         dispatchSemaphore.wait()
         closure()
         dispatchSemaphore.signal()
-        perform()
     }
 }

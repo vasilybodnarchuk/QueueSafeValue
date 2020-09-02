@@ -11,10 +11,10 @@ import Foundation
 /// Class where we keep an original value that we are going to read/write asynchronously.
 public class ValueContainer<Value> {
 
-    /// The type of closures to be passed onto the `serialQueue` and execute.
+    /// The type of closures to be passed onto the `commandQueue` and execute.
     public typealias Closure = (inout Value) -> Void
 
-    /// The original instance of the value we are going to read / write synchronously or asynchronousl.
+    /// The original instance of the `value` we are going to read / write synchronously or asynchronousl.
     private var value: Value
 
     /// A queue that stacks closures and executes them sequentially.
@@ -34,15 +34,21 @@ public class ValueContainer<Value> {
 // MARK: Performing closures in `stack`
 extension ValueContainer {
     /**
-     Adds closure to the end of `serialQueue` and perform it.
-     - Parameter closure: code that we want to perform.
+     Adds closure to the end of `commandQueue` and perform it.
+     - Parameter closure: closure (block) to be performed.
      */
     public func appendAndPerform(closure: @escaping Closure) {
         commandQueue.append { closure(&self.value) }
         commandQueue.perform()
     }
 
-    //func performNow(closure: Closure?) { accessQueue.sync { closure?(&self.value) } }
+    /**
+     Runs closure without stacking it to `commandQueue`.
+     - Parameter closure: closure (block) to be performed.
+     */
+    func performNow(closure: @escaping Closure) {
+        commandQueue.performNow { closure(&self.value) }
+    }
 }
 
 extension ValueContainer where Value: AnyObject {

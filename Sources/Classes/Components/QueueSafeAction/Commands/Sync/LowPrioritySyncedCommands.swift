@@ -1,5 +1,5 @@
 //
-//  LowPrioritySyncActions.swift
+//  LowPrioritySyncedCommands.swift
 //  QueueSafeValue
 //
 //  Created by Vasily Bodnarchuk on 8/16/20.
@@ -9,7 +9,7 @@
 import Foundation
 
 /// Defines the available sync functions that can manipulate a `value` enclosed in a `ValueContainer` and executes them in `low priority` order.
-public class LowPrioritySyncActions<Value>: SyncActionsWithPriority<Value> {
+public class LowPrioritySyncedCommands<Value>: SyncedCommandsWithPriority<Value> {
 
     /// Override func. Read the documentation in the parent class
     override func executeInCommandStack(valueContainer: Container, command: @escaping Container.Closure) {

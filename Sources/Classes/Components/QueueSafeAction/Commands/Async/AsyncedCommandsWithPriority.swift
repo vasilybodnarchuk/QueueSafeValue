@@ -1,8 +1,9 @@
 //
-//  AsyncActionsWithPriority.swift
+//  AsyncedCommandsWithPriority.swift
 //  QueueSafeValue
 //
 //  Created by Vasily Bodnarchuk on 8/21/20.
+//  Copyright (c) 2020 Vasily Bodnarchuk. All rights reserved.
 //
 
 import Foundation
@@ -11,7 +12,7 @@ import Foundation
  Defines the available functions that can manipulate a `value`, wrapped in a `ValueContainer` object.
  All functions will run asynchronously on the queue that calls them.
  */
-public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
+public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
 
     /// A queue in which access to the `value` will be granted.
     let queue: DispatchQueue

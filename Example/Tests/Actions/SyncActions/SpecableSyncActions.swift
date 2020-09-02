@@ -10,7 +10,7 @@ import Quick
 import Nimble
 import QueueSafeValue
 
-protocol SpecableSyncActions: SpecableActions where Actions == SyncActionsWithPriority<Value>,
+protocol SpecableSyncActions: SpecableActions where Actions == SyncedCommandsWithPriority<Value>,
                                                     Value == SimpleClass {
 }
 

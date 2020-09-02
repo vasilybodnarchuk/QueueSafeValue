@@ -11,33 +11,102 @@ import Nimble
 import QueueSafeValue
 
 class CommandQueueSpec: QuickSpec {
+    private let elementsCount = 10_000
     override func spec() {
-
         describe("Command Queue") {
-            var serialQueue: CommandQueue!
-            beforeEach { serialQueue = CommandQueue() }
-
-            it("first waits for all closures to be added and then executes them in the correct order") {
-                var array1 = [Int]()
-                var array2 = [Int]()
-                for _ in 0..<10_000 {
-                    array1.append(array1.count)
-                    serialQueue.append { array2.append(array2.count) }
+            context("synchronously adds closures to the command queue") {
+                it("executes closures afterwards in the correct order") {
+                    self.testInLoop(syncedIteration: { commandQueue, command in
+                        commandQueue.append { command() }
+                    }, completion: { commandQueue in
+                        commandQueue.perform()
+                    })
                 }
-                serialQueue.perform()
-                expect(array1) == array2
+                
+                
+                it("immediately executes the added closure in the correct order") {
+                    self.testInLoop(syncedIteration: { commandQueue, command in
+                        commandQueue.append { command() }
+                        commandQueue.perform()
+                    })
+                }
             }
-
-            it("adds closures to the queue and immediately executes them in the correct order") {
-                var array1 = [Int]()
-                var array2 = [Int]()
-                for _ in 0..<10_000 {
-                    array1.append(array1.count)
-                    serialQueue.append { array2.append(array2.count) }
-                    serialQueue.perform()
+            
+            context("perfoms closures now") {
+                it("synchronously") {
+                    self.testInLoop(syncedIteration: { commandQueue, command in
+                        commandQueue.performNow { command() }
+                    })
                 }
-                expect(array1) == array2
+                
+                it("asynchronously") {
+                    self.testInLoop(asyncedIteration: { commandQueue, dispatchGroup, command in
+                        commandQueue.performNow { command() }
+                        dispatchGroup.leave()
+                    })
+                }
+            }
+            
+            context("asynchronously adds closures to the command queue") {
+                it("executes closures afterwards") {
+                    self.testInLoop(asyncedIteration: { commandQueue, dispatchGroup, command in
+                        commandQueue.append { command() }
+                        dispatchGroup.leave()
+                    }, completion: { commandQueue in
+                        commandQueue.perform()
+                    })
+                }
+
+                it("immediately executes added closures") {
+                    self.testInLoop(asyncedIteration: { commandQueue, dispatchGroup, command in
+                        commandQueue.append {
+                            command()
+                            dispatchGroup.leave()
+                        }
+                        commandQueue.perform()
+                    })
+                }
             }
         }
+    }
+    
+    private func testInLoop(asyncedIteration: @escaping (CommandQueue, DispatchGroup, _ command: @escaping () -> Void) -> Void,
+                            completion: ((CommandQueue) -> Void)? = nil) {
+        let commandQueue = CommandQueue()
+        waitUntil(timeout: 1) { done in
+            var array1 = [Int]()
+            var array2 = [Int]()
+            let dispatchGroup = DispatchGroup()
+
+            for i in 0..<self.elementsCount {
+                array1.append(i)
+                dispatchGroup.enter()
+                Queues.random.async {
+                    asyncedIteration(commandQueue, dispatchGroup) { array2.append(i) }
+                }
+            }
+            dispatchGroup.notify(queue: .main) {
+                completion?(commandQueue)
+                expect(array1) != array2
+                expect(array1) == array2.sorted()
+                expect(array2.count) == self.elementsCount
+                done()
+            }
+            dispatchGroup.wait()
+        }
+    }
+    
+    private func testInLoop(syncedIteration: @escaping (CommandQueue, _ command: @escaping () -> Void) -> Void,
+                            completion: ((CommandQueue) -> Void)? = nil) {
+        let commandQueue = CommandQueue()
+        var array1 = [Int]()
+        var array2 = [Int]()
+        for i in 0..<self.elementsCount {
+            array1.append(i)
+            syncedIteration(commandQueue) { array2.append(i) }
+        }
+        completion?(commandQueue)
+        expect(array1) == array2
+        expect(array1.count) == self.elementsCount
     }
 }
