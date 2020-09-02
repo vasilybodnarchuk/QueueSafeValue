@@ -20,5 +20,4 @@ public class SyncScheduler<Value>: Scheduler<Value> {
 
     /// Executes the command as soon as possible. Don't use `Command stack`.
     public var now: ImmediatelyRunningSyncedCommands<Value> { .init(valueContainer: valueContainer) }
-
 }

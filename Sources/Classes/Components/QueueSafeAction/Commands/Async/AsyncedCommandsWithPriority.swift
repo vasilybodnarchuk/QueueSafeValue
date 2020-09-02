@@ -93,7 +93,7 @@ public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
 
     /**
      Defines performing order.
-     - Important: Blocks a queue where this code runs until it completed.  Must be redefined (overridden).
+     - Important: Will be executed asynchronously in own `queue`.
      - Parameters:
         - valueContainer: an object that stores the original `value` instance and provides thread-safe (queue-safe) access to it.
         - command: A block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object.

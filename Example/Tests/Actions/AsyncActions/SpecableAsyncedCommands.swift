@@ -12,6 +12,7 @@ import QueueSafeValue
 
 protocol SpecableAsyncedCommands: SpecableCommands where Commands == AsyncedCommandsWithPriority<Value>,
                                                          Value == SimpleClass  {
+     func commands(from queueSafeValue: QueueSafeValue<Value>, queue: DispatchQueue) -> Commands
 }
 
 extension SpecableAsyncedCommands {
@@ -21,9 +22,9 @@ extension SpecableAsyncedCommands {
             checkQueueWhereCommandIsRunning()
         }
     }
-
-    func commands(from queueSafeValue: QueueSafeValue<Value>, queue: DispatchQueue) -> Commands {
-        queueSafeValue.async(performIn: queue).lowPriority
+    
+    func commands(from queueSafeValue: QueueSafeValue<Value>) -> Commands {
+        commands(from: queueSafeValue, queue: .global(qos: .default))
     }
 }
 
