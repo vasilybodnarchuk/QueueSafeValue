@@ -84,7 +84,7 @@ public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
         }
 
         queue.async {
-            self.executeInCommandStack(valueContainer: valueContainer) { currentValue in
+            self.executeInCommandQueue(valueContainer: valueContainer) { currentValue in
                 let resultValue = command(&currentValue)
                 completion?(.success(resultValue))
             }
@@ -98,6 +98,6 @@ public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
         - valueContainer: an object that stores the original `value` instance and provides thread-safe (queue-safe) access to it.
         - command: A block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object.
      */
-    func executeInCommandStack(valueContainer: Container, command: @escaping Container.Closure) { fatalError() }
+    func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) { fatalError() }
 
 }

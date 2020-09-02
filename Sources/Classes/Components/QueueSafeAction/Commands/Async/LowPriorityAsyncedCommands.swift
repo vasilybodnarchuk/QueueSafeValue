@@ -12,7 +12,7 @@ import Foundation
 public class LowPriorityAsyncedCommands<Value>: AsyncedCommandsWithPriority<Value> {
 
     /// Override func. Read the documentation in the parent class
-    override func executeInCommandStack(valueContainer: Container, command: @escaping Container.Closure) {
+    override func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) {
         valueContainer.appendAndPerform(closure: command)
     }
 }

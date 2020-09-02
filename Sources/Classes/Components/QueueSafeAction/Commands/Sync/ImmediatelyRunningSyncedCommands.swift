@@ -12,7 +12,7 @@ import Foundation
 public class ImmediatelyRunningSyncedCommands<Value>: SyncedCommandsWithPriority<Value> {
 
     /// Override func. Read the documentation in the parent class
-    override func executeInCommandStack(valueContainer: Container, command: @escaping Container.Closure) {
+    override func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) {
         valueContainer.performNow(closure: command)
     }
 }

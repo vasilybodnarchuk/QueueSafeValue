@@ -88,7 +88,7 @@ public class SyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         var resultValue: ResultValue!
-        executeInCommandStack(valueContainer: valueContainer) { currentValue in
+        executeInCommandQueue(valueContainer: valueContainer) { currentValue in
             resultValue = command(&currentValue)
             dispatchGroup.leave()
         }
@@ -103,5 +103,5 @@ public class SyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
         - valueContainer: an object that stores the original `value` instance and provides thread-safe (queue-safe) access to it.
         - command: A block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object.
      */
-    func executeInCommandStack(valueContainer: Container, command: @escaping Container.Closure) { fatalError() }
+    func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) { fatalError() }
 }

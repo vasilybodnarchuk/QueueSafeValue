@@ -16,6 +16,8 @@ public class CommandQueue {
     /// A semaphore that allows only one command to be executed at a time.
     private var dispatchSemaphore: DispatchSemaphore!
 
+    private var immediatelyPriorityDispatchSemaphore: DispatchSemaphore!
+
     /// Container in which all closures are stored.
     private var stack: QueueSafeStack<Closure>
 
@@ -25,6 +27,7 @@ public class CommandQueue {
      */
     public init () {
         dispatchSemaphore = DispatchSemaphore(value: 1)
+        immediatelyPriorityDispatchSemaphore = DispatchSemaphore(value: 1)
         stack = QueueSafeStack<Closure>()
     }
 }
@@ -46,7 +49,10 @@ extension CommandQueue {
             perform()
             return
         }
-        performImmediately(closure: closure)
+        immediatelyPriorityDispatchSemaphore.wait()
+        immediatelyPriorityDispatchSemaphore.signal()
+
+        perform(closure: closure)
         perform()
     }
 
@@ -56,6 +62,12 @@ extension CommandQueue {
      */
 
     public func performImmediately(closure: @escaping Closure) {
+        immediatelyPriorityDispatchSemaphore.wait()
+        perform(closure: closure)
+        immediatelyPriorityDispatchSemaphore.signal()
+    }
+
+    private func perform(closure: @escaping Closure) {
         dispatchSemaphore.wait()
         closure()
         dispatchSemaphore.signal()
