@@ -12,7 +12,7 @@ public class CommandQueue {
 
     /**
      Describes the order in which `closures` will be performed.
-     `closures` with  `highest priority` will be execurted first.
+     `closure` with  `highest priority` will be execurted first.
      */
     public enum Priority: Int { case highest, lowest }
 

@@ -34,9 +34,4 @@ public class AsyncScheduler<Value>: Scheduler<Value> {
     public var lowPriority: LowPriorityAsyncedCommands<Value> {
         .init(valueContainer: valueContainer, grantAccessIn: queue)
     }
-
-    /// Executes the command as soon as possible. Don't use `Command stack`.
-    public var immediately: ImmediatelyRunningAsyncedCommands<Value> {
-        .init(valueContainer: valueContainer, grantAccessIn: queue)
-    }
 }

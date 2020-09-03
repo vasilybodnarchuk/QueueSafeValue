@@ -13,6 +13,6 @@ public class LowPriorityAsyncedCommands<Value>: AsyncedCommandsWithPriority<Valu
 
     /// Override func. Read the documentation in the parent class
     override func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) {
-        valueContainer.appendAndPerform(closure: command)
+        valueContainer.perform(priority: .lowest, closure: command)
     }
 }
