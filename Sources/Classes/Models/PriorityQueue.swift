@@ -181,6 +181,15 @@ extension PriorityQueue {
         }
     }
 
+    // Remove element with min priority (first in array "elements") and restore order (swap elements) if needed
+     @discardableResult
+     public mutating func removeElementWithLowestPriority() -> Element? {
+         switch count {
+         case 0: return nil
+         default: return elements.removeLast()
+         }
+     }
+
     // Remove element at specific index and restore order (swap elements) if needed
     @discardableResult
     public mutating func remove(at index: Int) -> Element? {

@@ -23,7 +23,6 @@
 		B8AD7D3E2500680800505A5B /* PriorityQueueSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8AD7D3D2500680800505A5B /* PriorityQueueSpec.swift */; };
 		D95E4B7224EB3DE6009BC031 /* SimpleClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */; };
 		D95E4B7924EB7D3E009BC031 /* CommandQueueSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B7724EB7CCC009BC031 /* CommandQueueSpec.swift */; };
-		D95E4B8824EC6C3A009BC031 /* QueueSafeStackSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B8624EC6C14009BC031 /* QueueSafeStackSpec.swift */; };
 		D9C1FE8524D7B30200B78489 /* Queues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C1FE8424D7B30200B78489 /* Queues.swift */; };
 		D9CEFC0A24F083EA00C76B19 /* LowPrioritySyncedCommandsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CEFC0924F083EA00C76B19 /* LowPrioritySyncedCommandsSpec.swift */; };
 /* End PBXBuildFile section */
@@ -64,7 +63,6 @@
 		B8AD7D3D2500680800505A5B /* PriorityQueueSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriorityQueueSpec.swift; sourceTree = "<group>"; };
 		D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleClass.swift; sourceTree = "<group>"; };
 		D95E4B7724EB7CCC009BC031 /* CommandQueueSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandQueueSpec.swift; sourceTree = "<group>"; };
-		D95E4B8624EC6C14009BC031 /* QueueSafeStackSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueSafeStackSpec.swift; sourceTree = "<group>"; };
 		D9790B5D24AB851E00701A2B /* QueueSafeValue.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = QueueSafeValue.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D98FA78524F03BFA0041DCFC /* QueueSafeValue_Example copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "QueueSafeValue_Example copy-Info.plist"; path = "/Users/vasily/Dropbox/developer/iOS/my_pods/QueueSafeValue/QueueSafeValue/Example/QueueSafeValue_Example copy-Info.plist"; sourceTree = "<absolute>"; };
 		D9C1FE8424D7B30200B78489 /* Queues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Queues.swift; sourceTree = "<group>"; };
@@ -220,7 +218,6 @@
 				D953038024F1B4B900FA6B99 /* Models */,
 				D9CEFC0824F083D800C76B19 /* Actions */,
 				D95E4B7724EB7CCC009BC031 /* CommandQueueSpec.swift */,
-				D95E4B8624EC6C14009BC031 /* QueueSafeStackSpec.swift */,
 				B8AD7D3D2500680800505A5B /* PriorityQueueSpec.swift */,
 			);
 			name = Tests;
@@ -466,7 +463,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D95E4B8824EC6C3A009BC031 /* QueueSafeStackSpec.swift in Sources */,
 				B81AC8F524F53E1F00A5CCC3 /* LowPriorityAsyncedCommandsSpec.swift in Sources */,
 				B85C15A224FE764B00F68032 /* SpecableSyncedCommands.swift in Sources */,
 				B8AD7D3124FF299C00505A5B /* ImmediatelyRunningSyncedCommandsSpec.swift in Sources */,
