@@ -52,7 +52,6 @@ extension PriorityQueueSpec {
                 expect(priorityQueue1.count) == self.elementsCount
                 expect(priorityQueue1.peek()!) == expectedFirst
                 expect(priorityQueue1.elements.last) == expectedLast
-
             }
             
             it("test removeElementWithHighestPriority") {

@@ -10,25 +10,22 @@ import Foundation
 /// A queue that stacks closures and executes them sequentially.
 public class CommandQueue {
 
-    public enum Priority: Int {
-        case highest
-        case lowest
-    }
+    /**
+     Describes the order in which `closures` will be performed.
+     `closures` with  `highest priority` will be execurted first.
+     */
+    public enum Priority: Int { case highest, lowest }
 
-//    private var highestPriority: Int
-//    private var lowestPriority: Int
-
-    /// The type of closures to be pushed onto the `stack` and executed.
+    /// The type of closures to be placed in the `priorityQueue` and executed afterwards.
     public typealias Closure = Command.Closure
 
     /// A semaphore that allows only one command to be executed at a time.
     private var executionCommandSemaphore: DispatchSemaphore!
 
+    /// A semaphore that provides only sequential (serial) access to a `priorityQueue`.
     private var priorityQueueAccessSemaphore: DispatchSemaphore!
 
     /// Container in which all closures are stored.
-    //private var stack: QueueSafeStack<Closure>
-
     private var priorityQueue: PriorityQueue<Command>!
 
     /**
@@ -38,19 +35,19 @@ public class CommandQueue {
     public init () {
         executionCommandSemaphore = DispatchSemaphore(value: 1)
         priorityQueueAccessSemaphore = DispatchSemaphore(value: 1)
-        priorityQueue = PriorityQueue(priority: .parentsGreaterThanOrEqualChildren)
-//        highestPriority = 1000
-//        lowestPriority = 0
+        priorityQueue = PriorityQueue(priority: .parentsLessThanOrEqualChildren)
     }
 }
 
-// MARK: Performing closures in `stack`
+// MARK: Working with priority queue
 
 extension CommandQueue {
 
     /**
-     Adds closure to the end of the `stack`.
-     - Parameter closure: code that we want to perform.
+     Insert `closure` in `priorityQueue`.
+     - Parameters:
+        - priority: Defines where `closure` will be placed in` priorityQueue`. `priority` describes when `closure` will be executed (in what order).
+        - closure: code that we want to perform.
      */
     public func append(priority: Priority, closure: @escaping Closure) {
         priorityQueueAccessSemaphore.wait()
@@ -65,11 +62,11 @@ extension CommandQueue {
         priorityQueueAccessSemaphore.signal()
     }
 
-    /// Performs closures sequentially that contained in `stack`.
+    /// Performs closures `sequentially`.` Closure` with highest priority will be performed first.
     public func perform() {
         var command: Command?
         priorityQueueAccessSemaphore.wait()
-        command = priorityQueue.removeElementWithHighestPriority()
+        command = priorityQueue.removeElementWithLowestPriority()
         priorityQueueAccessSemaphore.signal()
         guard let closure = command?.closure else { return }
 
