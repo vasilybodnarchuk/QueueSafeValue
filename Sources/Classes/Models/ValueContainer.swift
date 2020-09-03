@@ -38,7 +38,7 @@ extension ValueContainer {
      - Parameter closure: closure (block) to be performed.
      */
     public func appendAndPerform(closure: @escaping Closure) {
-        commandQueue.append { closure(&self.value) }
+        commandQueue.append(priority: .highest) { closure(&self.value) }
         commandQueue.perform()
     }
 
@@ -47,7 +47,9 @@ extension ValueContainer {
      - Parameter closure: closure (block) to be performed.
      */
     func performNow(closure: @escaping Closure) {
-        commandQueue.performImmediately { closure(&self.value) }
+       // commandQueue.performImmediately { closure(&self.value) }
+        commandQueue.append(priority: .highest) { closure(&self.value) }
+        commandQueue.perform()
     }
 }
 

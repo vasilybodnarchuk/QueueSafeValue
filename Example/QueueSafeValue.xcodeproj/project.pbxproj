@@ -20,6 +20,7 @@
 		B85C15A424FE789600F68032 /* SpecableAsyncedCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85C15A324FE789600F68032 /* SpecableAsyncedCommands.swift */; };
 		B8AD7D3124FF299C00505A5B /* ImmediatelyRunningSyncedCommandsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8AD7D3024FF299C00505A5B /* ImmediatelyRunningSyncedCommandsSpec.swift */; };
 		B8AD7D3824FF350E00505A5B /* ImmediatelyRunningAsyncedCommandsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8AD7D3724FF350E00505A5B /* ImmediatelyRunningAsyncedCommandsSpec.swift */; };
+		B8AD7D3E2500680800505A5B /* PriorityQueueSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8AD7D3D2500680800505A5B /* PriorityQueueSpec.swift */; };
 		D95E4B7224EB3DE6009BC031 /* SimpleClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */; };
 		D95E4B7924EB7D3E009BC031 /* CommandQueueSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B7724EB7CCC009BC031 /* CommandQueueSpec.swift */; };
 		D95E4B8824EC6C3A009BC031 /* QueueSafeStackSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B8624EC6C14009BC031 /* QueueSafeStackSpec.swift */; };
@@ -60,6 +61,7 @@
 		B85C15A324FE789600F68032 /* SpecableAsyncedCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecableAsyncedCommands.swift; sourceTree = "<group>"; };
 		B8AD7D3024FF299C00505A5B /* ImmediatelyRunningSyncedCommandsSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmediatelyRunningSyncedCommandsSpec.swift; sourceTree = "<group>"; };
 		B8AD7D3724FF350E00505A5B /* ImmediatelyRunningAsyncedCommandsSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmediatelyRunningAsyncedCommandsSpec.swift; sourceTree = "<group>"; };
+		B8AD7D3D2500680800505A5B /* PriorityQueueSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriorityQueueSpec.swift; sourceTree = "<group>"; };
 		D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleClass.swift; sourceTree = "<group>"; };
 		D95E4B7724EB7CCC009BC031 /* CommandQueueSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandQueueSpec.swift; sourceTree = "<group>"; };
 		D95E4B8624EC6C14009BC031 /* QueueSafeStackSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueSafeStackSpec.swift; sourceTree = "<group>"; };
@@ -219,6 +221,7 @@
 				D9CEFC0824F083D800C76B19 /* Actions */,
 				D95E4B7724EB7CCC009BC031 /* CommandQueueSpec.swift */,
 				D95E4B8624EC6C14009BC031 /* QueueSafeStackSpec.swift */,
+				B8AD7D3D2500680800505A5B /* PriorityQueueSpec.swift */,
 			);
 			name = Tests;
 			sourceTree = "<group>";
@@ -468,6 +471,7 @@
 				B85C15A224FE764B00F68032 /* SpecableSyncedCommands.swift in Sources */,
 				B8AD7D3124FF299C00505A5B /* ImmediatelyRunningSyncedCommandsSpec.swift in Sources */,
 				B8AD7D3824FF350E00505A5B /* ImmediatelyRunningAsyncedCommandsSpec.swift in Sources */,
+				B8AD7D3E2500680800505A5B /* PriorityQueueSpec.swift in Sources */,
 				D9C1FE8524D7B30200B78489 /* Queues.swift in Sources */,
 				B85C15A424FE789600F68032 /* SpecableAsyncedCommands.swift in Sources */,
 				D95E4B7224EB3DE6009BC031 /* SimpleClass.swift in Sources */,
