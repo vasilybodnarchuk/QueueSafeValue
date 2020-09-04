@@ -44,11 +44,14 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
 ### Available sync actions: 
 
-1. `get` - returns `CurrentValue` or `QueueSafeValueError`
+### 1. `get`
+
+>  returns `CurrentValue` or `QueueSafeValueError`
+
 ```Swift
 func get() -> Result<CurrentValue, QueueSafeValueError>
 ```
-> Sample
+> Code sample
 
 ```Swift
 let queueSafeValue = QueueSafeValue(value: true)
@@ -61,12 +64,15 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-2. `get` - returns `CurrentValue` or `QueueSafeValueError` in closure
+### 2. `get` 
+
+> returns `CurrentValue` or `QueueSafeValueError` in closure
+
 ```Swift
 func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
 ```
 
-> Sample
+> Code sample
 
 ```Swift
 let queueSafeValue = QueueSafeValue(value: 6)
@@ -80,12 +86,15 @@ DispatchQueue.global(qos: .unspecified).async {
 }
 ```
 
-3. `set` - sets `value`
+### 3. `set` 
+
+> sets `value`
+
 ```Swift
 func set(newValue: Value) -> Result<UpdatedValue, QueueSafeValueError>
 ```
 
-> Sample
+> Code sample
 
 ```Swift
 let queueSafeValue = QueueSafeValue<Int>(value: 1)
@@ -98,12 +107,15 @@ DispatchQueue.global(qos: .userInitiated).async {
 }
 ```
 
-4. `update` - updates `CurrentValue` in closure.  Useful when processing / updating a value consists of multiple lines of code.
+### 4. `update` 
+
+>  updates `CurrentValue` in closure.  Useful when processing / updating a value consists of multiple lines of code.
+
 ```Swift
 func update(closure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
 ```
 
-> Sample
+> Code sample
 
 ```Swift
 let queueSafeValue = QueueSafeValue(value: 1)
@@ -118,12 +130,15 @@ DispatchQueue.global(qos: .userInitiated).async {
 }
 ```
 
-5. `transform` -  transforms value without changing original instance
+### 5. `transform` 
+
+> transforms value without changing original instance
+
 ```Swift
 func transform<TransformedValue>(closure: ((CurrentValue) -> TransformedValue)?) -> Result<TransformedValue, QueueSafeValueError>
 ```
 
-> Sample
+> Code sample
 
 ```Swift
 let queueSafeValue = QueueSafeValue(value: 5)
@@ -138,12 +153,15 @@ DispatchQueue.global(qos: .background).async {
 
 ### Available async actions: 
 
-1. `get` - asynchronously returns the `value` in a `closure`
+### 1. `get`
+
+> asynchronously returns the `value` in a `closure`
+
 ```Swift
 func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
 ```
 
-> Sample
+> Code sample
 
 ```Swift
 let queueSafeValue = QueueSafeValue(value: true)
@@ -155,12 +173,15 @@ queueSafeValue.async(performIn: .global(qos: .utility)).lowestPriority.get { res
 }
 ```
 
-2. `set` - asynchronously sets `value`
+### 2. `set` 
+
+> asynchronously sets `value`
+
 ```Swift
 `func set(newValue: Value, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)
 ```
 
-> Sample
+> Code sample
 
 ```Swift
 let queueSafeValue = QueueSafeValue(value: 7)
@@ -177,13 +198,19 @@ queueSafeValue.async(performIn: .main).lowestPriority.set(newValue: 9) { result 
 }
 ```
 
-3. `update` - asynchronously updates `value` in closure. 
+### 3. `update`
+
+> asynchronously updates `value` in closure. 
+
 ```Swift
 func update(closure: ((inout CurrentValue) -> Void)?, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)
 ```
 
+> Code sample
+
 ```Swift
 let queueSafeValue = QueueSafeValue<Int>(value: 1)
+
 // Without completion block
 queueSafeValue.async(performIn: .background).lowestPriority.update(closure: { currentValue in
     currentValue = 10
@@ -199,8 +226,6 @@ queueSafeValue.async(performIn: .background).lowestPriority.update(closure: { cu
     }
 })
 ```
-___
-
     
 ## Requirements
 
