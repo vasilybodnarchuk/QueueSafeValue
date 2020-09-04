@@ -36,15 +36,15 @@ Framework that provides thread-safe (queue-safe) access to the value.
 > describes when (in what order) `command` will be executed in `command queue`. 
 
 *Available priorities*: 
-- `lowestPriority` - a `comand` with `lowest priority` will be executed first.
+- `lowestPriority` - a `comand` with `lowest priority` will be executed last.
 
 ## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​
 
 > describes what to do with value 
 
-### Available sync actions: 
+### Available synchronous comands: 
 
-### 1. `get`
+### 1. Synchronous `get`
 
 >  returns `CurrentValue` or `QueueSafeValueError`
 
@@ -64,7 +64,7 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 2. `get` 
+### 2. Synchronous `get` 
 
 > returns `CurrentValue` or `QueueSafeValueError` in closure
 
@@ -86,7 +86,7 @@ DispatchQueue.global(qos: .unspecified).async {
 }
 ```
 
-### 3. `set` 
+### 3. Synchronous `set` 
 
 > sets `value`
 
@@ -107,7 +107,7 @@ DispatchQueue.global(qos: .userInitiated).async {
 }
 ```
 
-### 4. `update` 
+### 4. Synchronous `update` 
 
 >  updates `CurrentValue` in closure.  Useful when processing / updating a value consists of multiple lines of code.
 
@@ -130,7 +130,7 @@ DispatchQueue.global(qos: .userInitiated).async {
 }
 ```
 
-### 5. `transform` 
+### 5. Synchronous `transform` 
 
 > transforms value without changing original instance
 
@@ -151,9 +151,9 @@ DispatchQueue.global(qos: .background).async {
 }
 ```
 
-### Available async actions: 
+### Available asynchronous commands: 
 
-### 1. `get`
+### 1. Asynchronous `get`
 
 > asynchronously returns the `value` in a `closure`
 
@@ -173,7 +173,7 @@ queueSafeValue.async(performIn: .global(qos: .utility)).lowestPriority.get { res
 }
 ```
 
-### 2. `set` 
+### 2. Asynchronous `set` 
 
 > asynchronously sets `value`
 
@@ -198,7 +198,7 @@ queueSafeValue.async(performIn: .main).lowestPriority.set(newValue: 9) { result 
 }
 ```
 
-### 3. `update`
+### 3. Asynchronous `update`
 
 > asynchronously updates `value` in closure. 
 
