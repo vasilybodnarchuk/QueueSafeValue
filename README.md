@@ -37,6 +37,7 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
 *Available priorities*: 
 - `lowestPriority` - a `comand` with `lowest priority` will be executed last.
+- `highestPriority` - a `comand` with `highest priority` will be executed first.
 
 ## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​
 
@@ -64,7 +65,7 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 2. Synchronous `get` 
+### 2. Synchronous `get` in closure
 
 > returns `CurrentValue` or `QueueSafeValueError` in closure
 
