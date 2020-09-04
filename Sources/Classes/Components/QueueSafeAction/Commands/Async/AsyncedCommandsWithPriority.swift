@@ -1,8 +1,9 @@
 //
-//  AsyncActionsWithPriority.swift
+//  AsyncedCommandsWithPriority.swift
 //  QueueSafeValue
 //
 //  Created by Vasily Bodnarchuk on 8/21/20.
+//  Copyright (c) 2020 Vasily Bodnarchuk. All rights reserved.
 //
 
 import Foundation
@@ -11,7 +12,7 @@ import Foundation
  Defines the available functions that can manipulate a `value`, wrapped in a `ValueContainer` object.
  All functions will run asynchronously on the queue that calls them.
  */
-public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
+public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
 
     /// A queue in which access to the `value` will be granted.
     let queue: DispatchQueue
@@ -83,7 +84,7 @@ public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
         }
 
         queue.async {
-            self.executeInCommandStack(valueContainer: valueContainer) { currentValue in
+            self.executeInCommandQueue(valueContainer: valueContainer) { currentValue in
                 let resultValue = command(&currentValue)
                 completion?(.success(resultValue))
             }
@@ -92,11 +93,11 @@ public class AsyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
 
     /**
      Defines performing order.
-     - Important: Blocks a queue where this code runs until it completed.  Must be redefined (overridden).
+     - Important: Will be executed asynchronously in own `queue`.
      - Parameters:
         - valueContainer: an object that stores the original `value` instance and provides thread-safe (queue-safe) access to it.
         - command: A block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object.
      */
-    func executeInCommandStack(valueContainer: Container, command: @escaping Container.Closure) { fatalError() }
+    func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) { fatalError() }
 
 }

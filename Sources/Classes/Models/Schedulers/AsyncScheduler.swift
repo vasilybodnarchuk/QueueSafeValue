@@ -27,11 +27,20 @@ public class AsyncScheduler<Value>: Scheduler<Value> {
     }
 
     /**
-     Schedules function execution in a `command queue` that is integrated into the `ValueContainer` object.
-     Each function is pushed onto the command stack and executed in FIFO order.
-     The `lowPriority` function will be placed at the end of the `command queue`.
+     Schedules `command` execution in a `command queue` that is integrated into the `ValueContainer` object.
+     Each `command` will be placed in a `command queue` and executed in order of priority.
+     The `Lowest priority command`  will be executed last.
      */
-    public var lowPriority: LowPriorityAsyncActions<Value> {
+    public var lowestPriority: LowestPriorityAsyncedCommands<Value> {
+        .init(valueContainer: valueContainer, grantAccessIn: queue)
+    }
+
+    /**
+     Schedules `command` execution in a `command queue` that is integrated into the `ValueContainer` object.
+     Each `command` will be placed in a `command queue` and executed in order of priority.
+     The `Highest priority command`  will be executed first.
+     */
+    public var highestPriority: HighestPriorityAsyncedCommands<Value> {
         .init(valueContainer: valueContainer, grantAccessIn: queue)
     }
 }

@@ -1,44 +1,24 @@
 //
-//  ViewController.swift
-//  QueueSafeValue
+//  ReadMeExamples.swift
+//  QueueSafeValue_Example
 //
-//  Created by Vasily Bodnarchuk on 06/30/2020.
-//  Copyright (c) 2020 Vasily Bodnarchuk. All rights reserved.
+//  Created by Vasily Bodnarchuk on 9/4/20.
+//  Copyright © 2020 CocoaPods. All rights reserved.
 //
 
-import UIKit
+import Foundation
 import QueueSafeValue
 
-class ViewController: UIViewController {
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        Examples().run()
-        ReadMeExamples().run()
-    }
-}
-
-class Examples {
+class ReadMeExamples {
     func run() {
         runSyncActions()
         runAsyncActions()
     }
 }
 
-extension Examples {
-    private func log<Value>(title: String, result: (Result<Value, QueueSafeValueError>)) {
-        var description = "\"\(title)\" func result: "
-        switch result {
-        case .failure(let error): description += "\(error)"
-        case .success(let value): description += "\(value)"
-        }
-        print(description + " or \(result)")
-    }
-}
-
 /// MARK: Sync actions
 
-extension Examples {
+extension ReadMeExamples {
     func runSyncActions() {
         syncGetActionSample()
         syncGetInClosureActionSample()
@@ -51,7 +31,10 @@ extension Examples {
         let queueSafeValue = QueueSafeValue(value: true)
         DispatchQueue.global(qos: .utility).async {
             let result = queueSafeValue.wait.lowestPriority.get()
-            self.log(title: "Sync lowPriority get", result: result)
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
         }
     }
     
@@ -59,7 +42,10 @@ extension Examples {
         let queueSafeValue = QueueSafeValue(value: 6)
         DispatchQueue.global(qos: .unspecified).async {
             queueSafeValue.wait.lowestPriority.get { result in
-                self.log(title: "Sync lowPriority get in closure", result: result)
+                switch result {
+                case .failure(let error): print(error)
+                case .success(let value): print(value)
+                }
             }
         }
     }
@@ -68,7 +54,10 @@ extension Examples {
         let queueSafeValue = QueueSafeValue<Int>(value: 1)
         DispatchQueue.global(qos: .userInitiated).async {
             let result = queueSafeValue.wait.lowestPriority.set(newValue: 2)
-            self.log(title: "Sync lowPriority set", result: result)
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
         }
     }
     
@@ -78,7 +67,10 @@ extension Examples {
             let result = queueSafeValue.wait.lowestPriority.update { currentValue in
                 currentValue = 3
             }
-            self.log(title: "Sync lowPriority update", result: result)
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
         }
     }
     
@@ -86,14 +78,17 @@ extension Examples {
         let queueSafeValue = QueueSafeValue(value: 5)
         DispatchQueue.global(qos: .background).async {
             let result = queueSafeValue.wait.lowestPriority.transform { "\($0)" }
-            self.log(title: "Sync lowPriority transform", result: result)
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
         }
     }
 }
 
 /// MARK: Async actions
 
-extension Examples {
+extension ReadMeExamples {
     func runAsyncActions() {
         asyncGetActionSample()
         asyncSetActionSample()
@@ -102,8 +97,11 @@ extension Examples {
 
     private func asyncGetActionSample() {
         let queueSafeValue = QueueSafeValue(value: true)
-        queueSafeValue.async(performIn: .global(qos: .utility)).lowestPriority.get { result in
-            self.log(title: "Async lowPriority get", result: result)
+        queueSafeValue.async(performIn: .global(qos: .utility)).highestPriority.get { result in
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
         }
     }
     
@@ -111,26 +109,32 @@ extension Examples {
         let queueSafeValue = QueueSafeValue(value: 7)
         
         // Without completion block
-        queueSafeValue.async(performIn: .main).lowestPriority.set(newValue: 8)
+        queueSafeValue.async(performIn: .main).highestPriority.set(newValue: 8)
         
         // With completion block
-        queueSafeValue.async(performIn: .main).lowestPriority.set(newValue: 9) { result in
-            self.log(title: "Async lowPriority set", result: result)
+        queueSafeValue.async(performIn: .main).highestPriority.set(newValue: 9) { result in
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
         }
     }
     
     private func asyncUpdateActionSample() {
         let queueSafeValue = QueueSafeValue<Int>(value: 1)
         // Without completion block
-        queueSafeValue.async(performIn: .background).lowestPriority.update(closure: { currentValue in
+        queueSafeValue.async(performIn: .background).highestPriority.update(closure: { currentValue in
             currentValue = 10
         })
         
         // With completion block
-        queueSafeValue.async(performIn: .background).lowestPriority.update(closure: { currentValue in
+        queueSafeValue.async(performIn: .background).highestPriority.update(closure: { currentValue in
             currentValue = 11
         }, completion: { result in
-            self.log(title: "Async lowPriority update", result: result)
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
         })
     }
 }
