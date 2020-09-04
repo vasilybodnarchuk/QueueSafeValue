@@ -52,15 +52,26 @@ extension CommandQueue {
     public func append(priority: Priority, closure: @escaping Closure) {
         priorityQueueAccessSemaphore.wait()
         var priorityValue: Int!
+        switch priorityQueue.count {
+        case 0: priorityValue = 0
+        case 1: priorityValue = priorityQueue.elements[0].prioriy
+        default:
+            switch priority {
+            case .highest: priorityValue = priorityQueue.elements[0].prioriy
+            case .lowest:
+                let halfElemets = priorityQueue.elements.count/2
+                priorityValue = priorityQueue.elements[halfElemets].prioriy
+                priorityQueue.elements[halfElemets+1..<priorityQueue.elements.count].forEach { command in
+                    if command.prioriy < priorityValue { priorityValue = command.prioriy }
+                }
+            }
+        }
+
         switch priority {
-        case .highest:
-            priorityValue = (priorityQueue.peek()?.prioriy ?? 0) + 1
-        case .lowest:
-            priorityValue = (priorityQueue.elements.last?.prioriy ?? 0) - 1
+        case .highest: priorityValue += 1
+        case .lowest: priorityValue -= 1
         }
         priorityQueue.insert(Command(prioriy: priorityValue, closure: closure))
-        //print(priorityQueue.elements)
-
         priorityQueueAccessSemaphore.signal()
     }
 
