@@ -1,5 +1,5 @@
 //
-//  ActionsWithPriority.swift
+//  CommandsWithPriority.swift
 //  QueueSafeValue
 //
 //  Created by Vasily Bodnarchuk on 8/22/20.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-/// An inheritance class that describes the interface for sync / async actions.
-public class ActionsWithPriority<Value> {
+/// An inheritance class that describes the interface for sync / async commands.
+public class CommandsWithPriority<Value> {
 
     /// Same as `value` type. Used to improve readability
     public typealias UpdatedValue = Value

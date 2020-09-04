@@ -1,5 +1,5 @@
 //
-//  SyncActionsWithPriority.swift
+//  SyncedCommandsWithPriority.swift
 //  QueueSafeValue
 //
 //  Created by Vasily Bodnarchuk on 6/30/20.
@@ -12,7 +12,7 @@ import Foundation
  Describes the available functions that can manipulate a `value`, wrapped in a `ValueContainer` object.
  All functions will run synchronously on the queue that calls them.
  */
-public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
+public class SyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
 
     /**
      Thread-safe (queue-safe) `value` reading.
@@ -36,7 +36,7 @@ public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
         default: break
         }
     }
-    
+
     /**
      Thread-safe (queue-safe) `value` writing.
      - Important: Runs synchronously (Blocks a queue where this code runs until it completed).
@@ -88,7 +88,7 @@ public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         var resultValue: ResultValue!
-        executeInCommandStack(valueContainer: valueContainer) { currentValue in
+        executeInCommandQueue(valueContainer: valueContainer) { currentValue in
             resultValue = command(&currentValue)
             dispatchGroup.leave()
         }
@@ -103,5 +103,5 @@ public class SyncActionsWithPriority<Value>: ActionsWithPriority<Value> {
         - valueContainer: an object that stores the original `value` instance and provides thread-safe (queue-safe) access to it.
         - command: A block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object.
      */
-    func executeInCommandStack(valueContainer: Container, command: @escaping Container.Closure) { fatalError() }
+    func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) { fatalError() }
 }

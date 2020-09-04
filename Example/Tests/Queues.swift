@@ -9,8 +9,8 @@
 import Foundation
 
 class Queues {
-    private static var queues : [DispatchQueue] = {
-        return [
+    private static var queues : Set<DispatchQueue> = {
+        [
             .global(qos: .background),
             .global(qos: .default),
             .global(qos: .unspecified),
@@ -20,9 +20,22 @@ class Queues {
         ]
     }()
 
+    class func getUniqueRandomQueues(count: Int) -> [DispatchQueue]  {
+        if count >= queues.count { fatalError() }
+        var availableQueues = queues
+        return (0..<count).map {_ in 
+            let queue = availableQueues.randomElement()!
+            availableQueues.remove(queue)
+            return queue
+        }
+    }
+
+    
+    class var random: DispatchQueue { queues.randomElement()! }
+    
     class func getRandomArray() -> [DispatchQueue] {
         let count = (10..<20).randomElement()!
-        return (0...count).map { _ in queues.randomElement()! }
+        return (0...count).map { _ in random }
     }
 }
 
