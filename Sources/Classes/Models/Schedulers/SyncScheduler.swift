@@ -16,5 +16,5 @@ public class SyncScheduler<Value>: Scheduler<Value> {
      Each function is pushed onto the `command stack` and executed in FIFO order.
      The `lowPriority` function will be placed at the end of the `command queue`.
      */
-    public var lowPriority: LowPrioritySyncedCommands<Value> { .init(valueContainer: valueContainer) }
+    public var lowestPriority: LowPrioritySyncedCommands<Value> { .init(valueContainer: valueContainer) }
 }

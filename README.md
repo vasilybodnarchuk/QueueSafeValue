@@ -11,29 +11,34 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
 #### Base structure of command
 
-`queueSafeValue.{schedule}.{priority}.{action}`
+`queueSafeValue.{schedule}.{priority}.{command}`
 
-### Components:
+### Definitions:
+
+## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​ 🇶​​​​​🇺​​​​​🇪​​​​​🇺​​​​​🇪​​​​​
+
+> stores `commands` and executes them sequentially with the correct priority.
+> `QueueSafeValue` has a built-in `command queue` (priority queue) where all 
+> `closures` (`commands`) will be placed and perfomed after. 
+
+### Request components:
 
 ## 🇸​​​​​🇨​​​​​🇭​​​​​🇪​​​​​🇩​​​​​🇺​​​​​🇱​​​​​🇪​​​​​
 
 > describes will func be executed synchronously or asynchronously. 
 
 *Available schedules*: 
-- `wait` - (sync) performs action sequentially. Blocks the queue where this code runs until it completed.
-- `async` - performs a function asynchronously of the queue that calls this function.
+- `wait` - (sync) performs `commands` sequentially. Blocks the queue where this code runs until it completed.
+- `async` - performs a `command` asynchronously of the queue that calls this function.
 
 ## 🇵​​​​​🇷​​​​​🇮​​​​​🇴​​​​​🇷​​​​​🇮​​​​​🇹​​​​​🇾​​​​​
 
-> describes when (in what order) the function will be executed. 
-> `QueueSafeValue` has a built-in `command stack` where all closures will be pushed. 
-> Every closure on that stack will be executed sequentially.
-> `priority` means position of a closure in the command stack.
+> describes when (in what order) `command` will be executed in `command queue`. 
 
-*Available orders*: 
-- `lowPriority` - adds a closure to the end of a `command stack`
-    
-## 🇦​​​​​🇨​​​​​🇹​​​​​🇮​​​​​🇴​​​​​🇳​​​​​
+*Available priorities*: 
+- `lowestPriority` - a `comand` with `lowest priority` will be executed first.
+
+## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​
 
 > describes what to do with value 
 
@@ -43,10 +48,36 @@ Framework that provides thread-safe (queue-safe) access to the value.
 ```Swift
 func get() -> Result<CurrentValue, QueueSafeValueError>
 ```
+> Sample
+
+```Swift
+let queueSafeValue = QueueSafeValue(value: true)
+DispatchQueue.global(qos: .utility).async {
+    let result = queueSafeValue.wait.lowestPriority.get()
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+}
+```
 
 2. `get` - returns `CurrentValue` or `QueueSafeValueError` in closure
 ```Swift
 func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
+```
+
+> Sample
+
+```Swift
+let queueSafeValue = QueueSafeValue(value: 6)
+DispatchQueue.global(qos: .unspecified).async {
+    queueSafeValue.wait.lowestPriority.get { result in
+        switch result {
+        case .failure(let error): print(error)
+        case .success(let value): print(value)
+        }
+    }
+}
 ```
 
 3. `set` - sets `value`
@@ -54,14 +85,55 @@ func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
 func set(newValue: Value) -> Result<UpdatedValue, QueueSafeValueError>
 ```
 
+> Sample
+
+```Swift
+let queueSafeValue = QueueSafeValue<Int>(value: 1)
+DispatchQueue.global(qos: .userInitiated).async {
+    let result = queueSafeValue.wait.lowestPriority.set(newValue: 2)
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+}
+```
+
 4. `update` - updates `CurrentValue` in closure.  Useful when processing / updating a value consists of multiple lines of code.
 ```Swift
 func update(closure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
 ```
 
+> Sample
+
+```Swift
+let queueSafeValue = QueueSafeValue(value: 1)
+DispatchQueue.global(qos: .userInitiated).async {
+    let result = queueSafeValue.wait.lowestPriority.update { currentValue in
+        currentValue = 3
+    }
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+}
+```
+
 5. `transform` -  transforms value without changing original instance
 ```Swift
 func transform<TransformedValue>(closure: ((CurrentValue) -> TransformedValue)?) -> Result<TransformedValue, QueueSafeValueError>
+```
+
+> Sample
+
+```Swift
+let queueSafeValue = QueueSafeValue(value: 5)
+DispatchQueue.global(qos: .background).async {
+    let result = queueSafeValue.wait.lowestPriority.transform { "\($0)" }
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+}
 ```
 
 ### Available async actions: 
@@ -71,9 +143,38 @@ func transform<TransformedValue>(closure: ((CurrentValue) -> TransformedValue)?)
 func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
 ```
 
+> Sample
+
+```Swift
+let queueSafeValue = QueueSafeValue(value: true)
+queueSafeValue.async(performIn: .global(qos: .utility)).lowestPriority.get { result in
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+}
+```
+
 2. `set` - asynchronously sets `value`
 ```Swift
 `func set(newValue: Value, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)
+```
+
+> Sample
+
+```Swift
+let queueSafeValue = QueueSafeValue(value: 7)
+
+// Without completion block
+queueSafeValue.async(performIn: .main).lowestPriority.set(newValue: 8)
+
+// With completion block
+queueSafeValue.async(performIn: .main).lowestPriority.set(newValue: 9) { result in
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+}
 ```
 
 3. `update` - asynchronously updates `value` in closure. 
@@ -81,128 +182,25 @@ func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
 func update(closure: ((inout CurrentValue) -> Void)?, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)
 ```
 
+```Swift
+let queueSafeValue = QueueSafeValue<Int>(value: 1)
+// Without completion block
+queueSafeValue.async(performIn: .background).lowestPriority.update(closure: { currentValue in
+    currentValue = 10
+})
+
+// With completion block
+queueSafeValue.async(performIn: .background).lowestPriority.update(closure: { currentValue in
+    currentValue = 11
+}, completion: { result in
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+})
+```
 ___
 
-## Examples
-
-```Swift
-class Examples {
-    func run() {
-        runSyncActions()
-        runAsyncActions()
-    }
-}
-
-extension Examples {
-    private func log<Value>(title: String, result: (Result<Value, QueueSafeValueError>)) {
-        var description = "\"\(title)\" func result: "
-        switch result {
-        case .failure(let error): description += "\(error)"
-        case .success(let value): description += "\(value)"
-        }
-        print(description + " or \(result)")
-    }
-}
-
-/// MARK: Sync actions
-
-extension Examples {
-    func runSyncActions() {
-        syncGetActionSample()
-        syncGetInClosureActionSample()
-        syncSetActionSample()
-        syncUpdateActionSample()
-        syncTransformActionSample()
-    }
-    
-    private func syncGetActionSample() {
-        let queueSafeValue = QueueSafeValue(value: true)
-        DispatchQueue.global(qos: .utility).async {
-            let result = queueSafeValue.wait.lowPriority.get()
-            self.log(title: "Sync lowPriority get", result: result)
-        }
-    }
-    
-    private func syncGetInClosureActionSample() {
-        let queueSafeValue = QueueSafeValue(value: 6)
-        DispatchQueue.global(qos: .unspecified).async {
-            queueSafeValue.wait.lowPriority.get { result in
-                self.log(title: "Sync lowPriority get in closure", result: result)
-            }
-        }
-    }
-    
-    private func syncSetActionSample() {
-        let queueSafeValue = QueueSafeValue<Int>(value: 1)
-        DispatchQueue.global(qos: .userInitiated).async {
-            let result = queueSafeValue.wait.lowPriority.set(newValue: 2)
-            self.log(title: "Sync lowPriority set", result: result)
-        }
-    }
-    
-    private func syncUpdateActionSample() {
-        let queueSafeValue = QueueSafeValue(value: 1)
-        DispatchQueue.main.async {
-            let result = queueSafeValue.wait.lowPriority.update { currentValue in
-                currentValue = 3
-            }
-            self.log(title: "Sync lowPriority update", result: result)
-        }
-    }
-    
-    private func syncTransformActionSample() {
-        let queueSafeValue = QueueSafeValue(value: 5)
-        DispatchQueue.global(qos: .background).async {
-            let result = queueSafeValue.wait.lowPriority.transform { "\($0)" }
-            self.log(title: "Sync lowPriority transform", result: result)
-        }
-    }
-}
-
-/// MARK: Async actions
-
-extension Examples {
-    func runAsyncActions() {
-        asyncGetActionSample()
-        asyncSetActionSample()
-        asyncUpdateActionSample()
-    }
-
-    private func asyncGetActionSample() {
-        let queueSafeValue = QueueSafeValue(value: true)
-        queueSafeValue.async(performIn: .global(qos: .utility)).lowPriority.get { result in
-            self.log(title: "Async lowPriority get", result: result)
-        }
-    }
-    
-    private func asyncSetActionSample() {
-        let queueSafeValue = QueueSafeValue(value: 7)
-        
-        // Without completion block
-        queueSafeValue.async(performIn: .main).lowPriority.set(newValue: 8)
-        
-        // With completion block
-        queueSafeValue.async(performIn: .main).lowPriority.set(newValue: 9) { result in
-            self.log(title: "Async lowPriority set", result: result)
-        }
-    }
-    
-    private func asyncUpdateActionSample() {
-        let queueSafeValue = QueueSafeValue<Int>(value: 1)
-        // Without completion block
-        queueSafeValue.async(performIn: .background).lowPriority.update(closure: { currentValue in
-            currentValue = 10
-        })
-        
-        // With completion block
-        queueSafeValue.async(performIn: .background).lowPriority.update(closure: { currentValue in
-            currentValue = 11
-        }, completion: { result in
-            self.log(title: "Async lowPriority update", result: result)
-        })
-    }
-}
-```
     
 ## Requirements
 

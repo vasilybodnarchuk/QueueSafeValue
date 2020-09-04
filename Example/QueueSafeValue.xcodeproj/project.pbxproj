@@ -16,6 +16,7 @@
 		883AC02491EF659EEE772C2B /* Pods_QueueSafeValue_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 902AAF1CF7B013550256F17D /* Pods_QueueSafeValue_Tests.framework */; };
 		B81AC8F524F53E1F00A5CCC3 /* LowPriorityAsyncedCommandsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81AC8F424F53E1F00A5CCC3 /* LowPriorityAsyncedCommandsSpec.swift */; };
 		B81AC8F724F5431700A5CCC3 /* SpecableActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81AC8F624F5431700A5CCC3 /* SpecableActions.swift */; };
+		B84E4A432502BCA0004BB2FC /* ReadMeExamples.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84E4A422502BCA0004BB2FC /* ReadMeExamples.swift */; };
 		B85C15A224FE764B00F68032 /* SpecableSyncedCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85C15A124FE764B00F68032 /* SpecableSyncedCommands.swift */; };
 		B85C15A424FE789600F68032 /* SpecableAsyncedCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85C15A324FE789600F68032 /* SpecableAsyncedCommands.swift */; };
 		B8AD7D3E2500680800505A5B /* PriorityQueueSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8AD7D3D2500680800505A5B /* PriorityQueueSpec.swift */; };
@@ -54,6 +55,7 @@
 		A9DE8AC7B55B14F9FDDF26BA /* QueueSafeValue.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = QueueSafeValue.podspec; path = ../QueueSafeValue.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		B81AC8F424F53E1F00A5CCC3 /* LowPriorityAsyncedCommandsSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LowPriorityAsyncedCommandsSpec.swift; sourceTree = "<group>"; };
 		B81AC8F624F5431700A5CCC3 /* SpecableActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecableActions.swift; sourceTree = "<group>"; };
+		B84E4A422502BCA0004BB2FC /* ReadMeExamples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadMeExamples.swift; sourceTree = "<group>"; };
 		B85C15A124FE764B00F68032 /* SpecableSyncedCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecableSyncedCommands.swift; sourceTree = "<group>"; };
 		B85C15A324FE789600F68032 /* SpecableAsyncedCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecableAsyncedCommands.swift; sourceTree = "<group>"; };
 		B8AD7D3D2500680800505A5B /* PriorityQueueSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriorityQueueSpec.swift; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 		607FACD21AFB9204008FA782 /* Example for QueueSafeValue */ = {
 			isa = PBXGroup;
 			children = (
+				B84E4A412502BC82004BB2FC /* Examples */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
@@ -167,6 +170,14 @@
 				902AAF1CF7B013550256F17D /* Pods_QueueSafeValue_Tests.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B84E4A412502BC82004BB2FC /* Examples */ = {
+			isa = PBXGroup;
+			children = (
+				B84E4A422502BCA0004BB2FC /* ReadMeExamples.swift */,
+			);
+			name = Examples;
 			sourceTree = "<group>";
 		};
 		B85C159F24FE763600F68032 /* SyncActions */ = {
@@ -449,6 +460,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
+				B84E4A432502BCA0004BB2FC /* ReadMeExamples.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

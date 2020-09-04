@@ -17,7 +17,7 @@ public class ValueContainer<Value> {
     /// The original `value` ( instance) for thread-safe (queue-safe)  read / write / update.
     private var value: Value
 
-    /// A queue that stores `closures` and executes them sequentially in correct order.
+    /// A queue that stores `closures` (`commands`) and executes them sequentially in correct order.
     private var commandQueue: CommandQueue
 
     /**
@@ -36,8 +36,8 @@ extension ValueContainer {
     /**
      Places `closure`to the `command Queue` and perform it in correct order.
      - Parameters:
-        - priority: Describes the order in which `closures` will be performed. `closure` with  `highest priority` will be execurted first.
-        - closure: `closure` where access to the `value` granted.
+        - priority: Describes the order in which `closures`  (`commands`) will be performed. `closure` (`command`) with  `highest priority` will be execurted first.
+        - closure: `closure` (`command`)  where access to the `value` granted.
      */
     public func perform(priority: CommandQueue.Priority, closure: @escaping Closure) {
         commandQueue.append(priority: priority) { closure(&self.value) }

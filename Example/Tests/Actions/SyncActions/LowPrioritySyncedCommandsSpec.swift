@@ -12,7 +12,7 @@ import QueueSafeValue
 class LowPrioritySyncedCommandsSpec: QuickSpec, SpecableSyncedCommands {
     var testedObjectName: String { "Low Priority Synced Commands" }
     func commands(from queueSafeValue: QueueSafeValue<Value>) -> Commands {
-        queueSafeValue.wait.lowPriority
+        queueSafeValue.wait.lowestPriority
     }
     
     override func spec() { runTests() }

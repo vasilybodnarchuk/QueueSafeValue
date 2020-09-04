@@ -7,12 +7,12 @@
 
 import Foundation
 
-/// A queue that stacks closures and executes them sequentially.
+/// A queue that stores commands and executes them sequentially with the correct priority.
 public class CommandQueue {
 
     /**
-     Describes the order in which `closures` will be performed.
-     `closure` with  `highest priority` will be execurted first.
+     Describes the order in which `Commands` will be performed.
+     `command` with  `highest priority` will be execurted first.
      */
     public enum Priority: Int { case highest, lowest }
 
@@ -25,12 +25,12 @@ public class CommandQueue {
     /// A semaphore that provides only sequential (serial) access to a `priorityQueue`.
     private var priorityQueueAccessSemaphore: DispatchSemaphore!
 
-    /// Container in which all closures are stored.
+    /// Container in which all commands are stored.
     private var priorityQueue: PriorityQueue<Command>!
 
     /**
      Initialize object with properties.
-     - Returns: Abstraction of a queue that stacks closures and executes them sequentially .
+     - Returns: A queue that stores commands and executes them sequentially with the correct priority.
      */
     public init () {
         executionCommandSemaphore = DispatchSemaphore(value: 1)
@@ -46,8 +46,8 @@ extension CommandQueue {
     /**
      Insert `closure` in `priorityQueue`.
      - Parameters:
-        - priority: Defines where `closure` will be placed in` priorityQueue`. `priority` describes when `closure` will be executed (in what order).
-        - closure: code that we want to perform.
+        - priority: Defines where `closure`  (`command`) will be placed in` priorityQueue`.  `priority` describes when `command` will be executed (in what order).
+        - closure: `closure` (`command`) to be performed.
      */
     public func append(priority: Priority, closure: @escaping Closure) {
         priorityQueueAccessSemaphore.wait()
@@ -75,7 +75,7 @@ extension CommandQueue {
         priorityQueueAccessSemaphore.signal()
     }
 
-    /// Performs closures `sequentially`.` Closure` with highest priority will be performed first.
+    /// Performs `closures`  (`commands`) sequentially.` Closure` (`command`) with highest priority will be performed first.
     public func perform() {
         var command: Command?
         priorityQueueAccessSemaphore.wait()
