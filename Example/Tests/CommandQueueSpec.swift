@@ -11,33 +11,64 @@ import Nimble
 import QueueSafeValue
 
 class CommandQueueSpec: QuickSpec {
-    private let elementsCount = 10_000
+    private let elementsCount = 10
     override func spec() {
         describe("Command Queue") {
-
+            test()
         }
     }
 }
 
 
 extension CommandQueueSpec {
+    
+    private func synchronouslyInsertAllClosuresAndExecuteThemAfter(expectedArray: [Int],
+                                                                   priority: CommandQueue.Priority) {
+        self.testInLoop(expectedArray: expectedArray,
+                        syncedIteration: { commandQueue, command in
+            commandQueue.append(priority: priority) { command() }
+        }, completion: { commandQueue in
+            commandQueue.perform()
+        })
+    }
+    
+    private func synchronouslyInsertClosureAndExecuteImmediately(expectedArray: [Int],
+                                                                 priority: CommandQueue.Priority) {
+        self.testInLoop(expectedArray: expectedArray,
+                        syncedIteration: { commandQueue, command in
+            commandQueue.append(priority: priority) { command() }
+            commandQueue.perform()
+        })
+    }
+    
     private func test() {
-            context("synchronously adds closures to the command queue") {
-//                it("executes closures afterwards in the correct order") {
-//                    self.testInLoop(syncedIteration: { commandQueue, command in
-//                        commandQueue.append(priority: .highest) { command() }
-//                    }, completion: { commandQueue in
-//                        commandQueue.perform()
-//                    })
-//                }
+            context("synchronously") {
+                let increasingArray = [Int](0..<self.elementsCount)
+                context("insert all closures and execute them after") {
+                    it("closures with lowest priority") {
+                        self.synchronouslyInsertAllClosuresAndExecuteThemAfter(expectedArray: increasingArray,
+                                                                              priority: .lowest)
+                    }
+
+                    it("closures with highest priority") {
+                        self.synchronouslyInsertAllClosuresAndExecuteThemAfter(expectedArray: (0..<self.elementsCount).reversed(),
+                                                                              priority: .highest)
+                    }
+
+                }
                 
-                
-//                it("immediately executes the added closure in the correct order") {
-//                    self.testInLoop(syncedIteration: { commandQueue, command in
-//                        commandQueue.append { command() }
-//                        commandQueue.perform()
-//                    })
-//                }
+                context("insert closures first and then execute them") {
+                    it("closures with lowest priority") {
+                        self.synchronouslyInsertClosureAndExecuteImmediately(expectedArray: increasingArray,
+                                                                              priority: .lowest)
+                    }
+
+                    it("closures with highest priority") {
+                        self.synchronouslyInsertClosureAndExecuteImmediately(expectedArray: increasingArray,
+                                                                             priority: .highest)
+                    }
+
+                }
             }
             
 //            context("performs closures immediately") {
@@ -104,17 +135,16 @@ extension CommandQueueSpec {
         }
     }
     
-    private func testInLoop(syncedIteration: @escaping (CommandQueue, _ command: @escaping () -> Void) -> Void,
+    private func testInLoop(expectedArray: [Int],
+                            syncedIteration: @escaping (CommandQueue, _ command: @escaping () -> Void) -> Void,
                             completion: ((CommandQueue) -> Void)? = nil) {
         let commandQueue = CommandQueue()
-        var array1 = [Int]()
-        var array2 = [Int]()
+        var array = [Int]()
         for i in 0..<self.elementsCount {
-            array1.append(i)
-            syncedIteration(commandQueue) { array2.append(i) }
+            syncedIteration(commandQueue) { array.append(i) }
         }
         completion?(commandQueue)
-        expect(array1) == array2
-        expect(array1.count) == self.elementsCount
+        expect(array) == expectedArray
+        expect(array.count) == self.elementsCount
     }
 }

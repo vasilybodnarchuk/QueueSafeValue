@@ -35,7 +35,7 @@ public class CommandQueue {
     public init () {
         executionCommandSemaphore = DispatchSemaphore(value: 1)
         priorityQueueAccessSemaphore = DispatchSemaphore(value: 1)
-        priorityQueue = PriorityQueue(priority: .parentsLessThanOrEqualChildren)
+        priorityQueue = PriorityQueue(priority: .parentsGreaterThanOrEqualChildren)
     }
 }
 
@@ -56,9 +56,11 @@ extension CommandQueue {
         case .highest:
             priorityValue = (priorityQueue.peek()?.prioriy ?? 0) + 1
         case .lowest:
-            priorityValue = (priorityQueue.peek()?.prioriy ?? 0) + 1
+            priorityValue = (priorityQueue.elements.last?.prioriy ?? 0) - 1
         }
         priorityQueue.insert(Command(prioriy: priorityValue, closure: closure))
+        //print(priorityQueue.elements)
+
         priorityQueueAccessSemaphore.signal()
     }
 
@@ -66,7 +68,7 @@ extension CommandQueue {
     public func perform() {
         var command: Command?
         priorityQueueAccessSemaphore.wait()
-        command = priorityQueue.removeElementWithLowestPriority()
+        command = priorityQueue.removeElementWithHighestPriority()
         priorityQueueAccessSemaphore.signal()
         guard let closure = command?.closure else { return }
 

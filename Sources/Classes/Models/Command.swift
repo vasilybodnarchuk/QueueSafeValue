@@ -41,3 +41,8 @@ extension Command: Comparable {
     public static func < (lhs: Command, rhs: Command) -> Bool { lhs.prioriy < rhs.prioriy }
     public static func == (lhs: Command, rhs: Command) -> Bool { lhs.prioriy == rhs.prioriy }
 }
+
+// MARK: CustomStringConvertible
+extension Command: CustomStringConvertible {
+    public var description: String { "Command(priority: \(prioriy))" }
+}

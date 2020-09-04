@@ -59,7 +59,6 @@ extension PriorityQueueSpec {
                 (0..<expectedArray.count).forEach { _ in
                     priorityQueueElements.append(priorityQueue1.removeElementWithHighestPriority()!)
                 }
-                print(priorityQueueElements)
                 expect(expectedArray) == priorityQueueElements
                 expect(priorityQueue1.count) == 0
                 expect(priorityQueue1.isEmpty) == true
