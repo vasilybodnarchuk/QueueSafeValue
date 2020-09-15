@@ -179,7 +179,7 @@ queueSafeValue.async(performIn: .global(qos: .utility)).lowestPriority.get { res
 > asynchronously sets `value`
 
 ```Swift
-`func set(newValue: Value, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)
+func set(newValue: Value, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)
 ```
 
 > Code sample

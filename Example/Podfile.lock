@@ -1,8 +1,8 @@
 PODS:
   - Nimble (7.3.4)
-  - QueueSafeValue (0.4)
+  - QueueSafeValue (0.5)
   - Quick (1.2.0)
-  - SwiftLint (0.40.0)
+  - SwiftLint (0.40.2)
 
 DEPENDENCIES:
   - Nimble (~> 7.0)
@@ -22,9 +22,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
-  QueueSafeValue: 75d8c5cac7ab59f74e30580c17c13f635e954ae0
+  QueueSafeValue: 9671adf6bacfdad9a022a7d1a01ecdf785fd8e68
   Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
-  SwiftLint: 4154893c73a4c52d6240195507eb7a3e3c64087e
+  SwiftLint: 1216c910d27c2633ade33b4f071bb6b930982e62
 
 PODFILE CHECKSUM: c5e07eb3ddcf81347d19e70b97b860f67cc9ca92
 
