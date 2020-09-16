@@ -33,15 +33,22 @@ public class ValueContainer<Value> {
 
 // MARK: Performing closures in `stack`
 extension ValueContainer {
+
+    public enum PerformPriority {
+        case commandQueue(priority: CommandQueue.Priority)
+    }
     /**
      Places `closure`to the `command Queue` and perform it in correct order.
      - Parameters:
         - priority: Describes the order in which `closures`  (`commands`) will be performed. `closure` (`command`) with  `highest priority` will be execurted first.
         - closure: `closure` (`command`)  where access to the `value` granted.
      */
-    public func perform(priority: CommandQueue.Priority, closure: @escaping Closure) {
-        commandQueue.append(priority: priority) { closure(&self.value) }
-        commandQueue.perform()
+    public func perform(priority: PerformPriority, closure: @escaping Closure) {
+        switch priority {
+        case .commandQueue(let priority):
+            commandQueue.append(priority: priority) { closure(&self.value) }
+            commandQueue.perform()
+        }
     }
 }
 

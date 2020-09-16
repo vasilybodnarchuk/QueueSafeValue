@@ -13,6 +13,6 @@ public class LowestPrioritySyncedCommands<Value>: SyncedCommandsWithPriority<Val
 
     /// Override func. Read the documentation in the parent class
     override func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) {
-        valueContainer.perform(priority: .lowest, closure: command)
+        valueContainer.perform(priority: .commandQueue(priority: .lowest), closure: command)
     }
 }

@@ -13,6 +13,6 @@ public class HighestPriorityAsyncedCommands<Value>: AsyncedCommandsWithPriority<
 
     /// Override func. Read the documentation in the parent class
     override func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) {
-        valueContainer.perform(priority: .highest, closure: command)
+        valueContainer.perform(priority: .commandQueue(priority: .highest), closure: command)
     }
 }

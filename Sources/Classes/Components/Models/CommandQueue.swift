@@ -75,17 +75,26 @@ extension CommandQueue {
         priorityQueueAccessSemaphore.signal()
     }
 
-    /// Performs `closures`  (`commands`) sequentially.` Closure` (`command`) with highest priority will be performed first.
+    /// Sequentially executes all the `closures` (`commands`) placed on the `command stack`.  `Commands` with the highest priority will be executed first.
+
     public func perform() {
         var command: Command?
         priorityQueueAccessSemaphore.wait()
         command = priorityQueue.removeElementWithHighestPriority()
         priorityQueueAccessSemaphore.signal()
-        guard let closure = command?.closure else { return }
 
+        guard let closure = command?.closure else { return }
+        performNow(closure: closure)
+        perform()
+    }
+
+    /**
+     Thrrad-safe (queue-safe)`closures`  (`commands`) execution.
+     - Parameter closure:`closure` (`command`) to be executed.
+     */
+    public func performNow(closure: @escaping Closure) {
         executionCommandSemaphore.wait()
         closure()
         executionCommandSemaphore.signal()
-        perform()
     }
 }
