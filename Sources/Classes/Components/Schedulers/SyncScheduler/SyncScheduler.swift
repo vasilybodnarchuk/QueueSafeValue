@@ -9,8 +9,9 @@
 import Foundation
 
 /// Describes the order in which sync access to the `value` enclosed in the `ValueContainer `object will be granted.
-public class SyncScheduler<Value>: Scheduler<Value> {
+public class SyncScheduler<Value>: Scheduler<Value> { }
 
+extension SyncScheduler: SyncSchedulerInterface {
     /**
      Schedules `command` execution in a `command queue` that is integrated into the `ValueContainer` object.
      Each `command` will be placed in a `command queue` and executed in order of priority.

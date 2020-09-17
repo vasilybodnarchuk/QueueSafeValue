@@ -3,6 +3,7 @@
 //  QueueSafeValue
 //
 //  Created by Vasily Bodnarchuk on 8/25/20.
+//  Copyright (c) 2020 Vasily Bodnarchuk. All rights reserved.
 //
 
 import Foundation

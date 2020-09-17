@@ -8,25 +8,19 @@
 
 import Foundation
 
-/// Main class that provides thread-safe (queue-safe) access to the `value`.
-public class QueueSafeValue<Value> {
-
-    /// Retains the original instance of the `value` and provides thread-safe (queue-safe) access to it.
-    let valueContainer: ValueContainer<Value>
+/// The main class providing synchronous and asynchronous queue-safe (thread-safe) access to a `value`.
+public class QueueSafeValue<Value>: QueueSafeValueConcrete<Value> {
 
     /**
-     Initialize object with properties.
-     - Parameter value: Instance of the `value` that we are going to read/write from one or several DispatchQueues.
-     - Returns: Container that provides limited and thread safe access to the `value`.
+     Returns the scheduler in which the priority of the `value access command` will be selected.
+     Each function that the scheduler will execute will block (synchronize) the queue (thread) in which that function is running until it finishes.
      */
-    required public init (value: Value) { valueContainer = ValueContainer(value: value) }
-
-    /// Blocks (synchronizes) the thread this function is running on and provides thread-safe (queue-safe) access to `value`
     public var wait: SyncScheduler<Value> { .init(valueContainer: valueContainer) }
 
     /**
-     Execute this function in parallel (asynchronously) on a queue that executes it and provides thread-safe (queue-safe) access to `value`
-     - Parameter queue: a queue in which access to the `value` will be granted.
+     Returns the scheduler in which the priority of the `value access command` will be selected.
+     Each function that the scheduler will execute will be executed in parallel (asynchronously) a queue (thread) that called it.
+     - Parameter queue: a queue in which access to the `value` will be granted (where a `command` will be executed).
      - Returns: A scheduler in which the execution priority will be selected.
      */
     public func async(performIn queue: DispatchQueue) -> AsyncScheduler<Value> {
@@ -34,13 +28,12 @@ public class QueueSafeValue<Value> {
     }
 
     /**
-     Execute this function in parallel (asynchronously) on a queue that executes it and provides thread-safe (queue-safe) access to `value`
-     - Parameter qos: A `quality of service` of a  queue in which access to the `value` will be granted.
+     Returns the scheduler in which the priority of the `value access command` will be selected.
+     Each function that the scheduler will execute will be executed in parallel (asynchronously) a queue (thread) that called it.
+     - Parameter qos: A `quality of service` of a  queue in which access to the `value` will be granted (where a `command` will be executed).
      - Returns: A scheduler in which the execution priority will be selected.
      */
     public func async(performIn qos: DispatchQoS.QoSClass) -> AsyncScheduler<Value> {
         async(performIn: DispatchQueue.global(qos: qos))
     }
 }
-
-extension QueueSafeValue: QueueSafeValueInterface { }

@@ -8,21 +8,24 @@
 
 import Foundation
 
-///// Main class that provides thread-safe (queue-safe) sync access to the `value`.
-public class QueueSafeSyncedValue<Value>: SyncScheduler<Value> {
-
-    /// Retains the original instance of the `value` and provides thread-safe (queue-safe) access to it.
-    let valueContainer: ValueContainer<Value>
+/// A class that provides synchronous queue-safe (thread-safe ) access to a value.
+public class QueueSafeSyncedValue<Value>:  QueueSafeValueConcrete<Value>, SyncSchedulerInterface {
+    
+    var valueContainerReference: ValueContainer<Value>? { valueContainer }
 
     /**
-     Initialize object with properties.
-     - Parameter value: Instance of the `value` that we are going to read/write from one or several DispatchQueues.
-     - Returns: Container that provides limited and thread safe sync access to the `value`.
+     Schedules `command` execution in a `command queue` that is integrated into the `ValueContainer` object.
+     Each `command` will be placed in a `command queue` and executed in order of priority.
+     The `Lowest priority command`  will be executed last.
      */
-    required public init(value: Value) {
-        valueContainer = ValueContainer(value: value)
-        super.init(valueContainer: valueContainer)
-    }
+    public var lowestPriority: LowestPrioritySyncedCommands<Value> { .init(valueContainer: valueContainerReference) }
+
+    /**
+     Schedules `command` execution in a `command queue` that is integrated into the `ValueContainer` object.
+     Each `command` will be placed in a `command queue` and executed in order of priority.
+     The `Highest priority command`  will be executed first.
+     */
+    public var highestPriority: HighestPrioritySyncedCommands<Value> { .init(valueContainer: valueContainerReference) }
 }
 
-extension QueueSafeSyncedValue: QueueSafeValueInterface { }
+//extension QueueSafeSyncedValue: QueueSafeValueInterface { }
