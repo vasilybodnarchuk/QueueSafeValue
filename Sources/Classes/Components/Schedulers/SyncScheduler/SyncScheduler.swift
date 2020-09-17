@@ -8,9 +8,10 @@
 
 import Foundation
 
-/// Describes the order in which sync access to the `value` enclosed in the `ValueContainer `object will be granted.
-public class SyncScheduler<Value>: Scheduler<Value> { }
+/// Describes the order in which synchronous access to the enclosed `value` will be granted
+public class SyncScheduler<Value>: SchedulerConcrete<Value> { }
 
+// MARK: SyncSchedulerInterface
 extension SyncScheduler: SyncSchedulerInterface {
     /**
      Schedules `command` execution in a `command queue` that is integrated into the `ValueContainer` object.

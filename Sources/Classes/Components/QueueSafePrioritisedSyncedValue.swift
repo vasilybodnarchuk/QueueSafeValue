@@ -1,5 +1,5 @@
 //
-//  QueueSafePrioritisedSyncedValue.swift
+//  QueueSafeSyncedPrioritisedValue.swift
 //  QueueSafeValue
 //
 //  Created by Vasily Bodnarchuk on 9/17/20.

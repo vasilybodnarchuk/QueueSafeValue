@@ -8,7 +8,9 @@
 
 import Foundation
 
-protocol SchedulerInterface {
-    associatedtype Value
+/// Interface of `scheduler` based type
+protocol SchedulerInterface: InterfaceWithEnclosedValue {
+
+    /// Reference to `value container` that retains the original instance of the `value` and provides queue-safe (thread-safe) access to it.
     var valueContainerReference: ValueContainer<Value>? { get }
 }

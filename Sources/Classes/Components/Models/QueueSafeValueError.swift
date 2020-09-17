@@ -8,9 +8,11 @@
 
 import Foundation
 
+/// Defines all possible errors
 public enum QueueSafeValueError: Error {
     case valueContainerDeinited
     case unexpected(error: Error)
 }
 
+// MARK: Equatable
 extension QueueSafeValueError: Equatable {}

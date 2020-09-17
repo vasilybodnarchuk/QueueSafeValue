@@ -3,24 +3,25 @@
 //  QueueSafeValue
 //
 //  Created by Vasily Bodnarchuk on 9/17/20.
+//  Copyright (c) 2020 Vasily Bodnarchuk. All rights reserved.
 //
 
 import Foundation
 
-public protocol SyncSchedulerInterface {
-    associatedtype Value
+/// Interface of ` scheduler` that provides sync queue-safe (thread-safe) access to the enclosed `value`
+public protocol SyncSchedulerInterface: InterfaceWithEnclosedValue {
 
     /**
-     Schedules `command` execution in a `command queue` that is integrated into the `ValueContainer` object.
+     Schedules `command` execution in a `command queue` that is integrated into the `value container` object.
      Each `command` will be placed in a `command queue` and executed in order of priority.
-     The `Lowest priority command`  will be executed last.
+     The `lowest priority command`  will be executed last.
      */
     var lowestPriority: LowestPrioritySyncedCommands<Value> { get }
 
     /**
-     Schedules `command` execution in a `command queue` that is integrated into the `ValueContainer` object.
+     Schedules `command` execution in a `command queue` that is integrated into the `value container` object.
      Each `command` will be placed in a `command queue` and executed in order of priority.
-     The `Highest priority command`  will be executed first.
+     The `highest priority command`  will be executed first.
      */
     var highestPriority: HighestPrioritySyncedCommands<Value> { get }
 }

@@ -8,10 +8,10 @@
 
 import Foundation
 
-/// Defines the available async `commands` that can manipulate a `value` enclosed in a `ValueContainer` and executes them in`highest priority` order.
+/// Defines the available async `commands` that can manipulate an enclosed `value` and executes them in`highest priority` order.
 public class HighestPriorityAsyncedCommands<Value>: AsyncedCommandsWithPriority<Value> {
 
-    /// Override func. Read the documentation in the parent class
+    /// Overriden. Read the documentation in the parent class
     override func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) {
         valueContainer.perform(priority: .commandQueue(priority: .highest), closure: command)
     }

@@ -9,10 +9,7 @@
 import Foundation
 
 /// Interface of ` QueueSafeValue` based type
-protocol QueueSafeValueInterface {
-
-    /// The type of `value` that is stored in `valueContainer` and has thread-safe (queue-safe) access to it.
-    associatedtype Value
+protocol QueueSafeValueInterface: InterfaceWithEnclosedValue {
 
     /// Retains the original instance of the `value` and provides thread-safe (queue-safe) access to it.
     var valueContainer: ValueContainer<Value> { get }
