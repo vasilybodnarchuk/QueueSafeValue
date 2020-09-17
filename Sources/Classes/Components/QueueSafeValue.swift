@@ -12,14 +12,14 @@ import Foundation
 public class QueueSafeValue<Value> {
 
     /// Retains the original instance of the `value` and provides thread-safe (queue-safe) access to it.
-    private let valueContainer: ValueContainer<Value>
+    let valueContainer: ValueContainer<Value>
 
     /**
      Initialize object with properties.
      - Parameter value: Instance of the `value` that we are going to read/write from one or several DispatchQueues.
      - Returns: Container that provides limited and thread safe access to the `value`.
      */
-    public init (value: Value) { valueContainer = ValueContainer(value: value) }
+    required public init (value: Value) { valueContainer = ValueContainer(value: value) }
 
     /// Blocks (synchronizes) the thread this function is running on and provides thread-safe (queue-safe) access to `value`
     public var wait: SyncScheduler<Value> { .init(valueContainer: valueContainer) }
@@ -43,11 +43,4 @@ public class QueueSafeValue<Value> {
     }
 }
 
-extension QueueSafeValue where Value: AnyObject {
-    /**
-     Get retain count of wrapped value
-     - Note: only for objects
-     - Returns:retain count of wrapped value
-     */
-    public func countObjectReferences() -> CFIndex { valueContainer.countObjectReferences() }
-}
+extension QueueSafeValue: QueueSafeValueInterface { }

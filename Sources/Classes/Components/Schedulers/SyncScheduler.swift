@@ -16,12 +16,12 @@ public class SyncScheduler<Value>: Scheduler<Value> {
      Each `command` will be placed in a `command queue` and executed in order of priority.
      The `Lowest priority command`  will be executed last.
      */
-    public var lowestPriority: LowestPrioritySyncedCommands<Value> { .init(valueContainer: valueContainer) }
+    public var lowestPriority: LowestPrioritySyncedCommands<Value> { .init(valueContainer: valueContainerReference) }
 
     /**
      Schedules `command` execution in a `command queue` that is integrated into the `ValueContainer` object.
      Each `command` will be placed in a `command queue` and executed in order of priority.
      The `Highest priority command`  will be executed first.
      */
-    public var highestPriority: HighestPrioritySyncedCommands<Value> { .init(valueContainer: valueContainer) }
+    public var highestPriority: HighestPrioritySyncedCommands<Value> { .init(valueContainer: valueContainerReference) }
 }

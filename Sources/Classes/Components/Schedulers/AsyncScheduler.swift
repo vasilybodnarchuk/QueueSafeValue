@@ -32,7 +32,7 @@ public class AsyncScheduler<Value>: Scheduler<Value> {
      The `Lowest priority command`  will be executed last.
      */
     public var lowestPriority: LowestPriorityAsyncedCommands<Value> {
-        .init(valueContainer: valueContainer, grantAccessIn: queue)
+        .init(valueContainer: valueContainerReference, grantAccessIn: queue)
     }
 
     /**
@@ -41,6 +41,6 @@ public class AsyncScheduler<Value>: Scheduler<Value> {
      The `Highest priority command`  will be executed first.
      */
     public var highestPriority: HighestPriorityAsyncedCommands<Value> {
-        .init(valueContainer: valueContainer, grantAccessIn: queue)
+        .init(valueContainer: valueContainerReference, grantAccessIn: queue)
     }
 }
