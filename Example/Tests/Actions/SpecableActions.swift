@@ -13,9 +13,14 @@ import QueueSafeValue
 protocol SpecableCommands: class {
     associatedtype Value: AnyObject
     associatedtype Commands: AnyObject
-    func createInstance(value: Int) -> Value
-    func commands(from queueSafeValue: QueueSafeValue<Value>) -> Commands
+    associatedtype QueueSafeValueType
+
     var testedObjectName: String { get }
+
+    func createQueueSafeValue(value: Value) -> QueueSafeValueType
+    func createInstance(value: Int) -> Value
+
+    func commands(from queueSafeValue: QueueSafeValueType) -> Commands
 }
 
 extension SpecableCommands {

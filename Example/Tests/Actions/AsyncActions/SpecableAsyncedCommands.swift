@@ -11,8 +11,8 @@ import Nimble
 import QueueSafeValue
 
 protocol SpecableAsyncedCommands: SpecableCommands where Commands == AsyncedCommandsWithPriority<Value>,
-                                                         Value == SimpleClass  {
-     func commands(from queueSafeValue: QueueSafeValue<Value>, queue: DispatchQueue) -> Commands
+                                                         Value == SimpleClass {
+     func commands(from queueSafeValue: QueueSafeValueType, queue: DispatchQueue) -> Commands
 }
 
 extension SpecableAsyncedCommands {
@@ -23,7 +23,7 @@ extension SpecableAsyncedCommands {
         }
     }
     
-    func commands(from queueSafeValue: QueueSafeValue<Value>) -> Commands {
+    func commands(from queueSafeValue: QueueSafeValueType) -> Commands {
         commands(from: queueSafeValue, queue: .global(qos: .default))
     }
 }
@@ -111,7 +111,7 @@ extension SpecableAsyncedCommands {
                                    after: @escaping (Commands, DispatchGroup) -> Void) {
          let object = createDefultInstance()
          expect(2) == CFGetRetainCount(object)
-         var queueSafeValue: QueueSafeValue<Value>! = .init(value: object)
+         var queueSafeValue: QueueSafeValueType! = createQueueSafeValue(value: object)
          expect(3) == CFGetRetainCount(object)
          let lowPriorityCommands = commands(from: queueSafeValue)
 
@@ -224,7 +224,7 @@ extension SpecableAsyncedCommands {
         it("check that closure of \(funcName) function is being executed on the correct queue") {
             let queues = Queues.getUniqueRandomQueues(count: 2)
             expect(queues[0]) != queues[1]
-            var queueSafeValue: QueueSafeValue! = QueueSafeValue(value: self.createDefultInstance())
+            var queueSafeValue: QueueSafeValueType! = self.createQueueSafeValue(value: self.createDefultInstance())
             let commands = self.commands(from: queueSafeValue, queue: queues[1])
             if deinitQueueSafeValueBeforeRunClosure { queueSafeValue = nil }
             waitUntil(timeout: 1) { done in

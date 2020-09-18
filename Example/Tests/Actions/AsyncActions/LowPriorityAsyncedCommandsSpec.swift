@@ -7,14 +7,19 @@
 //
 
 import Quick
-import Nimble
 import QueueSafeValue
 
 class LowPriorityAsyncedCommandsSpec: QuickSpec, SpecableAsyncedCommands {
+
+    typealias Value = SimpleClass
+    typealias Commands = AsyncedCommandsWithPriority<Value>
+    typealias QueueSafeValueType = QueueSafeValue<Value>
+
     var testedObjectName: String { "Low Priority Asynced Commands" }
-    func commands(from queueSafeValue: QueueSafeValue<Value>, queue: DispatchQueue) -> Commands {
+    func commands(from queueSafeValue: QueueSafeValueType, queue: DispatchQueue) -> Commands {
         queueSafeValue.async(performIn: queue).lowestPriority
     }
 
     override func spec() { runTests() }
+    func createQueueSafeValue(value: SimpleClass) -> QueueSafeValueType { QueueSafeValue(value: value) }
 }
