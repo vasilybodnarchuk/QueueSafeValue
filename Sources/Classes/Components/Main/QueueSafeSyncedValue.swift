@@ -27,5 +27,3 @@ public class QueueSafeSyncedValue<Value>: QueueSafeValueConcrete<Value>, SyncSch
      */
     public var highestPriority: HighestPrioritySyncedCommands<Value> { .init(valueContainer: valueContainerReference) }
 }
-
-//extension QueueSafeSyncedValue: QueueSafeValueInterface { }
