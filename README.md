@@ -55,9 +55,20 @@ func get() -> Result<CurrentValue, QueueSafeValueError>
 > Code sample
 
 ```Swift
+// Option 1
 let queueSafeValue = QueueSafeValue(value: true)
 DispatchQueue.global(qos: .utility).async {
     let result = queueSafeValue.wait.lowestPriority.get()
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+}
+
+// Option 2
+let queueSafeSyncedValue = QueueSafeSyncedValue(value: "a")
+DispatchQueue.global(qos: .utility).async {
+    let result = queueSafeSyncedValue.lowestPriority.get()
     switch result {
     case .failure(let error): print(error)
     case .success(let value): print(value)
@@ -76,9 +87,21 @@ func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
 > Code sample
 
 ```Swift
+// Option 1
 let queueSafeValue = QueueSafeValue(value: 6)
 DispatchQueue.global(qos: .unspecified).async {
     queueSafeValue.wait.lowestPriority.get { result in
+        switch result {
+        case .failure(let error): print(error)
+        case .success(let value): print(value)
+        }
+    }
+}
+
+// Option 2
+let queueSafeSyncedValue = QueueSafeSyncedValue(value: [1,2,3])
+DispatchQueue.global(qos: .utility).async {
+    queueSafeSyncedValue.lowestPriority.get { result in
         switch result {
         case .failure(let error): print(error)
         case .success(let value): print(value)
@@ -98,9 +121,20 @@ func set(newValue: Value) -> Result<UpdatedValue, QueueSafeValueError>
 > Code sample
 
 ```Swift
+// Option 1
 let queueSafeValue = QueueSafeValue<Int>(value: 1)
 DispatchQueue.global(qos: .userInitiated).async {
     let result = queueSafeValue.wait.lowestPriority.set(newValue: 2)
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+}
+
+// Option 2
+let queueSafeSyncedValue = QueueSafeSyncedValue(value: "b")
+DispatchQueue.global(qos: .userInitiated).async {
+    let result = queueSafeSyncedValue.lowestPriority.set(newValue: "b1")
     switch result {
     case .failure(let error): print(error)
     case .success(let value): print(value)
@@ -119,10 +153,23 @@ func update(closure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, Qu
 > Code sample
 
 ```Swift
+// Option 1
 let queueSafeValue = QueueSafeValue(value: 1)
-DispatchQueue.global(qos: .userInitiated).async {
+DispatchQueue.main.async {
     let result = queueSafeValue.wait.lowestPriority.update { currentValue in
         currentValue = 3
+    }
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+}
+
+// Option 2
+let queueSafeSyncedValue = QueueSafeSyncedValue(value: ["a":1])
+DispatchQueue.main.async {
+    let result = queueSafeSyncedValue.lowestPriority.update { currentValue in
+        currentValue["b"] = 2
     }
     switch result {
     case .failure(let error): print(error)
@@ -142,12 +189,23 @@ func transform<TransformedValue>(closure: ((CurrentValue) -> TransformedValue)?)
 > Code sample
 
 ```Swift
+// Option 1
 let queueSafeValue = QueueSafeValue(value: 5)
 DispatchQueue.global(qos: .background).async {
     let result = queueSafeValue.wait.lowestPriority.transform { "\($0)" }
     switch result {
     case .failure(let error): print(error)
     case .success(let value): print(value)
+    }
+}
+
+// Option 2
+let queueSafeSyncedValue = QueueSafeSyncedValue(value: "1")
+DispatchQueue.global(qos: .background).async {
+    let result = queueSafeSyncedValue.lowestPriority.transform { Int($0) }
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(String(describing: value))
     }
 }
 ```

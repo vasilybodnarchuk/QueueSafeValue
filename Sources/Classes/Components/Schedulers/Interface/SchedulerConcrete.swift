@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 /// Class for inheritance that provides common `Scheduler` functionality.
 public class SchedulerConcrete<Value>: SchedulerInterface {
 

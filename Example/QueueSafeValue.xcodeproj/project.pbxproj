@@ -64,7 +64,6 @@
 		D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleClass.swift; sourceTree = "<group>"; };
 		D95E4B7724EB7CCC009BC031 /* CommandQueueSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandQueueSpec.swift; sourceTree = "<group>"; };
 		D9790B5D24AB851E00701A2B /* QueueSafeValue.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = QueueSafeValue.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D98FA78524F03BFA0041DCFC /* QueueSafeValue_Example copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "QueueSafeValue_Example copy-Info.plist"; path = "/Users/vasily/Dropbox/developer/iOS/my_pods/QueueSafeValue/QueueSafeValue/Example/QueueSafeValue_Example copy-Info.plist"; sourceTree = "<absolute>"; };
 		D9C1FE8424D7B30200B78489 /* Queues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Queues.swift; sourceTree = "<group>"; };
 		D9CEFC0924F083EA00C76B19 /* LowPrioritySyncedCommandsSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LowPrioritySyncedCommandsSpec.swift; sourceTree = "<group>"; };
 		DA7406C9388422396093FD3F /* Pods-QueueSafeValue_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QueueSafeValue_Example.debug.xcconfig"; path = "Target Support Files/Pods-QueueSafeValue_Example/Pods-QueueSafeValue_Example.debug.xcconfig"; sourceTree = "<group>"; };
@@ -100,7 +99,6 @@
 				607FACD11AFB9204008FA782 /* Products */,
 				C9985C94B5BFB80DB4A74022 /* Pods */,
 				B610F9515E83AA45B1276F0F /* Frameworks */,
-				D98FA78524F03BFA0041DCFC /* QueueSafeValue_Example copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -307,7 +305,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0830;
-				LastUpgradeCheck = 1150;
+				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = CocoaPods;
 				TargetAttributes = {
 					607FACCF1AFB9204008FA782 = {
@@ -546,6 +544,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -571,7 +570,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -602,6 +601,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -620,7 +620,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
