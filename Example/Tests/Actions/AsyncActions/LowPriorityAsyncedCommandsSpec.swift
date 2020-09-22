@@ -14,10 +14,12 @@ class LowPriorityAsyncedCommandsSpec: QuickSpec, SpecableAsyncedCommands {
     typealias Value = SimpleClass
     typealias Commands = AsyncedCommandsWithPriority<Value>
     typealias QueueSafeValueType = QueueSafeValue<Value>
+    let queueSafeValueDispatchQueue = Queues.random
 
     var testedObjectName: String { "Low Priority Asynced Commands" }
-    func commands(from queueSafeValue: QueueSafeValueType, queue: DispatchQueue) -> Commands {
-        queueSafeValue.async(performIn: queue).lowestPriority
+    
+    func commands(from queueSafeValue: QueueSafeValueType) -> Commands {
+        queueSafeValue.async(performIn: queueSafeValueDispatchQueue).lowestPriority
     }
 
     override func spec() { runTests() }

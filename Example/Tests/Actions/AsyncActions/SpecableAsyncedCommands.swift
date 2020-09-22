@@ -12,7 +12,7 @@ import QueueSafeValue
 
 protocol SpecableAsyncedCommands: SpecableCommands where Commands == AsyncedCommandsWithPriority<Value>,
                                                          Value == SimpleClass {
-     func commands(from queueSafeValue: QueueSafeValueType, queue: DispatchQueue) -> Commands
+    var queueSafeValueDispatchQueue: DispatchQueue { get }
 }
 
 extension SpecableAsyncedCommands {
@@ -21,10 +21,6 @@ extension SpecableAsyncedCommands {
             testBasicFunctionality()
             checkQueueWhereCommandIsRunning()
         }
-    }
-    
-    func commands(from queueSafeValue: QueueSafeValueType) -> Commands {
-        commands(from: queueSafeValue, queue: .global(qos: .default))
     }
 }
 
@@ -222,17 +218,22 @@ extension SpecableAsyncedCommands {
                                                    deinitQueueSafeValueBeforeRunClosure: Bool = false,
                                                    closure: @escaping (Commands, _ done: @escaping () -> Void) -> Void) {
         it("check that closure of \(funcName) function is being executed on the correct queue") {
-            let queues = Queues.getUniqueRandomQueues(count: 2)
-            expect(queues[0]) != queues[1]
+            var queue1: DispatchQueue!
+            let queue2 = self.queueSafeValueDispatchQueue
+            while (queue1 == nil) {
+                let randomQueue = Queues.random
+                if randomQueue != queue2 { queue1 = randomQueue }
+            }
+            
+            expect(queue1) != queue2
             var queueSafeValue: QueueSafeValueType! = self.createQueueSafeValue(value: self.createDefultInstance())
-            let commands = self.commands(from: queueSafeValue, queue: queues[1])
+            let commands = self.commands(from: queueSafeValue)
             if deinitQueueSafeValueBeforeRunClosure { queueSafeValue = nil }
             waitUntil(timeout: 1) { done in
-                queues[0].async {
-                    expect(DispatchQueue.current) == queues[0]
+                queue1.async {
+                    expect(queue1) == DispatchQueue.current
                     closure(commands) {
-                        let queue = DispatchQueue.current
-                        expect(queue) == queues[1]
+                        expect(queue2) == DispatchQueue.current
                         done()
                     }
                 }

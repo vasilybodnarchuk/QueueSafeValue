@@ -11,6 +11,7 @@ import Foundation
 /// A class that provides synchronous queue-safe (thread-safe ) access to a value.
 public class QueueSafeSyncedValue<Value>: QueueSafeValueConcrete<Value>, SyncSchedulerInterface {
 
+    /// References to the original instance of the `value` and provides thread-safe (queue-safe) access to it.
     var valueContainerReference: ValueContainer<Value>? { valueContainer }
 
     /**

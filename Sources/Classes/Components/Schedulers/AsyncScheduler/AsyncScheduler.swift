@@ -25,7 +25,10 @@ public class AsyncScheduler<Value>: SchedulerConcrete<Value> {
         self.queue = queue
         super.init(valueContainer: valueContainer)
     }
+}
 
+// MARK: AsyncSchedulerInterface
+extension AsyncScheduler: AsyncSchedulerInterface {
     /**
      Schedules `command` execution in a `command queue` that is integrated into the `value container` object.
      Each `command` will be placed in a `command queue` and executed in order of priority.

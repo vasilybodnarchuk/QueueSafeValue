@@ -19,7 +19,6 @@ protocol SpecableCommands: class {
 
     func createQueueSafeValue(value: Value) -> QueueSafeValueType
     func createInstance(value: Int) -> Value
-
     func commands(from queueSafeValue: QueueSafeValueType) -> Commands
 }
 

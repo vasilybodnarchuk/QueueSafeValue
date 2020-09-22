@@ -17,7 +17,7 @@ class QueueSafeSyncedValueSpec: QuickSpec, SpecableSyncedCommands {
 
     var testedObjectName: String { "Queue Safe Synced Value Commands" }
     func commands(from queueSafeValue: QueueSafeValueType) -> Commands { queueSafeValue.lowestPriority }
-    func createQueueSafeValue(value: SimpleClass) -> QueueSafeValueType { QueueSafeSyncedValue(value: value) }
+    func createQueueSafeValue(value: SimpleClass) -> QueueSafeValueType { .init(value: value) }
     
     override func spec() { runTests() }
 }

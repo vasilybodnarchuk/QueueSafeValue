@@ -154,8 +154,18 @@ extension ReadMeExamples {
     }
 
     private func asyncGetActionSample() {
+        // Option 1
         let queueSafeValue = QueueSafeValue(value: true)
         queueSafeValue.async(performIn: .global(qos: .utility)).highestPriority.get { result in
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
+        }
+        
+        // Option 2
+        let queueSafeAsyncedValue = QueueSafeAsyncedValue(value: true, queue: .global(qos: .utility))
+        queueSafeAsyncedValue.highestPriority.get { result in
             switch result {
             case .failure(let error): print(error)
             case .success(let value): print(value)
@@ -164,6 +174,7 @@ extension ReadMeExamples {
     }
     
     private func asyncSetActionSample() {
+        // Option 1
         let queueSafeValue = QueueSafeValue(value: 7)
         
         // Without completion block
@@ -176,10 +187,26 @@ extension ReadMeExamples {
             case .success(let value): print(value)
             }
         }
+        
+        // Option 2
+        let queueSafeAsyncedValue = QueueSafeAsyncedValue(value: 7, queue: .global())
+        
+        // Without completion block
+        queueSafeAsyncedValue.highestPriority.set(newValue: 8)
+        
+        // With completion block
+        queueSafeAsyncedValue.highestPriority.set(newValue: 9) { result in
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
+        }
     }
     
     private func asyncUpdateActionSample() {
+        // Option 1.
         let queueSafeValue = QueueSafeValue<Int>(value: 1)
+
         // Without completion block
         queueSafeValue.async(performIn: .background).highestPriority.update(closure: { currentValue in
             currentValue = 10
@@ -187,6 +214,24 @@ extension ReadMeExamples {
         
         // With completion block
         queueSafeValue.async(performIn: .background).highestPriority.update(closure: { currentValue in
+            currentValue = 11
+        }, completion: { result in
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
+        })
+        
+        // Option 2.
+        let queueSafeAsyncedValue = QueueSafeAsyncedValue<Int>(value: 1, queue: .global(qos: .userInteractive))
+
+        // Without completion block
+        queueSafeAsyncedValue.highestPriority.update(closure: { currentValue in
+            currentValue = 10
+        })
+        
+        // With completion block
+        queueSafeAsyncedValue.highestPriority.update(closure: { currentValue in
             currentValue = 11
         }, completion: { result in
             switch result {
