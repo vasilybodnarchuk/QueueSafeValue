@@ -9,7 +9,7 @@
 import Foundation
 
 /**
- Defines the available functions that can manipulate a `value`, wrapped in a `ValueContainer` object.
+ Defines the available functions that can manipulate an enclosed `value`.
  All functions will run asynchronously on the queue that calls them.
  */
 public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
@@ -22,7 +22,7 @@ public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
      - Parameters:
         - valueContainer: an object that stores the original `value` instance and provides thread-safe (queue-safe) access to it.
         - queue: a queue in which access to the `value` will be granted.
-     - Returns: An object that  describes the available functions that can manipulate a `value`, wrapped in a `ValueContainer` object.
+     - Returns: an object that defines the available functions which can manipulate the nested `value`.
      */
     init(valueContainer: ValueContainer<Value>?, grantAccessIn queue: DispatchQueue) {
         self.queue = queue
@@ -30,20 +30,20 @@ public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
     }
 
     /**
-     Thread-safe (queue-safe) value reading.
-     - Important: Will be executed asynchronously in own `queue`.
-     - Parameter closure: a closure that returns an enum instance with the value `CurrentValue` or` QueueSafeValueError`.
+     Queue-safe (thread-safe) `value` reading.
+     - Important: the func will be executed asynchronously in `command queue`.
+     - Parameter closure: a closure that returns an enum instance containing `CurrentValue` or `QueueSafeValueError`.
      */
     public func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
         execute(command: { $0 }, completion: closure)
     }
 
     /**
-     Thread-safe (queue-safe) `value` writing.
-     - Important: Will be executed asynchronously in own `queue`.
+     Queue-safe (thread-safe) `value` writing.
+     - Important: the func will be executed asynchronously in `command queue`.
      - Parameters:
         - newValue: value to set.
-        - completion: a closure that returns an enum instance with the value `UpdatedValue` or` QueueSafeValueError`.
+        - completion: a closure that returns an enum instance containing `UpdatedValue` or `QueueSafeValueError`.
      */
     public func set(newValue: Value, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) {
         execute(command: {
@@ -53,11 +53,11 @@ public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
     }
 
     /**
-     Thread-safe (queue-safe) `value` updating. 
-     - Important: Will be executed asynchronously in own `queue`.
+     Queue-safe (thread-safe) `value` updating.
+     - Important: the func will be executed asynchronously in `command queue`.
      - Parameters:
-        - closure: A closure that updates the original `value` instance.
-        - completion: a closure that returns an enum instance with the value `UpdatedValue` or` QueueSafeValueError`.
+        - closure: a closure that updates the original `value` instance.
+        - completion: a closure that returns an enum instance containing `UpdatedValue` or `QueueSafeValueError`.
      - Attention: `closure` will not be run if any ` QueueSafeValueError` occurs.
      */
     public func update(closure: ((inout CurrentValue) -> Void)?,
@@ -70,10 +70,10 @@ public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
 
     /**
      Performs `command` asynchronously  in embeded `queue` in defined order.
-     - Important: Will be executed asynchronously in own `queue`.
+     - Important: `command` will be executed asynchronously in `command queue`.
      - Parameters:
-        - command: A block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object and returns `ResultValue`
-        - completion: a closure that returns an enum instance with the value `ResultValue` or` QueueSafeValueError`.
+        - command: a block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object and returns `ResultValue`
+        - completion: a closure that returns an enum instance containing `ResultValue` or `QueueSafeValueError`.
      */
 
     func execute<ResultValue>(command: @escaping (inout CurrentValue) -> ResultValue,
@@ -93,9 +93,10 @@ public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
 
     /**
      Defines performing order.
-     - Important: Will be executed asynchronously in own `queue`.
+     - Note: `command` will be executed asynchronously in `command queue`.
+     - Important: must be redefined (overridden).
      - Parameters:
-        - valueContainer: an object that stores the original `value` instance and provides thread-safe (queue-safe) access to it.
+        - valueContainer: an object that stores the original `value` instance and provides queue-safe (thread-safe) access to it.
         - command: A block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object.
      */
     func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) { fatalError() }

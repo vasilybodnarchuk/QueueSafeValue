@@ -8,13 +8,13 @@
 
 import Foundation
 
-/// Retains the original `value`( instance) and provides thread-safe (queue-safe) access to it.
+/// Retains the original `value`(nstance) and provides limited thread-safe (queue-safe) access to it.
 public class ValueContainer<Value> {
 
-    /// The type of closures to be placed in the `commandQueue` and executed afterwards.
+    /// The type of closures to be placed in the `command queue` and executed afterwards.
     public typealias Closure = (inout Value) -> Void
 
-    /// The original `value` ( instance) for thread-safe (queue-safe)  read / write / update.
+    /// The original `value` (instance) for thread-safe (queue-safe)  read / write / update.
     private var value: Value
 
     /// A queue that stores `closures` (`commands`) and executes them sequentially in correct order.
@@ -33,15 +33,23 @@ public class ValueContainer<Value> {
 
 // MARK: Performing closures in `stack`
 extension ValueContainer {
+
+    /// Defines all possible command execution priorities
+    public enum PerformPriority {
+        case commandQueue(priority: CommandQueue.Priority)
+    }
     /**
-     Places `closure`to the `command Queue` and perform it in correct order.
+     Places `closure`to the `command queue` and perform it in correct order.
      - Parameters:
         - priority: Describes the order in which `closures`  (`commands`) will be performed. `closure` (`command`) with  `highest priority` will be execurted first.
         - closure: `closure` (`command`)  where access to the `value` granted.
      */
-    public func perform(priority: CommandQueue.Priority, closure: @escaping Closure) {
-        commandQueue.append(priority: priority) { closure(&self.value) }
-        commandQueue.perform()
+    public func perform(priority: PerformPriority, closure: @escaping Closure) {
+        switch priority {
+        case .commandQueue(let priority):
+            commandQueue.append(priority: priority) { closure(&self.value) }
+            commandQueue.perform()
+        }
     }
 }
 

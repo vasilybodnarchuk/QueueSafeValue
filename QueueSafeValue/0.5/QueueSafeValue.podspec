@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'QueueSafeValue'
-  s.version          = '0.6'
+  s.version          = '0.5'
   s.summary          = 'Implementation of thread safe property.'
   s.swift_version    = '5.0'
 # This description is used to generate tags and improve search results.

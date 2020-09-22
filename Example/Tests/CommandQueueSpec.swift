@@ -12,9 +12,24 @@ import QueueSafeValue
 
 class CommandQueueSpec: QuickSpec {
     override func spec() {
+        let expectedElementsCounts = [0,1,2,1_000]
         describe("Command Queue") {
-            testOfSynchronousInsertingAndPerforming(expectedElementsCounts: [0,1,2,5,100])
+            testOfSynchronousInsertingAndPerforming(expectedElementsCounts: expectedElementsCounts)
+            testOfAsynchronousInsertingAndPerforming(expectedElementsCounts: expectedElementsCounts)
         }
+    }
+}
+
+extension CommandQueueSpec {
+    private func createExpectedArray(count: Int, priorityForElement: @escaping (_ index: Int) -> CommandQueue.Priority) -> [Int] {
+        var array = [Int]()
+        for i in 0..<count {
+            switch priorityForElement(i) {
+            case .highest: array.insert(i, at: 0)
+            case .lowest: array.append(i)
+            }
+        }
+        return array
     }
 }
 
@@ -44,17 +59,6 @@ extension CommandQueueSpec {
         })
     }
     
-    private func createExpectedArray(count: Int, priorityForElement: @escaping (_ index: Int) -> CommandQueue.Priority) -> [Int] {
-        var array = [Int]()
-        for i in 0..<count {
-            switch priorityForElement(i) {
-            case .highest: array.insert(i, at: 0)
-            case .lowest: array.append(i)
-            }
-        }
-        return array
-    }
-    
     private func synchronouslyInsertClosuresWithDifferentPrioritiesAndExecuteThemAfter(expectedElementsCount: Int,
                                                                                        priorityForElement: @escaping (_ index: Int) -> CommandQueue.Priority) {
         let array = createExpectedArray(count: expectedElementsCount,
@@ -82,7 +86,7 @@ extension CommandQueueSpec {
         expectedElementsCounts.forEach { count in
             context("synchronously insert \(count) commands") {
                 let increasingArray = [Int](0..<count)
-                context("first and execute them after") {
+                context("execute them all together after inserting") {
                     it("commands with lowest priority") {
                         self.synchronouslyInsertAllClosuresAndExecuteThemAfter(expectedArray: increasingArray,
                                                                                priorityForElement: { _ in .lowest })
@@ -174,87 +178,80 @@ extension CommandQueueSpec {
 extension CommandQueueSpec {
     private func testOfAsynchronousInsertingAndPerforming(expectedElementsCounts: [Int]) {
 
-//        expectedElementsCounts.forEach { count in
-//            context("asynchronously insert \(count) commands") {
-//                context("first and execute them after") {
-//                    it("commands with lowest priority") {
-//                        self.asynchronouslyInsertAllClosuresAndExecuteThemAfter(expectedArray: increasingArray,
-//                                                                                priorityForElement: { _ in .lowest })
-//                    }
-//                }
-//            }
-//        }
-            
-//            context("performs closures immediately") {
-//                it("synchronously") {
-//                    self.testInLoop(syncedIteration: { commandQueue, command in
-//                        commandQueue.performImmediately { command() }
-//                    })
-//                }
-//
-//                it("asynchronously") {
-//                    self.testInLoop(asyncedIteration: { commandQueue, dispatchGroup, command in
-//                        commandQueue.performImmediately { command() }
-//                        dispatchGroup.leave()
-//                    })
-//                }
-//            }
-//
-//            context("asynchronously adds closures to the command queue") {
-//                it("executes closures afterwards") {
-//                    self.testInLoop(asyncedIteration: { commandQueue, dispatchGroup, command in
-//                        commandQueue.append { command() }
-//                        dispatchGroup.leave()
-//                    }, completion: { commandQueue in
-//                        commandQueue.perform()
-//                    })
-//                }
-//
-//                it("immediately executes added closures") {
-//                    self.testInLoop(asyncedIteration: { commandQueue, dispatchGroup, command in
-//                        commandQueue.append {
-//                            command()
-//                            dispatchGroup.leave()
-//                        }
-//                        commandQueue.perform()
-//                    })
-//                }
-//            }
+        expectedElementsCounts.forEach { count in
+            context("asynchronously insert \(count) commands") {
+                context("execute them all together after inserting") {
+                    it("commands with lowest priority") {
+                        self.asynchronouslyInsertAllClosuresAndExecuteThemAfter(expectedElementsCount: count,
+                                                                                priorityForElement: { _ in .lowest })
+                    }
+                    
+                    it("commands with highest priority") {
+                        self.asynchronouslyInsertAllClosuresAndExecuteThemAfter(expectedElementsCount: count,
+                                                                               priorityForElement: {  _ in .highest })
+                    }
+                }
+                
+                context("and immediately execute each during inserting") {
+                    let increasingArray = [Int](0..<count)
+                    it("commands with lowest priority") {
+                        self.asynchronouslyInsertClosureAndExecuteImmediately(expectedArray: increasingArray,
+                                                                             priorityForElement: { _ in .lowest })
+                    }
+    
+                    it("commands with highest priority") {
+                        self.asynchronouslyInsertClosureAndExecuteImmediately(expectedArray: increasingArray,
+                                                                             priorityForElement: { _ in .highest })
+                    }
+                }
+            }
+        }
     }
     
-//    private func asynchronouslyInsertAllClosuresAndExecuteThemAfter(expectedArray: [Int],
-//                                                                    priorityForElement: @escaping (_ index: Int) -> CommandQueue.Priority) {
-//        self.testInLoop(expectedArray: expectedArray,
-//                        syncedIteration: { index, commandQueue, command in
-//            commandQueue.append(priority: priorityForElement(index)) { command() }
-//        }, completion: { commandQueue in
-//            commandQueue.perform()
-//        })
-//    }
-//    
-//    
-//    private func testInLoop(expectedArray: [Int],
-//                            asyncedIteration: @escaping (_ step: Int, CommandQueue, DispatchGroup, _ command: @escaping () -> Void) -> Void,
-//                            completion: ((CommandQueue) -> Void)? = nil) {
-//        let commandQueue = CommandQueue()
-//        waitUntil(timeout: 1) { done in
-//            var array = [Int]()
-//            let dispatchGroup = DispatchGroup()
-//
-//            for i in 0..<expectedArray.count {
-//                dispatchGroup.enter()
-//                Queues.random.async {
-//                    asyncedIteration(i, commandQueue, dispatchGroup) { array.append(i) }
-//                }
-//            }
-//            dispatchGroup.notify(queue: .main) {
-//                completion?(commandQueue)
-//                expect(array) != expectedArray
-//                //expect(array1) == array2.sorted()
-//                //expect(array2.count) == self.elementsCount
-//                done()
-//            }
-//            dispatchGroup.wait()
-//        }
-//    }
+    private func asynchronouslyInsertClosureAndExecuteImmediately(expectedArray: [Int],
+                                                                  priorityForElement: @escaping (_ index: Int) -> CommandQueue.Priority) {
+        self.testInLoop(expectedArray: expectedArray,
+                        asyncedIteration: { index, commandQueue, dispatchGroup, command in
+            commandQueue.append(priority: priorityForElement(index)) { command() }
+            commandQueue.perform()
+            dispatchGroup.leave()
+        }, completion: { commandQueue in
+        })
+    }
+    
+    private func asynchronouslyInsertAllClosuresAndExecuteThemAfter(expectedElementsCount: Int,
+                                                                    priorityForElement: @escaping (_ index: Int) -> CommandQueue.Priority) {
+        let array = (0..<expectedElementsCount).map { $0 }
+        self.testInLoop(expectedArray: array,
+                        asyncedIteration: { index, commandQueue, dispatchGroup, command in
+            commandQueue.append(priority: priorityForElement(index)) { command() }
+            dispatchGroup.leave()
+        }, completion: { commandQueue in
+            commandQueue.perform()
+        })
+    }
+    
+    private func testInLoop(expectedArray: [Int],
+                            asyncedIteration: @escaping (_ step: Int, CommandQueue, DispatchGroup, _ command: @escaping () -> Void) -> Void,
+                            completion: ((CommandQueue) -> Void)? = nil) {
+        let commandQueue = CommandQueue()
+        waitUntil(timeout: 10) { done in
+            var array = [Int]()
+            array.reserveCapacity(expectedArray.count)
+            let dispatchGroup = DispatchGroup()
+
+            for i in 0..<expectedArray.count {
+                dispatchGroup.enter()
+                Queues.random.async {
+                    asyncedIteration(i, commandQueue, dispatchGroup) { array.append(i) }
+                }
+            }
+            dispatchGroup.notify(queue: .main) {
+                completion?(commandQueue)
+                expect(expectedArray) == array.sorted()
+                done()
+            }
+            dispatchGroup.wait()
+        }
+    }
 }
