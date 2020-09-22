@@ -1,13 +1,13 @@
 PODS:
-  - Nimble (7.3.4)
-  - QueueSafeValue (0.4)
-  - Quick (1.2.0)
-  - SwiftLint (0.40.0)
+  - Nimble (8.1.2)
+  - QueueSafeValue (0.5)
+  - Quick (3.0.0)
+  - SwiftLint (0.40.2)
 
 DEPENDENCIES:
-  - Nimble (~> 7.0)
+  - Nimble (~> 8.1.2)
   - QueueSafeValue (from `../`)
-  - Quick (~> 1.2.0)
+  - Quick (~> 3.0.0)
   - SwiftLint
 
 SPEC REPOS:
@@ -21,11 +21,11 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
-  QueueSafeValue: 75d8c5cac7ab59f74e30580c17c13f635e954ae0
-  Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
-  SwiftLint: 4154893c73a4c52d6240195507eb7a3e3c64087e
+  Nimble: 3864815b4703c7ebffba875973c70e854489fbae
+  QueueSafeValue: 9671adf6bacfdad9a022a7d1a01ecdf785fd8e68
+  Quick: 6d9559f40647bc4d510103842ef2fdd882d753e2
+  SwiftLint: 1216c910d27c2633ade33b4f071bb6b930982e62
 
-PODFILE CHECKSUM: c5e07eb3ddcf81347d19e70b97b860f67cc9ca92
+PODFILE CHECKSUM: 1d9b4d56465d0242ab95ad055a900ed75e7bf006
 
 COCOAPODS: 1.9.3

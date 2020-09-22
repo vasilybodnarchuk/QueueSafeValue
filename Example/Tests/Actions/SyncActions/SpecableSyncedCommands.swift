@@ -96,7 +96,7 @@ extension SpecableSyncedCommands {
                                    after: @escaping (Commands) -> Void) {
         let object = createDefultInstance()
         expect(2) == CFGetRetainCount(object)
-        var queueSafeValue: QueueSafeValue<Value>! = .init(value: object)
+        var queueSafeValue: QueueSafeValueType! = createQueueSafeValue(value: object)
         expect(3) == CFGetRetainCount(object)
         let lowPriorityCommand = commands(from: queueSafeValue)
         var closure: (() -> Void)? = {
@@ -134,10 +134,10 @@ extension SpecableSyncedCommands {
     }
     
     private func queueCheckingWhereClosureIsRuning(funcName: String,
-                                           closure: @escaping (Commands, _ done: @escaping () -> Void) -> Void) {
+                                                   closure: @escaping (Commands, _ done: @escaping () -> Void) -> Void) {
+        let queueSafeValue = createQueueSafeValue(value: createDefultInstance())
         it("check that closure of \(funcName) function is being executed on the correct queue") {
             let queue = Queues.random
-            let queueSafeValue = QueueSafeValue(value: self.createDefultInstance())
             let commands = self.commands(from: queueSafeValue)
             waitUntil(timeout: 1) { done in
                 queue.async {

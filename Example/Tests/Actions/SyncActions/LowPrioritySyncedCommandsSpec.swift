@@ -10,10 +10,16 @@ import Quick
 import QueueSafeValue
 
 class LowPrioritySyncedCommandsSpec: QuickSpec, SpecableSyncedCommands {
+
+    typealias Value = SimpleClass
+    typealias Commands = SyncedCommandsWithPriority<Value>
+    typealias QueueSafeValueType = QueueSafeValue<Value>
+
     var testedObjectName: String { "Low Priority Synced Commands" }
-    func commands(from queueSafeValue: QueueSafeValue<Value>) -> Commands {
+    func commands(from queueSafeValue: QueueSafeValueType) -> Commands {
         queueSafeValue.wait.lowestPriority
     }
     
     override func spec() { runTests() }
+    func createQueueSafeValue(value: SimpleClass) -> QueueSafeValueType { QueueSafeValue(value: value) }
 }
