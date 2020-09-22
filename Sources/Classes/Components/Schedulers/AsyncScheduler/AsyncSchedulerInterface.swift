@@ -25,4 +25,3 @@ public protocol AsyncSchedulerInterface: InterfaceWithEnclosedValue {
      */
     var highestPriority: HighestPriorityAsyncedCommands<Value> { get }
 }
-

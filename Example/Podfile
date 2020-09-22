@@ -1,13 +1,32 @@
 use_frameworks!
+platform :ios, '9.0'
 
 target 'QueueSafeValue_Example' do
   pod 'QueueSafeValue', :path => '../'
+end
 
-  target 'QueueSafeValue_Tests' do
-    inherit! :search_paths
+target 'QueueSafeValue_Tests' do
+  inherit! :search_paths
+  pod 'QueueSafeValue', :path => '../'
+  pod 'Quick', '~> 3.0.0'
+  pod 'Nimble', '~> 8.1.2'
+  pod 'SwiftLint'
+end
 
-    pod 'Quick', '~> 1.2.0'
-    pod 'Nimble', '~> 7.0'
-    pod 'SwiftLint'
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
+    end
   end
 end
+#
+## force the sub specs in the array below to use swift version 3.2
+#    post_install do |installer|
+#        installer.pods_project.targets.each do |target|
+#            target.build_configurations.each do |config|
+#                config.build_settings['SWIFT_VERSION'] = '5.2'
+#            end
+#        end
+#    end
