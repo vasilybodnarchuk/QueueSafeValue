@@ -8,29 +8,29 @@
 Framework that provides thread-safe (queue-safe) access to the value. 
 
 ## Advantages
-1. Embedded `DispatchSemaphore`
+1. ##### Embedded `DispatchSemaphore`
 
     *Just use specific access functions (`commands`) of a `QueueSafeValue` and don't think about thread synchronization.*
     
-2. Built-in `scheduler`
+2. ##### Built-in `scheduler`
 
     *Scheduler organises synchronous and a synchronous `commands` executing.*
     
-3. Embedded `Comand Queue` (`Priority queue`)
+3. ##### Embedded `Comand Queue` (`Priority queue`)
 
     *`Command Queue` needed to organize the sequence of `commands`. All `commands` will be executed in order of priority, one after the other.*
     
-4. Priority `command` execution
+4. ##### Priority `command` execution
 
     *Ability to prioritize updates or access to `QueueSafeValue`. This means that some `commands` will run faster than others.*
     
-5. Doesn't increment object reference count
+5. ##### Doesn't increment object reference count
     
-6. Always returns a result and avoids returning optionals
+6. ##### Always returns a result and avoids returning optionals
 
-    *always return `Result<Value, QueueSafeValueError>`*
+    *always return* `Result<Value, QueueSafeValueError>`
     
-7. Implemented both atomic functions and value processing functions in a closure
+7. ##### Implemented both atomic functions and value processing functions in a closure
 
     *atomic function:* `queueSafeValue.wait.lowestPriority.get()`
    
