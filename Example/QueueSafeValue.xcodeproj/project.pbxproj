@@ -140,6 +140,7 @@
 			isa = PBXGroup;
 			children = (
 				D95E4B6E24EB3AED009BC031 /* Tests */,
+				D953038024F1B4B900FA6B99 /* Models */,
 				D9C1FE8324D7B2E300B78489 /* Helpers */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
@@ -232,7 +233,6 @@
 			isa = PBXGroup;
 			children = (
 				B84CF48725143254009C1DDB /* Main */,
-				D953038024F1B4B900FA6B99 /* Models */,
 				D9CEFC0824F083D800C76B19 /* Actions */,
 				D95E4B7724EB7CCC009BC031 /* CommandQueueSpec.swift */,
 				B8AD7D3D2500680800505A5B /* PriorityQueueSpec.swift */,

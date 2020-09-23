@@ -7,6 +7,16 @@
 
 Framework that provides thread-safe (queue-safe) access to the value. 
 
+## Advantages
+1. Embedded semaphore (`DispatchSemaphore`) 
+    *Just use specific access functions *`commands`) of a `QueueSafeValue` and don't think about thread synchronization.*
+2. Built-in scheduler
+    *Scheduler organises synchronous and a synchronous `commands` executing.*
+3. Embedded `Comand Queue` (`priority queue`)
+    *`Command Queue` needed to organize the sequence of `commands`. All `commands` will be executed in order of priority, one after the other.*
+4. Priority `command` execution
+    *Ability to prioritize updates or access to `Queue SafeValue`. This means that some `commands` will run faster than others.*
+
 ## Documentation
 
 #### Base structure of command
@@ -18,7 +28,7 @@ Framework that provides thread-safe (queue-safe) access to the value.
 ## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​ 🇶​​​​​🇺​​​​​🇪​​​​​🇺​​​​​🇪​​​​​
 
 > stores `commands` and executes them sequentially with the correct priority.
-> `QueueSafeValue` has a built-in `command queue` (priority queue) where all 
+> `QueueSafeValue` has a built-in `command queue` (`priority queue`) where all 
 > `closures` (`commands`) will be placed and perfomed after. 
 
 ### Request components:
@@ -36,14 +46,14 @@ Framework that provides thread-safe (queue-safe) access to the value.
 > describes when (in what order) `command` will be executed in `command queue`. 
 
 *Available priorities*: 
-- `lowestPriority` - a `comand` with `lowest priority` will be executed last.
-- `highestPriority` - a `comand` with `highest priority` will be executed first.
+- `lowestPriority` - a `command` with `lowest priority` will be executed last.
+- `highestPriority` - a `command` with `highest priority` will be executed first.
 
 ## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​
 
 > describes what to do with value 
 
-### Available synchronous comands: 
+### Available synchronous commands: 
 
 ### 1. Synchronous `get`
 
