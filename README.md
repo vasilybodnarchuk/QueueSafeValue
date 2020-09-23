@@ -9,12 +9,19 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
 ## Advantages
 1. Embedded semaphore (`DispatchSemaphore`) 
-    *Just use specific access functions *`commands`) of a `QueueSafeValue` and don't think about thread synchronization.*
+
+    *Just use specific access functions (`commands`) of a `QueueSafeValue` and don't think about thread synchronization.*
+    
 2. Built-in scheduler
+
     *Scheduler organises synchronous and a synchronous `commands` executing.*
+    
 3. Embedded `Comand Queue` (`priority queue`)
+
     *`Command Queue` needed to organize the sequence of `commands`. All `commands` will be executed in order of priority, one after the other.*
+    
 4. Priority `command` execution
+
     *Ability to prioritize updates or access to `Queue SafeValue`. This means that some `commands` will run faster than others.*
 
 ## Documentation
