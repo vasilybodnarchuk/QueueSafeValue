@@ -14,7 +14,9 @@
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		883AC02491EF659EEE772C2B /* Pods_QueueSafeValue_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 902AAF1CF7B013550256F17D /* Pods_QueueSafeValue_Tests.framework */; };
-		B81AC8F524F53E1F00A5CCC3 /* LowPriorityAsyncedCommandsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81AC8F424F53E1F00A5CCC3 /* LowPriorityAsyncedCommandsSpec.swift */; };
+		B817B4DD25253A2B00BA918C /* HighestPrioritySyncedCommandsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B817B4DC25253A2B00BA918C /* HighestPrioritySyncedCommandsSpec.swift */; };
+		B817B4E125253A7200BA918C /* HighestPriorityAsyncedCommandsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B817B4E025253A7200BA918C /* HighestPriorityAsyncedCommandsSpec.swift */; };
+		B81AC8F524F53E1F00A5CCC3 /* LowestPriorityAsyncedCommandsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81AC8F424F53E1F00A5CCC3 /* LowestPriorityAsyncedCommandsSpec.swift */; };
 		B81AC8F724F5431700A5CCC3 /* SpecableActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81AC8F624F5431700A5CCC3 /* SpecableActions.swift */; };
 		B84CF4892514326A009C1DDB /* QueueSafeSyncedValueSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84CF4882514326A009C1DDB /* QueueSafeSyncedValueSpec.swift */; };
 		B84E4A432502BCA0004BB2FC /* ReadMeExamples.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84E4A422502BCA0004BB2FC /* ReadMeExamples.swift */; };
@@ -25,7 +27,7 @@
 		D95E4B7224EB3DE6009BC031 /* SimpleClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B7024EB3DDC009BC031 /* SimpleClass.swift */; };
 		D95E4B7924EB7D3E009BC031 /* CommandQueueSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E4B7724EB7CCC009BC031 /* CommandQueueSpec.swift */; };
 		D9C1FE8524D7B30200B78489 /* Queues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C1FE8424D7B30200B78489 /* Queues.swift */; };
-		D9CEFC0A24F083EA00C76B19 /* LowPrioritySyncedCommandsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CEFC0924F083EA00C76B19 /* LowPrioritySyncedCommandsSpec.swift */; };
+		D9CEFC0A24F083EA00C76B19 /* LowestPrioritySyncedCommandsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CEFC0924F083EA00C76B19 /* LowestPrioritySyncedCommandsSpec.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,7 +57,9 @@
 		902AAF1CF7B013550256F17D /* Pods_QueueSafeValue_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_QueueSafeValue_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A08F1BB9A3BC9D3BE0856FF0 /* Pods-QueueSafeValue_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QueueSafeValue_Tests.debug.xcconfig"; path = "Target Support Files/Pods-QueueSafeValue_Tests/Pods-QueueSafeValue_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		A9DE8AC7B55B14F9FDDF26BA /* QueueSafeValue.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = QueueSafeValue.podspec; path = ../QueueSafeValue.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		B81AC8F424F53E1F00A5CCC3 /* LowPriorityAsyncedCommandsSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LowPriorityAsyncedCommandsSpec.swift; sourceTree = "<group>"; };
+		B817B4DC25253A2B00BA918C /* HighestPrioritySyncedCommandsSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighestPrioritySyncedCommandsSpec.swift; sourceTree = "<group>"; };
+		B817B4E025253A7200BA918C /* HighestPriorityAsyncedCommandsSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighestPriorityAsyncedCommandsSpec.swift; sourceTree = "<group>"; };
+		B81AC8F424F53E1F00A5CCC3 /* LowestPriorityAsyncedCommandsSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LowestPriorityAsyncedCommandsSpec.swift; sourceTree = "<group>"; };
 		B81AC8F624F5431700A5CCC3 /* SpecableActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecableActions.swift; sourceTree = "<group>"; };
 		B84CF4882514326A009C1DDB /* QueueSafeSyncedValueSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueSafeSyncedValueSpec.swift; sourceTree = "<group>"; };
 		B84E4A422502BCA0004BB2FC /* ReadMeExamples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadMeExamples.swift; sourceTree = "<group>"; };
@@ -67,7 +71,7 @@
 		D95E4B7724EB7CCC009BC031 /* CommandQueueSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandQueueSpec.swift; sourceTree = "<group>"; };
 		D9790B5D24AB851E00701A2B /* QueueSafeValue.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = QueueSafeValue.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9C1FE8424D7B30200B78489 /* Queues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Queues.swift; sourceTree = "<group>"; };
-		D9CEFC0924F083EA00C76B19 /* LowPrioritySyncedCommandsSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LowPrioritySyncedCommandsSpec.swift; sourceTree = "<group>"; };
+		D9CEFC0924F083EA00C76B19 /* LowestPrioritySyncedCommandsSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LowestPrioritySyncedCommandsSpec.swift; sourceTree = "<group>"; };
 		DA7406C9388422396093FD3F /* Pods-QueueSafeValue_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QueueSafeValue_Example.debug.xcconfig"; path = "Target Support Files/Pods-QueueSafeValue_Example/Pods-QueueSafeValue_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		F15B106DF5F417738BC49742 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -196,7 +200,8 @@
 			isa = PBXGroup;
 			children = (
 				B85C15A124FE764B00F68032 /* SpecableSyncedCommands.swift */,
-				D9CEFC0924F083EA00C76B19 /* LowPrioritySyncedCommandsSpec.swift */,
+				D9CEFC0924F083EA00C76B19 /* LowestPrioritySyncedCommandsSpec.swift */,
+				B817B4DC25253A2B00BA918C /* HighestPrioritySyncedCommandsSpec.swift */,
 			);
 			path = SyncActions;
 			sourceTree = "<group>";
@@ -205,7 +210,8 @@
 			isa = PBXGroup;
 			children = (
 				B85C15A324FE789600F68032 /* SpecableAsyncedCommands.swift */,
-				B81AC8F424F53E1F00A5CCC3 /* LowPriorityAsyncedCommandsSpec.swift */,
+				B81AC8F424F53E1F00A5CCC3 /* LowestPriorityAsyncedCommandsSpec.swift */,
+				B817B4E025253A7200BA918C /* HighestPriorityAsyncedCommandsSpec.swift */,
 			);
 			path = AsyncActions;
 			sourceTree = "<group>";
@@ -483,17 +489,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B81AC8F524F53E1F00A5CCC3 /* LowPriorityAsyncedCommandsSpec.swift in Sources */,
+				B81AC8F524F53E1F00A5CCC3 /* LowestPriorityAsyncedCommandsSpec.swift in Sources */,
 				B85C15A224FE764B00F68032 /* SpecableSyncedCommands.swift in Sources */,
 				B8AD7D3E2500680800505A5B /* PriorityQueueSpec.swift in Sources */,
 				D9C1FE8524D7B30200B78489 /* Queues.swift in Sources */,
 				B84CF4892514326A009C1DDB /* QueueSafeSyncedValueSpec.swift in Sources */,
 				B8CEC334251969DF00B904EA /* QueueSafeAsyncedValueSpec.swift in Sources */,
 				B85C15A424FE789600F68032 /* SpecableAsyncedCommands.swift in Sources */,
+				B817B4DD25253A2B00BA918C /* HighestPrioritySyncedCommandsSpec.swift in Sources */,
 				D95E4B7224EB3DE6009BC031 /* SimpleClass.swift in Sources */,
-				D9CEFC0A24F083EA00C76B19 /* LowPrioritySyncedCommandsSpec.swift in Sources */,
+				D9CEFC0A24F083EA00C76B19 /* LowestPrioritySyncedCommandsSpec.swift in Sources */,
 				B81AC8F724F5431700A5CCC3 /* SpecableActions.swift in Sources */,
 				D95E4B7924EB7D3E009BC031 /* CommandQueueSpec.swift in Sources */,
+				B817B4E125253A7200BA918C /* HighestPriorityAsyncedCommandsSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -14,7 +14,7 @@ Framework that provides thread-safe (queue-safe) access to the value.
     
 2. #### Built-in `scheduler`
 
-    *Scheduler organises synchronous and a synchronous `commands` executing.*
+    *Scheduler organises synchronous and asynchronous `commands` executing.*
     
 3. #### Embedded `Comand Queue` (`Priority queue`)
 
@@ -28,7 +28,7 @@ Framework that provides thread-safe (queue-safe) access to the value.
     
 6. #### Always returns a result and avoids returning optionals
 
-    *always return* `Result<Value, QueueSafeValueError>`
+    *always returns* `Result<Value, QueueSafeValueError>`
     
 7. #### Implemented both atomic functions and value processing functions in a closure
 
