@@ -74,7 +74,7 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
 ### Available synchronous commands: 
 
-### 1. Synchronous `get`
+### 1. Synchronous `get` value
 
 >  returns `CurrentValue` or `QueueSafeValueError`
 
@@ -105,9 +105,9 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 2. Synchronous `get` in closure
+### 2. Synchronous `get` value in closure
 
-> returns `CurrentValue` or `QueueSafeValueError` in closure
+> returns `CurrentValue` or `QueueSafeValueError` in `command closure`
 
 ```Swift
 func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
@@ -139,7 +139,43 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 3. Synchronous `set` 
+### 3. Synchronous `get` value in closure with manual `command` completion
+
+> returns `CurrentValue` or `QueueSafeValueError` and  `command completion closure` in `command closure`
+
+```Swift
+public func get(manualCompletion closure: ((Result<CurrentValue, QueueSafeValueError>, @escaping CommandCompletionClosure) -> Void)?)
+```
+
+> Code sample
+
+```Swift
+// Option 1
+let queueSafeValue = QueueSafeValue(value: 4.44)
+DispatchQueue.global(qos: .unspecified).async {
+    queueSafeValue.wait.highestPriority.get { (result, complete) in
+        switch result {
+        case .failure(let error): print(error)
+        case .success(let value): print(value)
+        }
+        complete() // should always be executed (called)
+    }
+}
+
+// Option 2
+let queueSafeSyncedValue = QueueSafeSyncedValue(value: 4.45)
+DispatchQueue.global(qos: .utility).async {
+    queueSafeSyncedValue.highestPriority.get { (result, complete) in
+        switch result {
+        case .failure(let error): print(error)
+        case .success(let value): print(value)
+        }
+        complete() // should always be executed (called)
+    }
+}
+```
+
+### 4. Synchronous `set` 
 
 > sets `value`
 
@@ -171,7 +207,7 @@ DispatchQueue.global(qos: .userInitiated).async {
 }
 ```
 
-### 4. Synchronous `update` 
+### 5. Synchronous `update` 
 
 >  updates `CurrentValue` in closure.  Useful when processing / updating a value consists of multiple lines of code.
 
@@ -207,7 +243,7 @@ DispatchQueue.main.async {
 }
 ```
 
-### 5. Synchronous `transform` 
+### 6. Synchronous `transform` 
 
 > transforms value without changing original instance
 

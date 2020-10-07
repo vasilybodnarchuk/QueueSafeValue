@@ -20,7 +20,7 @@ public class CommandsWithPriority<Value> {
     typealias Container = ValueContainer<Value>
 
     /// The type of closures to be called (executed) in  commands with manual completion.
-    public typealias CompleteAction = () -> Void
+    public typealias CommandCompletionClosure = () -> Void
 
     /// Retains the original instance of the `value` and provides queue-safe (thread-safe) access to it.
     private(set) weak var valueContainer: Container?
@@ -36,7 +36,7 @@ public class CommandsWithPriority<Value> {
      Performs a `closure` that includes a nested closure (`completion handler`). The `completion handler` must always be executed.
      - Parameter closure: closure with nested completion handler.
      */
-    func manuallyCompleted(closure: (@escaping CompleteAction) -> Void) {
+    func manuallyCompleted(closure: (@escaping CommandCompletionClosure) -> Void) {
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         closure({ dispatchGroup.leave() })

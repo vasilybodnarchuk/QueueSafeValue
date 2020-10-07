@@ -22,6 +22,7 @@ extension ReadMeExamples {
     func runSyncActions() {
         syncGetActionSample()
         syncGetInClosureActionSample()
+        syncedGetValueInClosureCommandWithManualCompletionSample()
         syncSetActionSample()
         syncUpdateActionSample()
         syncTransformActionSample()
@@ -69,6 +70,32 @@ extension ReadMeExamples {
                 case .failure(let error): print(error)
                 case .success(let value): print(value)
                 }
+            }
+        }
+    }
+    
+    private func syncedGetValueInClosureCommandWithManualCompletionSample() {
+        // Option 1
+        let queueSafeValue = QueueSafeValue(value: 4.44)
+        DispatchQueue.global(qos: .unspecified).async {
+            queueSafeValue.wait.highestPriority.get { (result, complete) in
+                switch result {
+                case .failure(let error): print(error)
+                case .success(let value): print(value)
+                }
+                complete() // should always be executed (called)
+            }
+        }
+        
+        // Option 2
+        let queueSafeSyncedValue = QueueSafeSyncedValue(value: 4.45)
+        DispatchQueue.global(qos: .utility).async {
+            queueSafeSyncedValue.highestPriority.get { (result, complete) in
+                switch result {
+                case .failure(let error): print(error)
+                case .success(let value): print(value)
+                }
+                complete() // should always be executed (called)
             }
         }
     }
