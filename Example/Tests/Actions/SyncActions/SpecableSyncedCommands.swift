@@ -40,7 +40,7 @@ extension SpecableSyncedCommands {
                 })
             }
 
-            it("get in closure func") {
+            it("get func with closure with auto completion") {
                 self.testWeakReference(before: {
                     var wasExecuted = false
                     $0.get { _ in wasExecuted = true  }
@@ -51,6 +51,34 @@ extension SpecableSyncedCommands {
                     $0.get { _ in wasExecuted = true }
                     expect($0.get()) == .failure(.valueContainerDeinited)
                     expect(wasExecuted) == true
+                })
+            }
+            
+            it("get func with closure with manual completion") {
+                self.testWeakReference(before: {
+                    let timestamp1 = Date()
+                    var timestamp2: Date!
+                    $0.get { (_, done) in
+                        usleep(300_000)
+                        timestamp2 = Date()
+                        done()
+                    }
+                    expect($0.get()) == .success(self.createDefultInstance())
+                    self.expectExecutionTime(timestamp1: timestamp1,
+                                             timestamp2: timestamp2,
+                                             expectedTimeRange: (0.0...0.4) )
+                }, after: {
+                    let timestamp1 = Date()
+                    var timestamp2: Date!
+                    $0.get { (_, done) in
+                        usleep(300_000)
+                        timestamp2 = Date()
+                        done()
+                    }
+                    expect($0.get()) == .failure(.valueContainerDeinited)
+                    self.expectExecutionTime(timestamp1: timestamp1,
+                                             timestamp2: timestamp2,
+                                             expectedTimeRange: (0.0...0.4) )
                 })
             }
 
@@ -90,6 +118,11 @@ extension SpecableSyncedCommands {
                 })
             }
         }
+    }
+    
+    private func expectExecutionTime(timestamp1: Date, timestamp2: Date, expectedTimeRange: ClosedRange<Double>) {
+        let timeDifference = timestamp2.timeIntervalSince1970 - timestamp1.timeIntervalSince1970
+        expect(expectedTimeRange ~= timeDifference) == true
     }
     
     private func testWeakReference(before: (Commands) -> Void,
