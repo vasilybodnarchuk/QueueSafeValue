@@ -69,13 +69,13 @@ extension SyncedCommandsWithPriority {
      - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
      - Parameter completion: a closure containing sequential code that updates the original nested `value`.
      */
-    public func get(completion closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
+    public func get(completion commandClosure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
         let result = execute { currentValue -> Void in
-            closure?(.success(currentValue))
+            commandClosure?(.success(currentValue))
             return Void()
         }
         switch result {
-        case .failure(let error): closure?(.failure(error))
+        case .failure(let error): commandClosure?(.failure(error))
         default: break
         }
     }
@@ -85,10 +85,10 @@ extension SyncedCommandsWithPriority {
      - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
      - Parameter manualCompletion: a closure with asynchronous code that updates the original nested `value`.
      */
-    public func get(manualCompletion closure: ((Result<CurrentValue, QueueSafeValueError>,
+    public func get(manualCompletion commandClosure: ((Result<CurrentValue, QueueSafeValueError>,
                                                 @escaping CommandCompletionClosure) -> Void)?) {
         manuallyCompleted { complete in
-            self.get { result in closure?(result, complete) }
+            self.get { result in commandClosure?(result, complete) }
         }
     }
 }

@@ -76,7 +76,8 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
 ### 1. Synchronous `get` value
 
->  returns `CurrentValue` or `QueueSafeValueError`
+>  returns `CurrentValue` or `QueueSafeValueError`. 
+> Is used when only the return `value` is required (no processing).
 
 ```Swift
 func get() -> Result<CurrentValue, QueueSafeValueError>
@@ -105,12 +106,14 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 2. Synchronous `get` value in closure
+### 2. Synchronous `get` value in `command closure`
 
-> returns `CurrentValue` or `QueueSafeValueError` in `command closure`
+> returns `CurrentValue` or `QueueSafeValueError` in `command closure`. 
+> Is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `command closure`.
+> `Command closure` will be completed automatically.
 
 ```Swift
-func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
+func get(completion commandClosure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
 ```
 
 > Code sample
@@ -139,12 +142,14 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 3. Synchronous `get` value in closure with manual `command` completion
+### 3. Synchronous `get` value in `command closure` with `CommandCompletionClosure`
 
-> returns `CurrentValue` or `QueueSafeValueError` and  `command completion closure` in `command closure`
+> returns `CurrentValue` or `QueueSafeValueError` and  `CommandCompletionClosure` in `command closure`
+> Is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `command closure`.
+> `Command closure` must be completed manually by performing (calling) `CommandCompletionClosure`.
 
 ```Swift
-public func get(manualCompletion closure: ((Result<CurrentValue, QueueSafeValueError>, @escaping CommandCompletionClosure) -> Void)?)
+func get(manualCompletion commandClosure: ((Result<CurrentValue, QueueSafeValueError>, @escaping CommandCompletionClosure) -> Void)?)
 ```
 
 > Code sample
@@ -158,7 +163,7 @@ DispatchQueue.global(qos: .unspecified).async {
         case .failure(let error): print(error)
         case .success(let value): print(value)
         }
-        complete() // should always be executed (called)
+        complete() // must always be executed (called)
     }
 }
 
@@ -170,7 +175,7 @@ DispatchQueue.global(qos: .utility).async {
         case .failure(let error): print(error)
         case .success(let value): print(value)
         }
-        complete() // should always be executed (called)
+        complete() // must always be executed (called)
     }
 }
 ```
