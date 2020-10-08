@@ -42,43 +42,43 @@ extension SpecableSyncedCommands {
 
             it("get func with closure with auto completion") {
                 self.testWeakReference(before: {
-                    var wasExecuted = false
-                    $0.get { _ in wasExecuted = true  }
+                    var funcWasExecuted: Bool!
+                    $0.get { _ in
+                        usleep(500_000)
+                        funcWasExecuted = true
+                    }
+                    expect(funcWasExecuted) == true
                     expect($0.get()) == .success(self.createDefultInstance())
-                    expect(wasExecuted) == true
                 }, after: {
-                    var wasExecuted = false
-                    $0.get { _ in wasExecuted = true }
+                    var funcWasExecuted: Bool!
+                    $0.get { _ in
+                        usleep(500_000)
+                        funcWasExecuted = true
+                    }
+                    expect(funcWasExecuted) == true
                     expect($0.get()) == .failure(.valueContainerDeinited)
-                    expect(wasExecuted) == true
                 })
             }
             
             it("get func with closure with manual completion") {
                 self.testWeakReference(before: {
-                    let timestamp1 = Date()
-                    var timestamp2: Date!
+                    var funcWasExecuted: Bool!
                     $0.get { (_, done) in
-                        usleep(300_000)
-                        timestamp2 = Date()
+                        usleep(500_000)
+                        funcWasExecuted = true
                         done()
                     }
+                    expect(funcWasExecuted) == true
                     expect($0.get()) == .success(self.createDefultInstance())
-                    self.expectExecutionTime(timestamp1: timestamp1,
-                                             timestamp2: timestamp2,
-                                             expectedTimeRange: (0.0...0.4) )
                 }, after: {
-                    let timestamp1 = Date()
-                    var timestamp2: Date!
+                    var funcWasExecuted: Bool!
                     $0.get { (_, done) in
-                        usleep(300_000)
-                        timestamp2 = Date()
+                        usleep(500_000)
+                        funcWasExecuted = true
                         done()
                     }
+                    expect(funcWasExecuted) == true
                     expect($0.get()) == .failure(.valueContainerDeinited)
-                    self.expectExecutionTime(timestamp1: timestamp1,
-                                             timestamp2: timestamp2,
-                                             expectedTimeRange: (0.0...0.4) )
                 })
             }
 

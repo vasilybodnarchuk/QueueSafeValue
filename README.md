@@ -76,8 +76,8 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
 ### 1. Synchronous `get` value
 
-*  returns `CurrentValue` or `QueueSafeValueError`. 
-* Is used when only the return `value` is required (no processing).
+* returns `CurrentValue` or `QueueSafeValueError`. 
+* is used when only the return `value` is required (no processing).
 
 ```Swift
 func get() -> Result<CurrentValue, QueueSafeValueError>
@@ -109,8 +109,8 @@ DispatchQueue.global(qos: .utility).async {
 ### 2. Synchronous `get` value in `command closure`
 
 * returns `CurrentValue` or `QueueSafeValueError` in `command closure`. 
-* Is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `command closure`.
-* `Command closure` will be completed automatically.
+* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `command closure`.
+* `command closure` will be completed automatically.
 
 ```Swift
 func get(completion commandClosure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
@@ -145,8 +145,8 @@ DispatchQueue.global(qos: .utility).async {
 ### 3. Synchronous `get` value in `command closure` with `CommandCompletionClosure`
 
 * returns `CurrentValue` or `QueueSafeValueError` and  `CommandCompletionClosure` in the `command closure`.
-* Is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `command closure`.
-* `Command closure` must be completed manually by performing (calling) `CommandCompletionClosure`.
+* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `command closure`.
+* `command closure` must be completed manually by performing (calling) `CommandCompletionClosure`.
 
 ```Swift
 func get(manualCompletion commandClosure: ((Result<CurrentValue, QueueSafeValueError>, @escaping CommandCompletionClosure) -> Void)?)
