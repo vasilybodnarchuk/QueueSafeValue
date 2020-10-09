@@ -121,7 +121,7 @@ DispatchQueue.global(qos: .utility).async {
 
 ### 2. Synchronous `get` value inside `commandClosure`
 
-* returns `CurrentValue` or `QueueSafeValueError` in `commandClosure`
+* returns `CurrentValue` or `QueueSafeValueError` inside `commandClosure`
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
 * `commandClosure` will be completed automatically
 
@@ -159,7 +159,7 @@ DispatchQueue.global(qos: .utility).async {
 
 * returns `CurrentValue` or `QueueSafeValueError` and  `CommandCompletionClosure` inside the `commandClosure`
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
-* `commandClosure` must be completed manually by performing (calling) `CommandCompletionClosure`
+* **important**:  `commandClosure` must be completed manually by performing (calling) `CommandCompletionClosure`
 
 ```Swift
 func get(manualCompletion commandClosure: ((Result<CurrentValue, QueueSafeValueError>,
@@ -270,6 +270,7 @@ DispatchQueue.main.async {
 * updates `CurrentValue` inside a closure
 * is used when it is necessary to both read and write a `value` inside one closure
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
+* **important**:  `commandClosure` must be completed manually by performing (calling) `CommandCompletionClosure`
 * **Attention**: `commandClosure` will not be run if any ` QueueSafeValueError` occurs.
 
 ```Swift
@@ -285,7 +286,7 @@ let queueSafeValue = QueueSafeValue(value: "value 1")
 DispatchQueue.main.async {
     let result = queueSafeValue.wait.lowestPriority.update { currentValue, complete in
         currentValue = "value 2"
-        complete() // should always be executed (called)
+        complete() // must always be executed (called)
     }
     switch result {
     case .failure(let error): print(error)
@@ -298,7 +299,7 @@ let queueSafeSyncedValue = QueueSafeSyncedValue(value: "value a")
 DispatchQueue.main.async {
     let result = queueSafeSyncedValue.lowestPriority.update { currentValue, complete in
         currentValue = "value b"
-        complete() // should always be executed (called)
+        complete() // must always be executed (called)
     }
     switch result {
     case .failure(let error): print(error)

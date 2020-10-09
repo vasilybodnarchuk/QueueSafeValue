@@ -94,7 +94,7 @@ extension SyncedCommandsWithPriority {
     }
 }
 
-// MARK: Update value
+// MARK: Change value
 extension SyncedCommandsWithPriority {
     /**
      Queue-safe (thread-safe) `value` writing.
