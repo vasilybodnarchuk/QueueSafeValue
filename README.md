@@ -56,8 +56,12 @@ Framework that provides thread-safe (queue-safe) access to the value.
 - protected from concurrent access to `value` (works as `critical section`, implementation based on `DispatchGroup`)
 
 *Available command closures*: 
-- `completion commandClosure` - default closure that expects to work with serial code within itself 
-- `manualCompletion commandClosure` -  closure that expects to work with serial / asynchronous code within itself. This closure must be completed manually by calling the `Command Completion Closure`, placed as a property inside `commandClosure`.
+- `commandClosure` - default closure that expects to work with serial code within itself 
+- `manually completed commandClosure` -  closure that expects to work with serial / asynchronous code within itself. This closure must be completed manually by calling the `CommandCompletionClosure`, placed as a property inside `commandClosure`.
+
+## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​ 🇨​​​​​🇴​​​​​🇲​​​​​🇵​​​​​🇱​​​​​🇪​​​​​🇹​​​​​🇮​​​​​🇴​​​​​🇳​​​​​ 🇨​​​​​🇱​​​​​🇴​​​​​🇸​​​​​🇺​​​​​🇷​​​​​🇪​​​​​
+
+- a closure that must always be performed (called) if available as a property inside the `commandClosure`
 
 ### Request components:
 
@@ -79,7 +83,7 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
 ## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​
 
-> describes what to do with value 
+> describes what to do with `value` 
 
 ### Available synchronous commands: 
 
@@ -115,7 +119,7 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 2. Synchronous `get` value in `commandClosure`
+### 2. Synchronous `get` value inside `commandClosure`
 
 * returns `CurrentValue` or `QueueSafeValueError` in `commandClosure`
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
@@ -151,7 +155,7 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 3. Synchronous `get` value in `commandClosure` with `CommandCompletionClosure`
+### 3. Synchronous `get` value inside `commandClosure` with manual completion
 
 * returns `CurrentValue` or `QueueSafeValueError` and  `CommandCompletionClosure` inside the `commandClosure`
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
@@ -222,7 +226,7 @@ DispatchQueue.global(qos: .userInitiated).async {
 }
 ```
 
-### 5. Synchronous `update` 
+### 5. Synchronous `update` value inside `commandClosure`
 
 * updates `CurrentValue` inside a closure
 * is used when it is necessary to both read and write a `value` inside one closure
@@ -261,7 +265,7 @@ DispatchQueue.main.async {
 }
 ```
 
-### 6. Synchronous `update` 
+### 6. Synchronous `update` value inside `commandClosure` with manual completion
 
 * updates `CurrentValue` inside a closure
 * is used when it is necessary to both read and write a `value` inside one closure
