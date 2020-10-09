@@ -22,9 +22,10 @@ extension ReadMeExamples {
     func runSyncActions() {
         syncGetActionSample()
         syncGetInClosureActionSample()
-        syncedGetValueInClosureCommandWithManualCompletionSample()
+        syncedGetValueInsideClosureCommandWithManualCompletionSample()
         syncSetActionSample()
         syncUpdateActionSample()
+        syncedUpdateValueInsideClosureCommandWithManualCompletionSample()
         syncTransformActionSample()
     }
     
@@ -74,7 +75,7 @@ extension ReadMeExamples {
         }
     }
     
-    private func syncedGetValueInClosureCommandWithManualCompletionSample() {
+    private func syncedGetValueInsideClosureCommandWithManualCompletionSample() {
         // Option 1
         let queueSafeValue = QueueSafeValue(value: 4.44)
         DispatchQueue.global(qos: .unspecified).async {
@@ -140,6 +141,34 @@ extension ReadMeExamples {
         DispatchQueue.main.async {
             let result = queueSafeSyncedValue.lowestPriority.update { currentValue in
                 currentValue["b"] = 2
+            }
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
+        }
+    }
+    
+    private func syncedUpdateValueInsideClosureCommandWithManualCompletionSample() {
+        // Option 1
+        let queueSafeValue = QueueSafeValue(value: "value 1")
+        DispatchQueue.main.async {
+            let result = queueSafeValue.wait.lowestPriority.update { currentValue, complete in
+                currentValue = "value 2"
+                complete() // should always be executed (called)
+            }
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
+        }
+        
+        // Option 2
+        let queueSafeSyncedValue = QueueSafeSyncedValue(value: "value a")
+        DispatchQueue.main.async {
+            let result = queueSafeSyncedValue.lowestPriority.update { currentValue, complete in
+                currentValue = "value b"
+                complete() // should always be executed (called)
             }
             switch result {
             case .failure(let error): print(error)

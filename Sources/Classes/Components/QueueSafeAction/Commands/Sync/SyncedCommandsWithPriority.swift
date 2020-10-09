@@ -65,9 +65,9 @@ extension SyncedCommandsWithPriority {
     public func get() -> Result<CurrentValue, QueueSafeValueError> { execute { $0 } }
 
     /**
-     Queue-safe (thread-safe) `value` reading in closure.
+     Queue-safe (thread-safe) `value` reading inside closure.
      - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
-     - Parameter completion: a closure containing sequential code that updates the original nested `value`.
+     - Parameter completion: a closure that get an enumeration instance consisting of `CurrentValue` or `QueueSafeValueError`. Expected sequential code inside a closure.
      */
     public func get(completion commandClosure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
         let result = execute { currentValue -> Void in
@@ -81,12 +81,13 @@ extension SyncedCommandsWithPriority {
     }
 
     /**
-     Queue-safe (thread-safe) `value` reading in closure that must be completed manually.
+     Queue-safe (thread-safe) `value` reading inside closure that must be completed manually.
      - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
-     - Parameter manualCompletion: a closure with asynchronous code that updates the original nested `value`.
+     - Requires: `CommandCompletionClosure`  must always be executed (called).
+     - Parameter manualCompletion:a closure that get an enumeration instance consisting of `CurrentValue` (or `QueueSafeValueError`) and `CommandCompletionClosure`.
      */
     public func get(manualCompletion commandClosure: ((Result<CurrentValue, QueueSafeValueError>,
-                                                @escaping CommandCompletionClosure) -> Void)?) {
+                                                       @escaping CommandCompletionClosure) -> Void)?) {
         manuallyCompleted { complete in
             self.get { result in commandClosure?(result, complete) }
         }
@@ -113,14 +114,33 @@ extension SyncedCommandsWithPriority {
      Queue-safe (thread-safe) `value` updating.
      - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
      - Parameter completion: a closure containing sequential code that updates the original nested `value`.
-     - Attention: `closure` will not be run if any ` QueueSafeValueError` occurs.
+     - Attention: `commandClosure` will not be run if any ` QueueSafeValueError` occurs.
      - Returns: enum instance that contains `UpdatedValue` or `QueueSafeValueError`.
      */
     @discardableResult
-    public func update(completion closure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError> {
+    public func update(completion commandClosure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError> {
         execute { currentValue in
-            closure?(&currentValue)
+            commandClosure?(&currentValue)
             return currentValue
         }
+    }
+
+    /**
+     Queue-safe (thread-safe) `value` updating inside closure that must be completed manually.
+     - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
+     - Parameter manualCompletion: a closure with asynchronous code that updates the original nested `value`.
+     - Attention: `commandClosure` will not be run if any ` QueueSafeValueError` occurs. Sequential or asynchronous code is expected inside the `commandClosure`.
+     - Returns: enum instance that contains `UpdatedValue` or `QueueSafeValueError`.
+     */
+    @discardableResult
+    public func update(manualCompletion commandClosure: ((inout CurrentValue, @escaping CommandCompletionClosure) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError> {
+        var result: Result<UpdatedValue, QueueSafeValueError>!
+        manuallyCompleted { complete in
+            result = execute { currentValue in
+                commandClosure?(&currentValue, complete)
+                return currentValue
+            }
+        }
+        return result
     }
 }

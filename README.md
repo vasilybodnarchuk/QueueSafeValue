@@ -46,9 +46,18 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
 ## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​ 🇶​​​​​🇺​​​​​🇪​​​​​🇺​​​​​🇪​​​​​
 
-> stores `commands` and executes them sequentially with the correct priority.
-> `QueueSafeValue` has a built-in `command queue` (`priority queue`) where all 
-> `closures` (`commands`) will be placed and perfomed after. 
+- stores `commands` and executes them sequentially with the correct priority.
+-  `QueueSafeValue` has a built-in `command queue` (`priority queue`) where all 
+-  `closures` (`commands`) will be placed and perfomed after. 
+
+## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​ 🇨​​​​​🇱​​​​​🇴​​​​​🇸​​​​​🇺​​​​​🇷​​​​​🇪​​​​​
+
+- is a closure inside which the value is accessed
+- protected from concurrent access to `value` (works as `critical section`, implementation based on `DispatchGroup`)
+
+*Available command closures*: 
+- `completion commandClosure` - default closure that expects to work with serial code within itself 
+- `manualCompletion commandClosure` -  closure that expects to work with serial / asynchronous code within itself. This closure must be completed manually by calling the `Command Completion Closure`, placed as a property inside `commandClosure`.
 
 ### Request components:
 
@@ -106,11 +115,11 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 2. Synchronous `get` value in `command closure`
+### 2. Synchronous `get` value in `commandClosure`
 
-* returns `CurrentValue` or `QueueSafeValueError` in `command closure`. 
-* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `command closure`.
-* `command closure` will be completed automatically.
+* returns `CurrentValue` or `QueueSafeValueError` in `commandClosure`
+* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
+* `commandClosure` will be completed automatically
 
 ```Swift
 func get(completion commandClosure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
@@ -142,14 +151,15 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 3. Synchronous `get` value in `command closure` with `CommandCompletionClosure`
+### 3. Synchronous `get` value in `commandClosure` with `CommandCompletionClosure`
 
-* returns `CurrentValue` or `QueueSafeValueError` and  `CommandCompletionClosure` in the `command closure`.
-* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `command closure`.
-* `command closure` must be completed manually by performing (calling) `CommandCompletionClosure`.
+* returns `CurrentValue` or `QueueSafeValueError` and  `CommandCompletionClosure` inside the `commandClosure`
+* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
+* `commandClosure` must be completed manually by performing (calling) `CommandCompletionClosure`
 
 ```Swift
-func get(manualCompletion commandClosure: ((Result<CurrentValue, QueueSafeValueError>, @escaping CommandCompletionClosure) -> Void)?)
+func get(manualCompletion commandClosure: ((Result<CurrentValue, QueueSafeValueError>,
+                                            @escaping CommandCompletionClosure) -> Void)?)
 ```
 
 > Code sample
@@ -214,10 +224,13 @@ DispatchQueue.global(qos: .userInitiated).async {
 
 ### 5. Synchronous `update` 
 
->  updates `CurrentValue` in closure.  Useful when processing / updating a value consists of multiple lines of code.
+* updates `CurrentValue` inside a closure
+* is used when it is necessary to both read and write a `value` inside one closure
+* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
+* **Attention**: `commandClosure` will not be run if any ` QueueSafeValueError` occurs
 
 ```Swift
-func update(closure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
+func update(completion commandClosure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
 ```
 
 > Code sample
@@ -248,7 +261,49 @@ DispatchQueue.main.async {
 }
 ```
 
-### 6. Synchronous `transform` 
+### 6. Synchronous `update` 
+
+* updates `CurrentValue` inside a closure
+* is used when it is necessary to both read and write a `value` inside one closure
+* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
+* **Attention**: `commandClosure` will not be run if any ` QueueSafeValueError` occurs.
+
+```Swift
+func update(manualCompletion commandClosure: ((inout CurrentValue, 
+                                               @escaping CommandCompletionClosure) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
+```
+
+> Code sample
+
+```Swift
+// Option 1
+let queueSafeValue = QueueSafeValue(value: "value 1")
+DispatchQueue.main.async {
+    let result = queueSafeValue.wait.lowestPriority.update { currentValue, complete in
+        currentValue = "value 2"
+        complete() // should always be executed (called)
+    }
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+}
+
+// Option 2
+let queueSafeSyncedValue = QueueSafeSyncedValue(value: "value a")
+DispatchQueue.main.async {
+    let result = queueSafeSyncedValue.lowestPriority.update { currentValue, complete in
+        currentValue = "value b"
+        complete() // should always be executed (called)
+    }
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+}
+```
+
+### 7. Synchronous `transform` 
 
 > transforms value without changing original instance
 

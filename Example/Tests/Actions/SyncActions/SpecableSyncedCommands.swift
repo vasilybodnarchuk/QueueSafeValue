@@ -31,6 +31,7 @@ extension SpecableSyncedCommands {
  */
 extension SpecableSyncedCommands {
     private func testBasicFunctionality() {
+        let delayInUseconds: useconds_t = 100_000
         context("test basic functionality") {
             it("get func") {
                 self.testWeakReference(before: {
@@ -40,11 +41,11 @@ extension SpecableSyncedCommands {
                 })
             }
 
-            it("get func with closure with auto completion") {
+            it("get func inside closure with auto completion") {
                 self.testWeakReference(before: {
                     var funcWasExecuted: Bool!
                     $0.get { _ in
-                        usleep(500_000)
+                        usleep(delayInUseconds)
                         funcWasExecuted = true
                     }
                     expect(funcWasExecuted) == true
@@ -52,7 +53,7 @@ extension SpecableSyncedCommands {
                 }, after: {
                     var funcWasExecuted: Bool!
                     $0.get { _ in
-                        usleep(500_000)
+                        usleep(delayInUseconds)
                         funcWasExecuted = true
                     }
                     expect(funcWasExecuted) == true
@@ -60,11 +61,11 @@ extension SpecableSyncedCommands {
                 })
             }
             
-            it("get func with closure with manual completion") {
+            it("get func inside closure with manual completion") {
                 self.testWeakReference(before: {
                     var funcWasExecuted: Bool!
                     $0.get { (_, done) in
-                        usleep(500_000)
+                        usleep(delayInUseconds)
                         funcWasExecuted = true
                         done()
                     }
@@ -73,7 +74,7 @@ extension SpecableSyncedCommands {
                 }, after: {
                     var funcWasExecuted: Bool!
                     $0.get { (_, done) in
-                        usleep(500_000)
+                        usleep(delayInUseconds)
                         funcWasExecuted = true
                         done()
                     }
@@ -93,15 +94,35 @@ extension SpecableSyncedCommands {
                 })
             }
 
-            it("update func") {
+            it("update func inside closure with auto completion") {
                 let newValue = self.createInstance(value: 2)
                 self.testWeakReference(before: {
-                    $0.update { $0 = newValue }
-                    expect($0.get()) == .success(newValue)
+                    let result = $0.update { $0 = newValue }
+                    expect(result) == .success(newValue)
                 }, after: {
                     var wasExecuted = false
-                    $0.update { _ in wasExecuted = true }
-                    expect($0.get()) == .failure(.valueContainerDeinited)
+                    let result = $0.update { _ in wasExecuted = true }
+                    expect(result) == .failure(.valueContainerDeinited)
+                    expect(wasExecuted) == false
+                })
+            }
+            
+            it("update func inside closure with manual completion") {
+                let newValue = self.createInstance(value: 2)
+                self.testWeakReference(before: {
+                    let result = $0.update { mutableValue, complete in
+                        usleep(delayInUseconds)
+                        mutableValue = newValue
+                        complete()
+                    }
+                    expect(result) == .success(newValue)
+                }, after: {
+                    var wasExecuted = false
+                    let result = $0.update { _, complete in
+                        wasExecuted = true
+                        complete()
+                    }
+                    expect(result) == .failure(.valueContainerDeinited)
                     expect(wasExecuted) == false
                 })
             }
