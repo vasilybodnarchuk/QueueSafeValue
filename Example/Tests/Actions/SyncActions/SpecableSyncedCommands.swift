@@ -94,23 +94,23 @@ extension SpecableSyncedCommands {
                 })
             }
 
-            it("update func inside closure with auto completion") {
+            it("set func inside closure with auto completion") {
                 let newValue = self.createInstance(value: 2)
                 self.testWeakReference(before: {
-                    let result = $0.update { $0 = newValue }
+                    let result = $0.set { $0 = newValue }
                     expect(result) == .success(newValue)
                 }, after: {
                     var wasExecuted = false
-                    let result = $0.update { _ in wasExecuted = true }
+                    let result = $0.set { _ in wasExecuted = true }
                     expect(result) == .failure(.valueContainerDeinited)
                     expect(wasExecuted) == false
                 })
             }
             
-            it("update func inside closure with manual completion") {
+            it("set func inside closure with manual completion") {
                 let newValue = self.createInstance(value: 2)
                 self.testWeakReference(before: {
-                    let result = $0.update { mutableValue, complete in
+                    let result = $0.set { mutableValue, complete in
                         usleep(delayInUseconds)
                         mutableValue = newValue
                         complete()
@@ -118,9 +118,8 @@ extension SpecableSyncedCommands {
                     expect(result) == .success(newValue)
                 }, after: {
                     var wasExecuted = false
-                    let result = $0.update { _, complete in
+                    let result = $0.set { _, _ in
                         wasExecuted = true
-                        complete()
                     }
                     expect(result) == .failure(.valueContainerDeinited)
                     expect(wasExecuted) == false
@@ -176,7 +175,7 @@ extension SpecableSyncedCommands {
         }
         
         queueCheckingWhereClosureIsRuning(funcName: "update") { commands, done in
-            commands.update { result in done() }
+            commands.set { result in done() }
         }
         
         queueCheckingWhereClosureIsRuning(funcName: "transform") { commands, done in

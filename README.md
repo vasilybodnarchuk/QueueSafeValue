@@ -228,16 +228,16 @@ DispatchQueue.global(qos: .userInitiated).async {
 }
 ```
 
-### 5. Synchronous `update` value inside `commandClosure`
+### 5. Synchronous `set` value inside `commandClosure`
 
-* updates `CurrentValue` inside a closure
+* sets `CurrentValue` inside a closure
 * is used when it is necessary to both read and write a `value` inside one closure
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
 * **Attention**: `commandClosure` will not be run if any ` QueueSafeValueError` occurs
 
 ```Swift
 @discardableResult
-func update(completion commandClosure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
+func set(completion commandClosure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
 ```
 
 > Code sample
@@ -246,7 +246,7 @@ func update(completion commandClosure: ((inout CurrentValue) -> Void)?) -> Resul
 // Option 1
 let queueSafeValue = QueueSafeValue(value: 1)
 DispatchQueue.main.async {
-    let result = queueSafeValue.wait.lowestPriority.update { currentValue in
+    let result = queueSafeValue.wait.lowestPriority.set { currentValue in
         currentValue = 3
     }
     switch result {
@@ -258,7 +258,7 @@ DispatchQueue.main.async {
 // Option 2
 let queueSafeSyncedValue = QueueSafeSyncedValue(value: ["a":1])
 DispatchQueue.main.async {
-    let result = queueSafeSyncedValue.lowestPriority.update { currentValue in
+    let result = queueSafeSyncedValue.lowestPriority.set { currentValue in
         currentValue["b"] = 2
     }
     switch result {
@@ -270,7 +270,7 @@ DispatchQueue.main.async {
 
 ### 6. Synchronous `update` value inside `commandClosure` with manual completion
 
-* updates `CurrentValue` inside a closure
+* sets `CurrentValue` inside a closure
 * is used when it is necessary to both read and write a `value` inside one closure
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
 * **important**:  `commandClosure` must be completed manually by performing (calling) `CommandCompletionClosure`
@@ -278,8 +278,8 @@ DispatchQueue.main.async {
 
 ```Swift
 @discardableResult
-func update(manualCompletion commandClosure: ((inout CurrentValue, 
-                                               @escaping CommandCompletionClosure) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
+func set(manualCompletion commandClosure: ((inout CurrentValue, 
+                                            @escaping CommandCompletionClosure) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
 ```
 
 > Code sample
@@ -288,7 +288,7 @@ func update(manualCompletion commandClosure: ((inout CurrentValue,
 // Option 1
 let queueSafeValue = QueueSafeValue(value: "value 1")
 DispatchQueue.main.async {
-    let result = queueSafeValue.wait.lowestPriority.update { currentValue, complete in
+    let result = queueSafeValue.wait.lowestPriority.set { currentValue, complete in
         currentValue = "value 2"
         complete() // must always be executed (called)
     }
@@ -301,7 +301,7 @@ DispatchQueue.main.async {
 // Option 2
 let queueSafeSyncedValue = QueueSafeSyncedValue(value: "value a")
 DispatchQueue.main.async {
-    let result = queueSafeSyncedValue.lowestPriority.update { currentValue, complete in
+    let result = queueSafeSyncedValue.lowestPriority.set { currentValue, complete in
         currentValue = "value b"
         complete() // must always be executed (called)
     }

@@ -15,16 +15,6 @@ import Foundation
 public class SyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
 
     /**
-     Queue-safe (thread-safe) `value` transforming.
-     - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
-     - Parameter completion: a closure containing sequential code that updates the original nested `value`.
-     - Returns: enum instance that contains `TransformedValue` or `QueueSafeValueError`.
-     */
-    public func transform<TransformedValue>(completion closure: ((CurrentValue) -> TransformedValue)?) -> Result<TransformedValue, QueueSafeValueError> {
-        execute { closure!($0) }
-    }
-
-    /**
      Performs `command` synchronously in defined order.
      - Parameter command: a closure (block) that updates the original `value` instance, wrapped in a `ValueContainer` object.
      - Returns: enum instance that contains `ResultValue` or `QueueSafeValueError`.
@@ -55,17 +45,17 @@ public class SyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
     func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) { fatalError() }
 }
 
-// MARK: Get functions
+// MARK: Get commands
 extension SyncedCommandsWithPriority {
     /**
-     Queue-safe (thread-safe) `value` reading.
+     Queue-safe (thread-safe) `value` getting command.
      - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
      - Returns: enum instance that contains `CurrentValue` or `QueueSafeValueError`.
      */
     public func get() -> Result<CurrentValue, QueueSafeValueError> { execute { $0 } }
 
     /**
-     Queue-safe (thread-safe) `value` reading inside closure.
+     Queue-safe (thread-safe) `value` getting inside a closure command.
      - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
      - Parameter completion: a closure that get an enumeration instance consisting of `CurrentValue` or `QueueSafeValueError`. Expected sequential code inside a closure.
      */
@@ -81,7 +71,7 @@ extension SyncedCommandsWithPriority {
     }
 
     /**
-     Queue-safe (thread-safe) `value` reading inside closure that must be completed manually.
+     Queue-safe (thread-safe) `value` getting inside a closure that must be completed manually command.
      - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
      - Requires: `CommandCompletionClosure`  must always be executed (called).
      - Parameter manualCompletion:a closure that get an enumeration instance consisting of `CurrentValue` (or `QueueSafeValueError`) and `CommandCompletionClosure`.
@@ -94,10 +84,10 @@ extension SyncedCommandsWithPriority {
     }
 }
 
-// MARK: Change value
+// MARK: Change value commands
 extension SyncedCommandsWithPriority {
     /**
-     Queue-safe (thread-safe) `value` writing.
+     Queue-safe (thread-safe) `value` setting command.
      - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
      - Parameter newValue: value to set
      - Returns: enum instance that contains `UpdatedValue` or `QueueSafeValueError`.
@@ -111,14 +101,14 @@ extension SyncedCommandsWithPriority {
     }
 
     /**
-     Queue-safe (thread-safe) `value` updating.
+     Queue-safe (thread-safe) `value` setting inside closure command.
      - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
      - Parameter completion: a closure containing sequential code that updates the original nested `value`.
      - Attention: `commandClosure` will not be run if any ` QueueSafeValueError` occurs.
      - Returns: enum instance that contains `UpdatedValue` or `QueueSafeValueError`.
      */
     @discardableResult
-    public func update(completion commandClosure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError> {
+    public func set(completion commandClosure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError> {
         execute { currentValue in
             commandClosure?(&currentValue)
             return currentValue
@@ -126,21 +116,39 @@ extension SyncedCommandsWithPriority {
     }
 
     /**
-     Queue-safe (thread-safe) `value` updating inside closure that must be completed manually.
+     Queue-safe (thread-safe) `value` setting inside closure that must be completed manually.
      - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
      - Parameter manualCompletion: a closure with asynchronous code that updates the original nested `value`.
      - Attention: `commandClosure` will not be run if any ` QueueSafeValueError` occurs. Sequential or asynchronous code is expected inside the `commandClosure`.
      - Returns: enum instance that contains `UpdatedValue` or `QueueSafeValueError`.
      */
     @discardableResult
-    public func update(manualCompletion commandClosure: ((inout CurrentValue, @escaping CommandCompletionClosure) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError> {
+    public func set(manualCompletion commandClosure: ((inout CurrentValue, @escaping CommandCompletionClosure) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError> {
         var result: Result<UpdatedValue, QueueSafeValueError>!
         manuallyCompleted { complete in
             result = execute { currentValue in
                 commandClosure?(&currentValue, complete)
                 return currentValue
             }
+            switch result! {
+            case .failure: complete()
+            case .success: break
+            }
         }
         return result
     }
+}
+
+// MARK: Other commands
+extension SyncedCommandsWithPriority {
+    /**
+     Queue-safe (thread-safe) `value` transforming.
+     - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
+     - Parameter completion: a closure containing sequential code that updates the original nested `value`.
+     - Returns: enum instance that contains `TransformedValue` or `QueueSafeValueError`.
+     */
+    public func transform<TransformedValue>(completion closure: ((CurrentValue) -> TransformedValue)?) -> Result<TransformedValue, QueueSafeValueError> {
+        execute { closure!($0) }
+    }
+
 }

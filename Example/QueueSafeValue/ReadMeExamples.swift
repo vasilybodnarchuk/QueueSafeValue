@@ -127,7 +127,7 @@ extension ReadMeExamples {
         // Option 1
         let queueSafeValue = QueueSafeValue(value: 1)
         DispatchQueue.main.async {
-            let result = queueSafeValue.wait.lowestPriority.update { currentValue in
+            let result = queueSafeValue.wait.lowestPriority.set { currentValue in
                 currentValue = 3
             }
             switch result {
@@ -139,7 +139,7 @@ extension ReadMeExamples {
         // Option 2
         let queueSafeSyncedValue = QueueSafeSyncedValue(value: ["a":1])
         DispatchQueue.main.async {
-            let result = queueSafeSyncedValue.lowestPriority.update { currentValue in
+            let result = queueSafeSyncedValue.lowestPriority.set { currentValue in
                 currentValue["b"] = 2
             }
             switch result {
@@ -153,7 +153,7 @@ extension ReadMeExamples {
         // Option 1
         let queueSafeValue = QueueSafeValue(value: "value 1")
         DispatchQueue.main.async {
-            let result = queueSafeValue.wait.lowestPriority.update { currentValue, complete in
+            let result = queueSafeValue.wait.lowestPriority.set { currentValue, complete in
                 currentValue = "value 2"
                 complete() // should always be executed (called)
             }
@@ -166,7 +166,7 @@ extension ReadMeExamples {
         // Option 2
         let queueSafeSyncedValue = QueueSafeSyncedValue(value: "value a")
         DispatchQueue.main.async {
-            let result = queueSafeSyncedValue.lowestPriority.update { currentValue, complete in
+            let result = queueSafeSyncedValue.lowestPriority.set { currentValue, complete in
                 currentValue = "value b"
                 complete() // should always be executed (called)
             }

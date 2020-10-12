@@ -37,7 +37,7 @@ public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
     public func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
         execute(command: { $0 }, completion: closure)
     }
-    
+
     /**
      Queue-safe (thread-safe) `value` writing.
      - Important: the func will be executed asynchronously in `command queue`.
