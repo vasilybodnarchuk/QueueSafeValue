@@ -87,7 +87,7 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
 ### Available synchronous commands: 
 
-### 1. Synchronous `get` value
+### 1. Synchronously `get` value
 
 * returns `CurrentValue` or `QueueSafeValueError`
 * is used when only the return `value` is required (no `value` processing)
@@ -119,7 +119,7 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 2. Synchronous `get` value inside `commandClosure`
+### 2. Synchronously `get` value inside `commandClosure`
 
 * returns `CurrentValue` or `QueueSafeValueError` inside `commandClosure`
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
@@ -155,7 +155,7 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 3. Synchronous `get` value inside `commandClosure` with manual completion
+### 3. Synchronously `get` value inside `commandClosure` with manual completion
 
 * returns `CurrentValue` or `QueueSafeValueError` and  `CommandCompletionClosure` inside the `commandClosure`
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
@@ -194,7 +194,7 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 4. Synchronous `set` value
+### 4. Synchronously `set` value
 
 * returns `UpdatedValue` or `QueueSafeValueError`
 * is used when only the set of `value` is required (no `value` processing)
@@ -228,9 +228,9 @@ DispatchQueue.global(qos: .userInitiated).async {
 }
 ```
 
-### 5. Synchronous `set` value inside `commandClosure`
+### 5. Synchronously `set` value inside a `commandClosure`
 
-* sets `CurrentValue` inside a closure
+* sets `CurrentValue` inside the `commandClosure` 
 * is used when it is necessary to both read and write a `value` inside one closure
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
 * **Attention**: `commandClosure` will not be run if any ` QueueSafeValueError` occurs
@@ -268,9 +268,9 @@ DispatchQueue.main.async {
 }
 ```
 
-### 6. Synchronous `update` value inside `commandClosure` with manual completion
+### 6. Synchronously `set` value inside a `commandClosure` with manual completion
 
-* sets `CurrentValue` inside a closure
+* sets `CurrentValue` inside the `commandClosure` 
 * is used when it is necessary to both read and write a `value` inside one closure
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
 * **important**:  `commandClosure` must be completed manually by performing (calling) `CommandCompletionClosure`
@@ -312,12 +312,13 @@ DispatchQueue.main.async {
 }
 ```
 
-### 7. Synchronous `map` value inside `commandClosure` 
+### 7. Synchronously `map` value inside a `commandClosure` 
 
-> transforms value without changing original instance
+* maps (transforms) `CurrentValue` to `MappedValue` inside the `commandClosure` 
+* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
 
 ```Swift
-func map<MappedValue>(completion commandClosure: ((CurrentValue) -> MappedValue)?) -> Result<MappedValue, QueueSafeValueError> {
+public func map<MappedValue>(completion commandClosure: ((CurrentValue) -> MappedValue)?) -> Result<MappedValue, QueueSafeValueError>
 ```
 
 > Code sample
