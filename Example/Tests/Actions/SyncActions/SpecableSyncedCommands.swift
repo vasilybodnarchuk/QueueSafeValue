@@ -41,7 +41,7 @@ extension SpecableSyncedCommands {
                 })
             }
 
-            it("get func inside closure with auto completion") {
+            it("get command inside closure with auto completion") {
                 self.testWeakReference(before: {
                     var funcWasExecuted: Bool!
                     $0.get { _ in
@@ -61,7 +61,7 @@ extension SpecableSyncedCommands {
                 })
             }
             
-            it("get func inside closure with manual completion") {
+            it("get command inside closure with manual completion") {
                 self.testWeakReference(before: {
                     var funcWasExecuted: Bool!
                     $0.get { (_, done) in
@@ -83,7 +83,7 @@ extension SpecableSyncedCommands {
                 })
             }
 
-            it("set func") {
+            it("set command") {
                 let newValue = SimpleClass(value: 2)
                 self.testWeakReference(before: {
                     $0.set(newValue: newValue)
@@ -94,7 +94,7 @@ extension SpecableSyncedCommands {
                 })
             }
 
-            it("set func inside closure with auto completion") {
+            it("set command inside closure with auto completion") {
                 let newValue = self.createInstance(value: 2)
                 self.testWeakReference(before: {
                     let result = $0.set { $0 = newValue }
@@ -107,7 +107,7 @@ extension SpecableSyncedCommands {
                 })
             }
             
-            it("set func inside closure with manual completion") {
+            it("set command inside closure with manual completion") {
                 let newValue = self.createInstance(value: 2)
                 self.testWeakReference(before: {
                     let result = $0.set { mutableValue, complete in
@@ -126,13 +126,13 @@ extension SpecableSyncedCommands {
                 })
             }
 
-            it("transform func") {
+            it("map command inside closure with auto completion") {
                 self.testWeakReference(before: {
-                    let result = $0.transform { "\($0)" }
+                    let result = $0.map { "\($0)" }
                     expect($0.get()) == .success(self.createDefultInstance())
                     expect(result) == .success("\(self.createDefultInstance())")
                 }, after: {
-                    let result = $0.transform { "\($0)" }
+                    let result = $0.map { "\($0)" }
                     expect($0.get()) == .failure(.valueContainerDeinited)
                     expect(result) == .failure(.valueContainerDeinited)
                 })
@@ -178,8 +178,8 @@ extension SpecableSyncedCommands {
             commands.set { result in done() }
         }
         
-        queueCheckingWhereClosureIsRuning(funcName: "transform") { commands, done in
-            _ = commands.transform { value -> Value in
+        queueCheckingWhereClosureIsRuning(funcName: "map") { commands, done in
+            _ = commands.map { value -> Value in
                 done()
                 return value
             }

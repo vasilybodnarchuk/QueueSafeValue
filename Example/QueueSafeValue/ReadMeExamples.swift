@@ -181,7 +181,7 @@ extension ReadMeExamples {
         // Option 1
         let queueSafeValue = QueueSafeValue(value: 5)
         DispatchQueue.global(qos: .background).async {
-            let result = queueSafeValue.wait.lowestPriority.transform { "\($0)" }
+            let result = queueSafeValue.wait.lowestPriority.map { "\($0)" }
             switch result {
             case .failure(let error): print(error)
             case .success(let value): print(value)
@@ -191,7 +191,7 @@ extension ReadMeExamples {
         // Option 2
         let queueSafeSyncedValue = QueueSafeSyncedValue(value: "1")
         DispatchQueue.global(qos: .background).async {
-            let result = queueSafeSyncedValue.lowestPriority.transform { Int($0) }
+            let result = queueSafeSyncedValue.lowestPriority.map { Int($0) }
             switch result {
             case .failure(let error): print(error)
             case .success(let value): print(String(describing: value))

@@ -312,12 +312,12 @@ DispatchQueue.main.async {
 }
 ```
 
-### 7. Synchronous `transform` 
+### 7. Synchronous `map` value inside `commandClosure` 
 
 > transforms value without changing original instance
 
 ```Swift
-func transform<TransformedValue>(closure: ((CurrentValue) -> TransformedValue)?) -> Result<TransformedValue, QueueSafeValueError>
+func map<MappedValue>(completion commandClosure: ((CurrentValue) -> MappedValue)?) -> Result<MappedValue, QueueSafeValueError> {
 ```
 
 > Code sample
@@ -326,7 +326,7 @@ func transform<TransformedValue>(closure: ((CurrentValue) -> TransformedValue)?)
 // Option 1
 let queueSafeValue = QueueSafeValue(value: 5)
 DispatchQueue.global(qos: .background).async {
-    let result = queueSafeValue.wait.lowestPriority.transform { "\($0)" }
+    let result = queueSafeValue.wait.lowestPriority.map { "\($0)" }
     switch result {
     case .failure(let error): print(error)
     case .success(let value): print(value)
@@ -336,7 +336,7 @@ DispatchQueue.global(qos: .background).async {
 // Option 2
 let queueSafeSyncedValue = QueueSafeSyncedValue(value: "1")
 DispatchQueue.global(qos: .background).async {
-    let result = queueSafeSyncedValue.lowestPriority.transform { Int($0) }
+    let result = queueSafeSyncedValue.lowestPriority.map { Int($0) }
     switch result {
     case .failure(let error): print(error)
     case .success(let value): print(String(describing: value))

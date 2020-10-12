@@ -85,7 +85,7 @@ extension Examples {
     private func syncTransformActionSample() {
         let queueSafeValue = QueueSafeValue(value: 5)
         DispatchQueue.global(qos: .background).async {
-            let result = queueSafeValue.wait.lowestPriority.transform { "\($0)" }
+            let result = queueSafeValue.wait.lowestPriority.map { "\($0)" }
             self.log(title: "Sync lowPriority transform", result: result)
         }
     }

@@ -130,8 +130,8 @@ extension SyncedCommandsWithPriority {
                 commandClosure?(&currentValue, complete)
                 return currentValue
             }
-            switch result! {
-            case .failure: complete()
+            switch result {
+            case .failure, .none: complete()
             case .success: break
             }
         }
@@ -142,13 +142,21 @@ extension SyncedCommandsWithPriority {
 // MARK: Other commands
 extension SyncedCommandsWithPriority {
     /**
-     Queue-safe (thread-safe) `value` transforming.
+     Queue-safe (thread-safe) `value` mapping.
      - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
      - Parameter completion: a closure containing sequential code that updates the original nested `value`.
-     - Returns: enum instance that contains `TransformedValue` or `QueueSafeValueError`.
+     - Returns: enum instance that contains `MappedValue` or `QueueSafeValueError`.
      */
-    public func transform<TransformedValue>(completion closure: ((CurrentValue) -> TransformedValue)?) -> Result<TransformedValue, QueueSafeValueError> {
-        execute { closure!($0) }
+    public func map<MappedValue>(completion commandClosure: ((CurrentValue) -> MappedValue)?) -> Result<MappedValue, QueueSafeValueError> {
+        execute { commandClosure!($0) }
+//        var resultError: QueueSafeValueError?
+//        let result = execute { currentValue -> MappedValue? in
+//            guard let closure = commandClosure else {
+//                resultError = .commandClosureDeallocated
+//                return nil
+//            }
+//            return closure(currentValue)
+//        }
+//        
     }
-
 }
