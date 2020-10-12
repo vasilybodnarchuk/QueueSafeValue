@@ -21,17 +21,17 @@ public class SyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
      */
 
     @discardableResult
-    func execute<ResultValue>(command: @escaping (inout CurrentValue) -> ResultValue) -> Result<ResultValue, QueueSafeValueError> {
+    func execute<ResultValue>(command: @escaping (inout CurrentValue) -> Result<ResultValue, QueueSafeValueError>) -> Result<ResultValue, QueueSafeValueError> {
         guard let valueContainer = valueContainer else { return .failure(.valueContainerDeinited) }
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
-        var resultValue: ResultValue!
+        var resultValue: Result<ResultValue, QueueSafeValueError>!
         executeInCommandQueue(valueContainer: valueContainer) { currentValue in
             resultValue = command(&currentValue)
             dispatchGroup.leave()
         }
         dispatchGroup.wait()
-        return .success(resultValue)
+        return resultValue
     }
 
     /**
@@ -52,7 +52,7 @@ extension SyncedCommandsWithPriority {
      - Important: the func runs synchronously (blocks a queue where this code runs until it completed).
      - Returns: enum instance that contains `CurrentValue` or `QueueSafeValueError`.
      */
-    public func get() -> Result<CurrentValue, QueueSafeValueError> { execute { $0 } }
+    public func get() -> Result<CurrentValue, QueueSafeValueError> { execute { .success($0) } }
 
     /**
      Queue-safe (thread-safe) `value` getting inside a closure command.
@@ -60,9 +60,9 @@ extension SyncedCommandsWithPriority {
      - Parameter completion: a closure that get an enumeration instance consisting of `CurrentValue` or `QueueSafeValueError`. Expected sequential code inside a closure.
      */
     public func get(completion commandClosure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
-        let result = execute { currentValue -> Void in
+        let result = execute { currentValue -> Result<Void, QueueSafeValueError> in
             commandClosure?(.success(currentValue))
-            return Void()
+            return .success(Void())
         }
         switch result {
         case .failure(let error): commandClosure?(.failure(error))
@@ -96,7 +96,7 @@ extension SyncedCommandsWithPriority {
     public func set(newValue: Value) -> Result<UpdatedValue, QueueSafeValueError> {
         execute { currentValue in
             currentValue = newValue
-            return currentValue
+            return .success(newValue)
         }
     }
 
@@ -111,7 +111,7 @@ extension SyncedCommandsWithPriority {
     public func set(completion commandClosure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError> {
         execute { currentValue in
             commandClosure?(&currentValue)
-            return currentValue
+            return .success(currentValue)
         }
     }
 
@@ -128,7 +128,7 @@ extension SyncedCommandsWithPriority {
         manuallyCompleted { complete in
             result = execute { currentValue in
                 commandClosure?(&currentValue, complete)
-                return currentValue
+                return .success(currentValue)
             }
             switch result {
             case .failure, .none: complete()
@@ -148,15 +148,9 @@ extension SyncedCommandsWithPriority {
      - Returns: enum instance that contains `MappedValue` or `QueueSafeValueError`.
      */
     public func map<MappedValue>(completion commandClosure: ((CurrentValue) -> MappedValue)?) -> Result<MappedValue, QueueSafeValueError> {
-        execute { commandClosure!($0) }
-//        var resultError: QueueSafeValueError?
-//        let result = execute { currentValue -> MappedValue? in
-//            guard let closure = commandClosure else {
-//                resultError = .commandClosureDeallocated
-//                return nil
-//            }
-//            return closure(currentValue)
-//        }
-//        
+        execute { currentValue -> Result<MappedValue, QueueSafeValueError> in
+            guard let closure = commandClosure else { return .failure(.commandClosureDeallocated) }
+            return .success(closure(currentValue))
+        }
     }
 }

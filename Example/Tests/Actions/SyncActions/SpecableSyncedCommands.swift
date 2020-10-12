@@ -170,12 +170,26 @@ extension SpecableSyncedCommands {
 extension SpecableSyncedCommands {
 
     private func checkQueueWhereCommandIsRunning() {
-        queueCheckingWhereClosureIsRuning(funcName: "get with completion") { commands, done in
+        queueCheckingWhereClosureIsRuning(funcName: "get with manual completion") { commands, done in
             commands.get { _ in done() }
         }
         
-        queueCheckingWhereClosureIsRuning(funcName: "update") { commands, done in
-            commands.set { result in done() }
+        queueCheckingWhereClosureIsRuning(funcName: "get with autocompletion") { commands, done in
+            commands.get { _, completeCommand in
+                completeCommand()
+                done()
+            }
+        }
+        
+        queueCheckingWhereClosureIsRuning(funcName: "set with manual completion") { commands, done in
+            commands.set { _ in done() }
+        }
+        
+        queueCheckingWhereClosureIsRuning(funcName: "set with autocompletion") { commands, done in
+            commands.set { _, completeCommand in
+                completeCommand()
+                done()
+            }
         }
         
         queueCheckingWhereClosureIsRuning(funcName: "map") { commands, done in
@@ -189,7 +203,7 @@ extension SpecableSyncedCommands {
     private func queueCheckingWhereClosureIsRuning(funcName: String,
                                                    closure: @escaping (Commands, _ done: @escaping () -> Void) -> Void) {
         let queueSafeValue = createQueueSafeValue(value: createDefultInstance())
-        it("check that closure of \(funcName) function is being executed on the correct queue") {
+        it("check that closure of \(funcName) command is being executed on the correct queue") {
             let queue = Queues.random
             let commands = self.commands(from: queueSafeValue)
             waitUntil(timeout: 1) { done in
