@@ -44,13 +44,13 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
 ### Definitions:
 
-## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​ 🇶​​​​​🇺​​​​​🇪​​​​​🇺​​​​​🇪​​​​​
+## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​  🇶​​​​​🇺​​​​​🇪​​​​​🇺​​​​​🇪​​​​​
 
 - stores `commands` and executes them sequentially with the correct priority.
 -  `QueueSafeValue` has a built-in `command queue` (`priority queue`) where all 
 -  `closures` (`commands`) will be placed and perfomed after. 
 
-## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​ 🇨​​​​​🇱​​​​​🇴​​​​​🇸​​​​​🇺​​​​​🇷​​​​​🇪​​​​​
+## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​  🇨​​​​​🇱​​​​​🇴​​​​​🇸​​​​​🇺​​​​​🇷​​​​​🇪​​​​​
 
 - is a closure inside which the value is accessed
 - protected from concurrent access to `value` (works as `critical section`, implementation based on `DispatchGroup`)
@@ -59,7 +59,7 @@ Framework that provides thread-safe (queue-safe) access to the value.
 - `commandClosure` - default closure that expects to work with serial code within itself 
 - `manually completed commandClosure` -  closure that expects to work with serial / asynchronous code within itself. This closure must be completed manually by calling the `CommandCompletionClosure`, placed as a property inside `commandClosure`.
 
-## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​ 🇨​​​​​🇴​​​​​🇲​​​​​🇵​​​​​🇱​​​​​🇪​​​​​🇹​​​​​🇮​​​​​🇴​​​​​🇳​​​​​ 🇨​​​​​🇱​​​​​🇴​​​​​🇸​​​​​🇺​​​​​🇷​​​​​🇪​​​​​
+## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​  🇨​​​​​🇴​​​​​🇲​​​​​🇵​​​​​🇱​​​​​🇪​​​​​🇹​​​​​🇮​​​​​🇴​​​​​🇳​​​​​  🇨​​​​​🇱​​​​​🇴​​​​​🇸​​​​​🇺​​​​​🇷​​​​​🇪​​​​​
 
 - a closure that must always be performed (called) if available as a property inside the `commandClosure`
 
@@ -89,8 +89,8 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
 ### 1. Synchronous `get` value
 
-* returns `CurrentValue` or `QueueSafeValueError`. 
-* is used when only the return `value` is required (no processing).
+* returns `CurrentValue` or `QueueSafeValueError`
+* is used when only the return `value` is required (no `value` processing)
 
 ```Swift
 func get() -> Result<CurrentValue, QueueSafeValueError>
@@ -194,12 +194,14 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 4. Synchronous `set` 
+### 4. Synchronous `set` value
 
-> sets `value`
+* returns `UpdatedValue` or `QueueSafeValueError`
+* is used when only the set of `value` is required (no `value` processing)
 
 ```Swift
-func set(newValue: Value) -> Result<UpdatedValue, QueueSafeValueError>
+@discardableResult
+public func set(newValue: Value) -> Result<UpdatedValue, QueueSafeValueError>
 ```
 
 > Code sample
@@ -234,6 +236,7 @@ DispatchQueue.global(qos: .userInitiated).async {
 * **Attention**: `commandClosure` will not be run if any ` QueueSafeValueError` occurs
 
 ```Swift
+@discardableResult
 func update(completion commandClosure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
 ```
 
@@ -274,6 +277,7 @@ DispatchQueue.main.async {
 * **Attention**: `commandClosure` will not be run if any ` QueueSafeValueError` occurs.
 
 ```Swift
+@discardableResult
 func update(manualCompletion commandClosure: ((inout CurrentValue, 
                                                @escaping CommandCompletionClosure) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
 ```
