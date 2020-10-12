@@ -1,5 +1,5 @@
 //
-//  LowPriorityAsyncedCommandsSpec.swift
+//  LowestPriorityAsyncedCommandsSpec.swift
 //  QueueSafeValue_Tests
 //
 //  Created by Vasily Bodnarchuk on 8/25/20.
@@ -9,14 +9,14 @@
 import Quick
 import QueueSafeValue
 
-class LowPriorityAsyncedCommandsSpec: QuickSpec, SpecableAsyncedCommands {
+class LowestPriorityAsyncedCommandsSpec: QuickSpec, SpecableAsyncedCommands {
 
     typealias Value = SimpleClass
     typealias Commands = AsyncedCommandsWithPriority<Value>
     typealias QueueSafeValueType = QueueSafeValue<Value>
     let queueSafeValueDispatchQueue = Queues.random
 
-    var testedObjectName: String { "Low Priority Asynced Commands" }
+    var testedObjectName: String { "Lowest Priority Asynced Commands" }
     
     func commands(from queueSafeValue: QueueSafeValueType) -> Commands {
         queueSafeValue.async(performIn: queueSafeValueDispatchQueue).lowestPriority
