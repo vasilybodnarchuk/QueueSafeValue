@@ -12,6 +12,7 @@ import Foundation
 public enum QueueSafeValueError: Error {
     case valueContainerDeinited
     case unexpected(error: Error)
+    case commandClosureDeallocated
 }
 
 // MARK: Equatable

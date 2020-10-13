@@ -31,6 +31,7 @@ extension SpecableSyncedCommands {
  */
 extension SpecableSyncedCommands {
     private func testBasicFunctionality() {
+        let delayInUseconds: useconds_t = 100_000
         context("test basic functionality") {
             it("get func") {
                 self.testWeakReference(before: {
@@ -40,21 +41,49 @@ extension SpecableSyncedCommands {
                 })
             }
 
-            it("get in closure func") {
+            it("get command inside closure with auto completion") {
                 self.testWeakReference(before: {
-                    var wasExecuted = false
-                    $0.get { _ in wasExecuted = true  }
+                    var funcWasExecuted: Bool!
+                    $0.get { _ in
+                        usleep(delayInUseconds)
+                        funcWasExecuted = true
+                    }
+                    expect(funcWasExecuted) == true
                     expect($0.get()) == .success(self.createDefultInstance())
-                    expect(wasExecuted) == true
                 }, after: {
-                    var wasExecuted = false
-                    $0.get { _ in wasExecuted = true }
+                    var funcWasExecuted: Bool!
+                    $0.get { _ in
+                        usleep(delayInUseconds)
+                        funcWasExecuted = true
+                    }
+                    expect(funcWasExecuted) == true
                     expect($0.get()) == .failure(.valueContainerDeinited)
-                    expect(wasExecuted) == true
+                })
+            }
+            
+            it("get command inside closure with manual completion") {
+                self.testWeakReference(before: {
+                    var funcWasExecuted: Bool!
+                    $0.get { (_, done) in
+                        usleep(delayInUseconds)
+                        funcWasExecuted = true
+                        done()
+                    }
+                    expect(funcWasExecuted) == true
+                    expect($0.get()) == .success(self.createDefultInstance())
+                }, after: {
+                    var funcWasExecuted: Bool!
+                    $0.get { (_, done) in
+                        usleep(delayInUseconds)
+                        funcWasExecuted = true
+                        done()
+                    }
+                    expect(funcWasExecuted) == true
+                    expect($0.get()) == .failure(.valueContainerDeinited)
                 })
             }
 
-            it("set func") {
+            it("set command") {
                 let newValue = SimpleClass(value: 2)
                 self.testWeakReference(before: {
                     $0.set(newValue: newValue)
@@ -65,31 +94,55 @@ extension SpecableSyncedCommands {
                 })
             }
 
-            it("update func") {
+            it("set command inside closure with auto completion") {
                 let newValue = self.createInstance(value: 2)
                 self.testWeakReference(before: {
-                    $0.update { $0 = newValue }
-                    expect($0.get()) == .success(newValue)
+                    let result = $0.set { $0 = newValue }
+                    expect(result) == .success(newValue)
                 }, after: {
                     var wasExecuted = false
-                    $0.update { _ in wasExecuted = true }
-                    expect($0.get()) == .failure(.valueContainerDeinited)
+                    let result = $0.set { _ in wasExecuted = true }
+                    expect(result) == .failure(.valueContainerDeinited)
+                    expect(wasExecuted) == false
+                })
+            }
+            
+            it("set command inside closure with manual completion") {
+                let newValue = self.createInstance(value: 2)
+                self.testWeakReference(before: {
+                    let result = $0.set { mutableValue, complete in
+                        usleep(delayInUseconds)
+                        mutableValue = newValue
+                        complete()
+                    }
+                    expect(result) == .success(newValue)
+                }, after: {
+                    var wasExecuted = false
+                    let result = $0.set { _, _ in
+                        wasExecuted = true
+                    }
+                    expect(result) == .failure(.valueContainerDeinited)
                     expect(wasExecuted) == false
                 })
             }
 
-            it("transform func") {
+            it("map command inside closure with auto completion") {
                 self.testWeakReference(before: {
-                    let result = $0.transform { "\($0)" }
+                    let result = $0.map { "\($0)" }
                     expect($0.get()) == .success(self.createDefultInstance())
                     expect(result) == .success("\(self.createDefultInstance())")
                 }, after: {
-                    let result = $0.transform { "\($0)" }
+                    let result = $0.map { "\($0)" }
                     expect($0.get()) == .failure(.valueContainerDeinited)
                     expect(result) == .failure(.valueContainerDeinited)
                 })
             }
         }
+    }
+    
+    private func expectExecutionTime(timestamp1: Date, timestamp2: Date, expectedTimeRange: ClosedRange<Double>) {
+        let timeDifference = timestamp2.timeIntervalSince1970 - timestamp1.timeIntervalSince1970
+        expect(expectedTimeRange ~= timeDifference) == true
     }
     
     private func testWeakReference(before: (Commands) -> Void,
@@ -117,16 +170,30 @@ extension SpecableSyncedCommands {
 extension SpecableSyncedCommands {
 
     private func checkQueueWhereCommandIsRunning() {
-        queueCheckingWhereClosureIsRuning(funcName: "get with completion") { commands, done in
+        queueCheckingWhereClosureIsRuning(funcName: "get with manual completion") { commands, done in
             commands.get { _ in done() }
         }
         
-        queueCheckingWhereClosureIsRuning(funcName: "update") { commands, done in
-            commands.update { result in done() }
+        queueCheckingWhereClosureIsRuning(funcName: "get with autocompletion") { commands, done in
+            commands.get { _, completeCommand in
+                completeCommand()
+                done()
+            }
         }
         
-        queueCheckingWhereClosureIsRuning(funcName: "transform") { commands, done in
-            _ = commands.transform { value -> Value in
+        queueCheckingWhereClosureIsRuning(funcName: "set with manual completion") { commands, done in
+            commands.set { _ in done() }
+        }
+        
+        queueCheckingWhereClosureIsRuning(funcName: "set with autocompletion") { commands, done in
+            commands.set { _, completeCommand in
+                completeCommand()
+                done()
+            }
+        }
+        
+        queueCheckingWhereClosureIsRuning(funcName: "map") { commands, done in
+            _ = commands.map { value -> Value in
                 done()
                 return value
             }
@@ -136,7 +203,7 @@ extension SpecableSyncedCommands {
     private func queueCheckingWhereClosureIsRuning(funcName: String,
                                                    closure: @escaping (Commands, _ done: @escaping () -> Void) -> Void) {
         let queueSafeValue = createQueueSafeValue(value: createDefultInstance())
-        it("check that closure of \(funcName) function is being executed on the correct queue") {
+        it("check that closure of \(funcName) command is being executed on the correct queue") {
             let queue = Queues.random
             let commands = self.commands(from: queueSafeValue)
             waitUntil(timeout: 1) { done in

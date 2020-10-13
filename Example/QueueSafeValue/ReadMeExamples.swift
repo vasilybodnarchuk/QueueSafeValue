@@ -22,8 +22,10 @@ extension ReadMeExamples {
     func runSyncActions() {
         syncGetActionSample()
         syncGetInClosureActionSample()
+        syncedGetValueInsideClosureCommandWithManualCompletionSample()
         syncSetActionSample()
         syncUpdateActionSample()
+        syncedUpdateValueInsideClosureCommandWithManualCompletionSample()
         syncTransformActionSample()
     }
     
@@ -73,6 +75,32 @@ extension ReadMeExamples {
         }
     }
     
+    private func syncedGetValueInsideClosureCommandWithManualCompletionSample() {
+        // Option 1
+        let queueSafeValue = QueueSafeValue(value: 4.44)
+        DispatchQueue.global(qos: .unspecified).async {
+            queueSafeValue.wait.highestPriority.get { (result, complete) in
+                switch result {
+                case .failure(let error): print(error)
+                case .success(let value): print(value)
+                }
+                complete() // should always be executed (called)
+            }
+        }
+        
+        // Option 2
+        let queueSafeSyncedValue = QueueSafeSyncedValue(value: 4.45)
+        DispatchQueue.global(qos: .utility).async {
+            queueSafeSyncedValue.highestPriority.get { (result, complete) in
+                switch result {
+                case .failure(let error): print(error)
+                case .success(let value): print(value)
+                }
+                complete() // should always be executed (called)
+            }
+        }
+    }
+    
     private func syncSetActionSample() {
         // Option 1
         let queueSafeValue = QueueSafeValue<Int>(value: 1)
@@ -99,7 +127,7 @@ extension ReadMeExamples {
         // Option 1
         let queueSafeValue = QueueSafeValue(value: 1)
         DispatchQueue.main.async {
-            let result = queueSafeValue.wait.lowestPriority.update { currentValue in
+            let result = queueSafeValue.wait.lowestPriority.set { currentValue in
                 currentValue = 3
             }
             switch result {
@@ -111,8 +139,36 @@ extension ReadMeExamples {
         // Option 2
         let queueSafeSyncedValue = QueueSafeSyncedValue(value: ["a":1])
         DispatchQueue.main.async {
-            let result = queueSafeSyncedValue.lowestPriority.update { currentValue in
+            let result = queueSafeSyncedValue.lowestPriority.set { currentValue in
                 currentValue["b"] = 2
+            }
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
+        }
+    }
+    
+    private func syncedUpdateValueInsideClosureCommandWithManualCompletionSample() {
+        // Option 1
+        let queueSafeValue = QueueSafeValue(value: "value 1")
+        DispatchQueue.main.async {
+            let result = queueSafeValue.wait.lowestPriority.set { currentValue, complete in
+                currentValue = "value 2"
+                complete() // should always be executed (called)
+            }
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
+        }
+        
+        // Option 2
+        let queueSafeSyncedValue = QueueSafeSyncedValue(value: "value a")
+        DispatchQueue.main.async {
+            let result = queueSafeSyncedValue.lowestPriority.set { currentValue, complete in
+                currentValue = "value b"
+                complete() // should always be executed (called)
             }
             switch result {
             case .failure(let error): print(error)
@@ -125,7 +181,7 @@ extension ReadMeExamples {
         // Option 1
         let queueSafeValue = QueueSafeValue(value: 5)
         DispatchQueue.global(qos: .background).async {
-            let result = queueSafeValue.wait.lowestPriority.transform { "\($0)" }
+            let result = queueSafeValue.wait.lowestPriority.map { "\($0)" }
             switch result {
             case .failure(let error): print(error)
             case .success(let value): print(value)
@@ -135,7 +191,7 @@ extension ReadMeExamples {
         // Option 2
         let queueSafeSyncedValue = QueueSafeSyncedValue(value: "1")
         DispatchQueue.global(qos: .background).async {
-            let result = queueSafeSyncedValue.lowestPriority.transform { Int($0) }
+            let result = queueSafeSyncedValue.lowestPriority.map { Int($0) }
             switch result {
             case .failure(let error): print(error)
             case .success(let value): print(String(describing: value))

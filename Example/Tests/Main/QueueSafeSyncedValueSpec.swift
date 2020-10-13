@@ -10,7 +10,6 @@ import Quick
 import QueueSafeValue
 
 class QueueSafeSyncedValueSpec: QuickSpec, SpecableSyncedCommands {
-
     typealias Value = SimpleClass
     typealias Commands = SyncedCommandsWithPriority<Value>
     typealias QueueSafeValueType = QueueSafeSyncedValue<Value>
