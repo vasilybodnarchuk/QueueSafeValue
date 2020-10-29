@@ -19,11 +19,14 @@ public class CommandsWithPriority<Value> {
     /// The type of container that stores original instance of `value`.
     typealias Container = ValueContainer<Value>
 
-    /// The type of closures to be called (executed) in  commands with manual completion.
+    /// The type of closures to be called (executed) in commands with manual completion.
     public typealias CommandCompletionClosure = () -> Void
 
     /// Retains the original instance of the `value` and provides queue-safe (thread-safe) access to it.
     private(set) weak var valueContainer: Container?
+
+    /// Priority characterizing the order of command execution. Must be overridden!
+    public var priority: ValueContainer<Value>.PerformPriority { fatalError() }
 
     /**
      Object initialization with parameters.
@@ -41,5 +44,16 @@ public class CommandsWithPriority<Value> {
         dispatchGroup.enter()
         closure({ dispatchGroup.leave() })
         dispatchGroup.wait()
+    }
+
+    /**
+     Defines performing order.
+     - Note: `command` will be executed asynchronously or synchronously in `CommandQueue`.
+     - Parameters:
+        - valueContainer: an object that stores the original `value` instance and provides queue-safe (thread-safe) access to it.
+        - command: a closure that updates (provides access) the original `value` instance, wrapped in a `ValueContainer` object.
+     */
+    func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) {
+        valueContainer.perform(priority: priority, closure: command)
     }
 }

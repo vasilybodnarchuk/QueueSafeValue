@@ -11,8 +11,6 @@ import Foundation
 /// Defines the available async `commands` that can manipulate an enclosed `value` and executes them in `lowest priority` order.
 public class LowestPriorityAsyncedCommands<Value>: AsyncedCommandsWithPriority<Value> {
 
-    /// Overriden. Read the documentation in the parent class
-    override func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) {
-        valueContainer.perform(priority: .commandQueue(priority: .lowest), closure: command)
-    }
+    public override
+    var priority: ValueContainer<Value>.PerformPriority { .commandQueue(priority: .lowest) }
 }

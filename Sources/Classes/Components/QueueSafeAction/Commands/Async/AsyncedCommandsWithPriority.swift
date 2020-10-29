@@ -51,16 +51,6 @@ public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
             }
         }
     }
-
-    /**
-     Defines performing order.
-     - Note: `command` will be executed asynchronously in `CommandQueue`.
-     - Important: must be redefined (overridden).
-     - Parameters:
-        - valueContainer: an object that stores the original `value` instance and provides queue-safe (thread-safe) access to it.
-        - command: a closure that updates (provides access) the original `value` instance, wrapped in a `ValueContainer` object.
-     */
-    func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) { fatalError() }
 }
 
 // MARK: Get commands

@@ -33,16 +33,6 @@ public class SyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
         dispatchGroup.wait()
         return resultValue
     }
-
-    /**
-     Defines performing order.
-     - Note: the func blocks a queue where this code runs until it completed.
-     - Important: must be redefined (overridden).
-     - Parameters:
-        - valueContainer: an object that stores the original `value` instance and provides thread-safe (queue-safe) access to it.
-        - command: a closure that updates (provides access) the original enclosed `value`.
-     */
-    func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) { fatalError() }
 }
 
 // MARK: Get commands
