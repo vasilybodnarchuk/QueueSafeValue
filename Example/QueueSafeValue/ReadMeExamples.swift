@@ -264,12 +264,10 @@ extension ReadMeExamples {
         let queueSafeValue = QueueSafeValue<Int>(value: 1)
 
         // Without completion block
-        queueSafeValue.async(performIn: .background).highestPriority.update(closure: { currentValue in
-            currentValue = 10
-        })
+        queueSafeValue.async(performIn: .background).highestPriority.set { $0 = 10 }
         
         // With completion block
-        queueSafeValue.async(performIn: .background).highestPriority.update(closure: { currentValue in
+        queueSafeValue.async(performIn: .background).highestPriority.set(accessClosure: { currentValue in
             currentValue = 11
         }, completion: { result in
             switch result {
@@ -282,12 +280,12 @@ extension ReadMeExamples {
         let queueSafeAsyncedValue = QueueSafeAsyncedValue<Int>(value: 1, queue: .global(qos: .userInteractive))
 
         // Without completion block
-        queueSafeAsyncedValue.highestPriority.update(closure: { currentValue in
+        queueSafeAsyncedValue.highestPriority.set { currentValue in
             currentValue = 10
-        })
+        }
         
         // With completion block
-        queueSafeAsyncedValue.highestPriority.update(closure: { currentValue in
+        queueSafeAsyncedValue.highestPriority.set(accessClosure: { currentValue in
             currentValue = 11
         }, completion: { result in
             switch result {

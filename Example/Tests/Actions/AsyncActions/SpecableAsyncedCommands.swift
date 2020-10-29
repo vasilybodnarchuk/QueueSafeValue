@@ -71,7 +71,7 @@ extension SpecableAsyncedCommands {
                     dispatchGroup.enter()
                     let resultInstance = self.createInstance(value: newValue)
                     var valueUpdated = false
-                    commands.update(closure: { instance in
+                    commands.set(accessClosure: { instance in
                         valueUpdated = true
                         expect(self.createDefultInstance().value) == instance.value
                         instance.value = newValue
@@ -88,7 +88,7 @@ extension SpecableAsyncedCommands {
                 }) { commands, dispatchGroup in
                     dispatchGroup.enter()
                     var valueUpdated = false
-                    commands.update(closure: { instance in
+                    commands.set(accessClosure: { instance in
                         valueUpdated = true
                         instance.value = newValue
                     }) { result in
@@ -192,11 +192,11 @@ extension SpecableAsyncedCommands {
         }
         
         queueCheckingWhereClosureIsRuning(funcName: "update") { commands, done in
-            commands.update(closure: { _ in done() })
+            commands.set { _ in done() }
         }
         
         queueCheckingWhereClosureIsRuning(funcName: "successful update completion") { commands, done in
-            commands.update(closure: { _ in
+            commands.set(accessClosure: { _ in
                 
             }, completion: { result in
                 expect(result) == .success(self.createDefultInstance())
@@ -205,7 +205,7 @@ extension SpecableAsyncedCommands {
         }
         
         queueCheckingWhereClosureIsRuning(funcName: "failed update completion", deinitQueueSafeValueBeforeRunClosure: true) { commands, done in
-            commands.update(closure: { _ in
+            commands.set(accessClosure: { _ in
                 
             }, completion: { result in
                 expect(result) == .failure(.valueContainerDeinited)

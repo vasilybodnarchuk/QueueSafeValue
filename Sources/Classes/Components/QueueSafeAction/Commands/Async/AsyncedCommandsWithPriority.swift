@@ -75,7 +75,7 @@ extension AsyncedCommandsWithPriority {
         execute(command: { $0 }, completion: commandClosure)
     }
 }
-    
+
 // MARK: Change value commands
 extension AsyncedCommandsWithPriority {
 
@@ -94,15 +94,15 @@ extension AsyncedCommandsWithPriority {
     }
 
     /**
-     Queue-safe (thread-safe) `value` updating command.
+     Queue-safe (thread-safe) `value` setting inside the `accessClosure` command.
      - Important: the func will be executed asynchronously in `CommandQueue`.
      - Parameters:
         - accessClosure: a closure that provide access to the `CurrentValue`,  where it is possible to change the original instance of the `CurrentValue`. Expected sequential code inside the `accessClosure`.
         - completion: a closure that returns the `UpdatedValue` on success or  `QueueSafeValueError` on fail. Expected sequential code inside the `commandClosure`.
      - Attention: `accessClosure` will not be run if any ` QueueSafeValueError` occurs.
      */
-    public func update(accessClosure: ((inout CurrentValue) -> Void)?,
-                       completion commandClosure: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) {
+    public func set(accessClosure: ((inout CurrentValue) -> Void)?,
+                    completion commandClosure: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) {
         execute(command: {
             accessClosure?(&$0)
             return $0
