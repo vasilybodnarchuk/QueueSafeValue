@@ -74,6 +74,19 @@ extension AsyncedCommandsWithPriority {
     public func get(completion commandClosure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
         execute(command: { $0 }, completion: commandClosure)
     }
+
+    /**
+     Queue-safe (thread-safe) `value` getting inside a closure that must be completed manually command.
+     - Important: the func will be executed asynchronously in the `CommandQueue`.
+     - Requires: `CommandCompletionClosure`  must always be executed (called).
+     - Parameter manualCompletion: a closure that returns the `CurrentValue` on success or  `QueueSafeValueError` on fail. Expected sequential or asynchronous code inside the `commandClosure`.
+     */
+    public func get(manualCompletion commandClosure: ((Result<CurrentValue, QueueSafeValueError>,
+                                                       @escaping CommandCompletionClosure) -> Void)?) {
+        manuallyCompleted { complete in
+            self.get { result in commandClosure?(result, complete) }
+        }
+    }
 }
 
 // MARK: Change value commands

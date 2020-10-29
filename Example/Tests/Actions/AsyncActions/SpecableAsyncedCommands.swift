@@ -19,7 +19,7 @@ extension SpecableAsyncedCommands {
     func runTests() {
         describe(testedObjectName) {
             testBasicFunctionality()
-            checkQueueWhereCommandIsRunning()
+           // checkQueueWhereCommandIsRunning()
         }
     }
 }
@@ -32,74 +32,91 @@ extension SpecableAsyncedCommands {
  */
 
 extension SpecableAsyncedCommands {
+    
     private func testBasicFunctionality() {
         context("test basic functionality") {
-            it("get func") {
-                self.testWeakReference(before: { commands, dispatchGroup in
-                    self.expectResult(.success(self.createDefultInstance()),
-                                      commands: commands, dispatchGroup: dispatchGroup)
-
-                }) { commands, dispatchGroup in
-                    self.expectResult(.failure(.valueContainerDeinited),
-                                       commands: commands, dispatchGroup: dispatchGroup)
-                }
-            }
-
-            it("set func") {
-                let resultInstance = self.createInstance(value: 3)
-                self.testWeakReference(before: { commands, dispatchGroup in
-                    dispatchGroup.enter()
-                    commands.set(newValue: resultInstance) { _ in
-                        dispatchGroup.leave()
-                    }
-                    self.expectResult(.success(resultInstance),
-                                      commands: commands, dispatchGroup: dispatchGroup)
-
-                }) { commands, dispatchGroup in
-                    dispatchGroup.enter()
-                    commands.set(newValue: resultInstance) { _ in
-                        dispatchGroup.leave()
-                    }
-                    self.expectResult(.failure(.valueContainerDeinited),
-                                      commands: commands, dispatchGroup: dispatchGroup)
-                }
-            }
-            
-            it("update func") {
-                let newValue = 4
-                self.testWeakReference(before: { commands, dispatchGroup in
-                    dispatchGroup.enter()
-                    let resultInstance = self.createInstance(value: newValue)
-                    var valueUpdated = false
-                    commands.set(accessClosure: { instance in
-                        valueUpdated = true
-                        expect(self.createDefultInstance().value) == instance.value
-                        instance.value = newValue
-                    }) { result in
-                        expect(result) == .success(resultInstance)
-                        expect(valueUpdated) == true
-                        dispatchGroup.leave()
-                    }
-
-                    self.expectResult(.success(resultInstance),
-                                      commands: commands, dispatchGroup: dispatchGroup)
-
-
-                }) { commands, dispatchGroup in
-                    dispatchGroup.enter()
-                    var valueUpdated = false
-                    commands.set(accessClosure: { instance in
-                        valueUpdated = true
-                        instance.value = newValue
-                    }) { result in
-                        expect(result) == .failure(.valueContainerDeinited)
-                        expect(valueUpdated) == false
-                        dispatchGroup.leave()
-                    }
-                    self.expectResult(.failure(.valueContainerDeinited),
-                                      commands: commands, dispatchGroup: dispatchGroup)
-                }
-            }
+            testValueReturningFunctionality();
+            return
+//            it("get command inside closure with auto completion") {
+//                self.testWeakReference(before: { commands, dispatchGroup in
+//                    self.expectResult(.success(self.createDefultInstance()),
+//                                      commands: commands, dispatchGroup: dispatchGroup)
+//
+//                }) { commands, dispatchGroup in
+//                    self.expectResult(.failure(.valueContainerDeinited),
+//                                       commands: commands, dispatchGroup: dispatchGroup)
+//                }
+//            }
+//
+//            it("get command inside closure with manual completion") {
+//                self.testWeakReference(before: { commands, dispatchGroup in
+//                    dispatchGroup.enter()
+////                    commands.get { (result, done) in
+////                        result
+//////                    }
+////                    self.expectResult(.success(resultInstance),
+////                                      commands: commands, dispatchGroup: dispatchGroup)
+//
+//                }) { commands, dispatchGroup in
+//
+//                }
+//            }
+//
+//            it("set func") {
+//                let resultInstance = self.createInstance(value: 3)
+//                self.testWeakReference(before: { commands, dispatchGroup in
+//                    dispatchGroup.enter()
+//                    commands.set(newValue: resultInstance) { _ in
+//                        dispatchGroup.leave()
+//                    }
+//                    self.expectResult(.success(resultInstance),
+//                                      commands: commands, dispatchGroup: dispatchGroup)
+//
+//                }) { commands, dispatchGroup in
+//                    dispatchGroup.enter()
+//                    commands.set(newValue: resultInstance) { _ in
+//                        dispatchGroup.leave()
+//                    }
+//                    self.expectResult(.failure(.valueContainerDeinited),
+//                                      commands: commands, dispatchGroup: dispatchGroup)
+//                }
+//            }
+//
+//            it("update func") {
+//                let newValue = 4
+//                self.testWeakReference(before: { commands, dispatchGroup in
+//                    dispatchGroup.enter()
+//                    let resultInstance = self.createInstance(value: newValue)
+//                    var valueUpdated = false
+//                    commands.set(accessClosure: { instance in
+//                        valueUpdated = true
+//                        expect(self.createDefultInstance().value) == instance.value
+//                        instance.value = newValue
+//                    }) { result in
+//                        expect(result) == .success(resultInstance)
+//                        expect(valueUpdated) == true
+//                        dispatchGroup.leave()
+//                    }
+//
+//                    self.expectResult(.success(resultInstance),
+//                                      commands: commands, dispatchGroup: dispatchGroup)
+//
+//
+//                }) { commands, dispatchGroup in
+//                    dispatchGroup.enter()
+//                    var valueUpdated = false
+//                    commands.set(accessClosure: { instance in
+//                        valueUpdated = true
+//                        instance.value = newValue
+//                    }) { result in
+//                        expect(result) == .failure(.valueContainerDeinited)
+//                        expect(valueUpdated) == false
+//                        dispatchGroup.leave()
+//                    }
+//                    self.expectResult(.failure(.valueContainerDeinited),
+//                                      commands: commands, dispatchGroup: dispatchGroup)
+//                }
+//            }
         }
     }
     
@@ -242,3 +259,48 @@ extension SpecableAsyncedCommands {
     }
 }
 
+// MARK: Test base value returning functionality (that get funcs returns correct values).
+
+extension SpecableAsyncedCommands {
+    
+    private func testValueReturningFunctionality() {
+        describe("value returning") {
+            let expectedValue = createDefultInstance()
+            var queueSafeValue: QueueSafeValueType!
+            var commands: Commands!
+            beforeEach {
+                queueSafeValue = self.createQueueSafeValue(value: expectedValue)
+                commands = self.commands(from: queueSafeValue)
+            }
+
+            it("inside closure with auto completion") {
+                waitUntil(timeout: 1) { done in
+                    commands.get { result in
+                        expect(result) == .success(expectedValue)
+                        done()
+                    }
+                }
+            }
+            
+            it("inside closure with manual completion") {
+                waitUntil(timeout: 1) { done in
+                    commands.get { result, finishCommand in
+                        expect(result) == .success(expectedValue)
+                        finishCommand()
+                        done()
+                    }
+                }
+            }
+            
+            it("inside closure with manual completion") {
+                waitUntil(timeout: 1) { done in
+                    commands.get { result, finishCommand in
+                        expect(result) == .success(expectedValue)
+                        finishCommand()
+                        done()
+                    }
+                }
+            }
+        }
+    }
+}
