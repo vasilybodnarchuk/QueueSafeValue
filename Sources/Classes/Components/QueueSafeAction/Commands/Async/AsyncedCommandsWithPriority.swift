@@ -21,7 +21,7 @@ public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
      Initialize object with properties.
      - Parameters:
         - valueContainer: an object that stores the original `value` instance and provides thread-safe (queue-safe) access to it.
-        - queue: a queue in which access to the `value` will be granted.
+        - queue: a queue in which access to the `value` will be granted (where `command` will be executed)
      - Returns: an object that defines the available functions which can manipulate the nested `value`.
      */
     init(valueContainer: ValueContainer<Value>?, grantAccessIn queue: DispatchQueue) {
@@ -30,50 +30,11 @@ public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
     }
 
     /**
-     Queue-safe (thread-safe) `value` reading.
-     - Important: the func will be executed asynchronously in `command queue`.
-     - Parameter closure: a closure that returns an enum instance containing `CurrentValue` or `QueueSafeValueError`.
-     */
-    public func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
-        execute(command: { $0 }, completion: closure)
-    }
-
-    /**
-     Queue-safe (thread-safe) `value` writing.
-     - Important: the func will be executed asynchronously in `command queue`.
-     - Parameters:
-        - newValue: value to set.
-        - completion: a closure that returns an enum instance containing `UpdatedValue` or `QueueSafeValueError`.
-     */
-    public func set(newValue: Value, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) {
-        execute(command: {
-            $0 = newValue
-            return $0
-        }, completion: completion)
-    }
-
-    /**
-     Queue-safe (thread-safe) `value` updating.
-     - Important: the func will be executed asynchronously in `command queue`.
-     - Parameters:
-        - closure: a closure that updates the original `value` instance.
-        - completion: a closure that returns an enum instance containing `UpdatedValue` or `QueueSafeValueError`.
-     - Attention: `closure` will not be run if any ` QueueSafeValueError` occurs.
-     */
-    public func update(closure: ((inout CurrentValue) -> Void)?,
-                       completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) {
-        execute(command: {
-            closure?(&$0)
-            return $0
-        }, completion: completion)
-    }
-
-    /**
      Performs `command` asynchronously  in embeded `queue` in defined order.
-     - Important: `command` will be executed asynchronously in `command queue`.
+     - Important: `command` will be executed asynchronously in the `CommandQueue`.
      - Parameters:
-        - command: a block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object and returns `ResultValue`
-        - completion: a closure that returns an enum instance containing `ResultValue` or `QueueSafeValueError`.
+        - command: a closure that updates (provides access) the original `value` instance, wrapped in a `ValueContainer` object and returns `ResultValue`
+        - completion: a closure that returns `ResultValue` on success or  `QueueSafeValueError` on fail.
      */
 
     func execute<ResultValue>(command: @escaping (inout CurrentValue) -> ResultValue,
@@ -93,12 +54,58 @@ public class AsyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
 
     /**
      Defines performing order.
-     - Note: `command` will be executed asynchronously in `command queue`.
+     - Note: `command` will be executed asynchronously in `CommandQueue`.
      - Important: must be redefined (overridden).
      - Parameters:
         - valueContainer: an object that stores the original `value` instance and provides queue-safe (thread-safe) access to it.
-        - command: A block (closure) that updates the original `value` instance, wrapped in a `ValueContainer` object.
+        - command: a closure that updates (provides access) the original `value` instance, wrapped in a `ValueContainer` object.
      */
     func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) { fatalError() }
+}
 
+// MARK: Get commands
+extension AsyncedCommandsWithPriority {
+
+    /**
+     Queue-safe (thread-safe) `value` getting command.
+     - Important: the func will be executed asynchronously in the `CommandQueue`.
+     - Parameter completion: a closure that returns the `CurrentValue` on success or  `QueueSafeValueError` on fail. Expected sequential code inside the `commandClosure`.
+     */
+    public func get(completion commandClosure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
+        execute(command: { $0 }, completion: commandClosure)
+    }
+}
+    
+// MARK: Change value commands
+extension AsyncedCommandsWithPriority {
+
+    /**
+     Queue-safe (thread-safe) `value` setting command.
+     - Important: the func will be executed asynchronously in the `CommandQueue`.
+     - Parameters:
+        - newValue: value to set.
+        - completion: a closure that returns the `UpdatedValue` on success or  `QueueSafeValueError` on fail. Expected sequential code inside the `commandClosure`.
+     */
+    public func set(newValue: Value, completion commandClosure: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) {
+        execute(command: {
+            $0 = newValue
+            return $0
+        }, completion: commandClosure)
+    }
+
+    /**
+     Queue-safe (thread-safe) `value` updating command.
+     - Important: the func will be executed asynchronously in `CommandQueue`.
+     - Parameters:
+        - accessClosure: a closure that provide access to the `CurrentValue`,  where it is possible to change the original instance of the `CurrentValue`. Expected sequential code inside the `accessClosure`.
+        - completion: a closure that returns the `UpdatedValue` on success or  `QueueSafeValueError` on fail. Expected sequential code inside the `commandClosure`.
+     - Attention: `accessClosure` will not be run if any ` QueueSafeValueError` occurs.
+     */
+    public func update(accessClosure: ((inout CurrentValue) -> Void)?,
+                       completion commandClosure: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) {
+        execute(command: {
+            accessClosure?(&$0)
+            return $0
+        }, completion: commandClosure)
+    }
 }

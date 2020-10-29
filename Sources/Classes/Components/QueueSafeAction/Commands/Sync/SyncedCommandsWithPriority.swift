@@ -16,8 +16,8 @@ public class SyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
 
     /**
      Performs `command` synchronously in defined order.
-     - Parameter command: a closure (block) that updates the original `value` instance, wrapped in a `ValueContainer` object.
-     - Returns: enum instance that contains `ResultValue` or `QueueSafeValueError`.
+     - Parameter command: a closure that updates (provides access) the original `value` instance, wrapped in the`ValueContainer` object.
+     - Returns: `ResultValue` on success or  `QueueSafeValueError` on fail.
      */
 
     @discardableResult
@@ -39,8 +39,8 @@ public class SyncedCommandsWithPriority<Value>: CommandsWithPriority<Value> {
      - Note: the func blocks a queue where this code runs until it completed.
      - Important: must be redefined (overridden).
      - Parameters:
-     - valueContainer: an object that stores the original `value` instance and provides thread-safe (queue-safe) access to it.
-     - command: a closure (block) that updates the original enclosed `value`.
+        - valueContainer: an object that stores the original `value` instance and provides thread-safe (queue-safe) access to it.
+        - command: a closure that updates (provides access) the original enclosed `value`.
      */
     func executeInCommandQueue(valueContainer: Container, command: @escaping Container.Closure) { fatalError() }
 }
@@ -57,7 +57,7 @@ extension SyncedCommandsWithPriority {
     /**
      Queue-safe (thread-safe) `value` getting inside a closure command.
      - Important: the func runs synchronously in `command queue` (blocks a queue where this code runs until it completed).
-     - Parameter completion: a closure that  provide access to the `CurrentValue` on success or  `QueueSafeValueError` on fail. Expected sequential code inside the `commandClosure`.
+     - Parameter completion: a closure that returns the `CurrentValue` on success or  `QueueSafeValueError` on fail. Expected sequential code inside the `commandClosure`.
      */
     public func get(completion commandClosure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?) {
         let result = execute { currentValue -> Result<Void, QueueSafeValueError> in
@@ -74,7 +74,7 @@ extension SyncedCommandsWithPriority {
      Queue-safe (thread-safe) `value` getting inside a closure that must be completed manually command.
      - Important: the func runs synchronously in `CommandQueue` (blocks a queue where this code runs until it completed).
      - Requires: `CommandCompletionClosure`  must always be executed (called).
-     - Parameter manualCompletion: a closure that  provide access to the `CurrentValue` on success or  `QueueSafeValueError` on fail. Expected sequential or asynchronous code inside the `commandClosure`.
+     - Parameter manualCompletion: a closure that returns the `CurrentValue` on success or  `QueueSafeValueError` on fail. Expected sequential or asynchronous code inside the `commandClosure`.
      */
     public func get(manualCompletion commandClosure: ((Result<CurrentValue, QueueSafeValueError>,
                                                        @escaping CommandCompletionClosure) -> Void)?) {
@@ -103,7 +103,7 @@ extension SyncedCommandsWithPriority {
     /**
      Queue-safe (thread-safe) `value` setting inside closure command.
      - Important: the func runs synchronously in `CommandQueue` (blocks a queue where this code runs until it completed).
-     - Parameter completion: a closure that  provide access to the `CurrentValue`,  where it is possible to change the original instance of the `CurrentValue`. Expected sequential code inside the `commandClosure`.
+     - Parameter completion: a closure that provide access to the `CurrentValue`,  where it is possible to change the original instance of the `CurrentValue`. Expected sequential code inside the `commandClosure`.
      - Attention: `commandClosure` will not be run if any ` QueueSafeValueError` occurs.
      - Returns: `UpdatedValue` on success or  `QueueSafeValueError` on fail.
      */
