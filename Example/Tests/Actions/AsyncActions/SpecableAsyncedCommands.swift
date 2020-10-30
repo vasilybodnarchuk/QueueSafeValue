@@ -18,8 +18,8 @@ protocol SpecableAsyncedCommands: SpecableCommands where Commands == AsyncedComm
 extension SpecableAsyncedCommands {
     func runTests() {
         describe(testedObjectName) {
-            testBasicFunctionality()
-           // checkQueueWhereCommandIsRunning()
+           // testBasicFunctionality()
+            checkQueueWhereCommandIsRunning()
         }
     }
 }
@@ -175,87 +175,141 @@ extension SpecableAsyncedCommands {
     }
 }
 
-/// Check that `commands` are running on the correct queues.
+// MARK: Check that command completions are running on the correct DispatchQueues.
 
 extension SpecableAsyncedCommands {
 
     private func checkQueueWhereCommandIsRunning() {
-        queueCheckingWhereClosureIsRuning(funcName: "successful set") { commands, done in
-            commands.set(newValue: self.createDefultInstance()) { result in
-                expect(result) == .success(self.createDefultInstance())
-                done()
-            }
+        let expectedValue = createDefultInstance()
+        var queueSafeValue: QueueSafeValueType!
+        var commands: Commands!
+        beforeEach {
+            queueSafeValue = self.createQueueSafeValue(value: expectedValue)
+            commands = self.commands(from: queueSafeValue)
         }
-        
-        queueCheckingWhereClosureIsRuning(funcName: "failed set", deinitQueueSafeValueBeforeRunClosure: true) { commands, done in
-            commands.set(newValue: self.createDefultInstance()) { result in
-                expect(result) == .failure(.valueContainerDeinited)
-                done()
-            }
-        }
-        
-        queueCheckingWhereClosureIsRuning(funcName: "successful get") { commands, done in
-            commands.get { result in
-                expect(result) == .success(self.createDefultInstance())
-                done()
-            }
-        }
-        
-        queueCheckingWhereClosureIsRuning(funcName: "failed get", deinitQueueSafeValueBeforeRunClosure: true) { commands, done in
-            commands.get { result in
-                expect(result) == .failure(.valueContainerDeinited)
-                done()
-            }
-        }
-        
-        queueCheckingWhereClosureIsRuning(funcName: "update") { commands, done in
-            commands.set { _ in done() }
-        }
-        
-        queueCheckingWhereClosureIsRuning(funcName: "successful update completion") { commands, done in
-            commands.set(accessClosure: { _ in
-                
-            }, completion: { result in
-                expect(result) == .success(self.createDefultInstance())
-                done()
-            })
-        }
-        
-        queueCheckingWhereClosureIsRuning(funcName: "failed update completion", deinitQueueSafeValueBeforeRunClosure: true) { commands, done in
-            commands.set(accessClosure: { _ in
-                
-            }, completion: { result in
-                expect(result) == .failure(.valueContainerDeinited)
-                done()
-            })
-        }
-    }
-    
-    private func queueCheckingWhereClosureIsRuning(funcName: String,
-                                                   deinitQueueSafeValueBeforeRunClosure: Bool = false,
-                                                   closure: @escaping (Commands, _ done: @escaping () -> Void) -> Void) {
-        it("check that closure of \(funcName) function is being executed on the correct queue") {
-            var queue1: DispatchQueue!
-            let queue2 = self.queueSafeValueDispatchQueue
-            while (queue1 == nil) {
-                let randomQueue = Queues.random
-                if randomQueue != queue2 { queue1 = randomQueue }
+
+        describe("get funcs") {
+            describe("with auto-completion") {
+                it("successful result") {
+                    self.runCommandInOneQueueAndFinishInAnother { done in
+                        commands.get { _ in done() }
+                    }
+                }
+                it("valueContainerDeinited error") {
+                    queueSafeValue = nil
+                    self.runCommandInOneQueueAndFinishInAnother { done in
+                        commands.get { _ in done() }
+                    }
+                }
             }
             
-            expect(queue1) != queue2
-            var queueSafeValue: QueueSafeValueType! = self.createQueueSafeValue(value: self.createDefultInstance())
-            let commands = self.commands(from: queueSafeValue)
-            if deinitQueueSafeValueBeforeRunClosure { queueSafeValue = nil }
-            waitUntil(timeout: 1) { done in
-                queue1.async {
-                    expect(queue1) == DispatchQueue.current
-                    closure(commands) {
-                        expect(queue2) == DispatchQueue.current
-                        done()
+            describe("with manual completion") {
+                it("successful result") {
+                    self.runCommandInOneQueueAndFinishInAnother { done in
+                        commands.get { (_, finishCommand) in
+                            finishCommand()
+                            done()
+                        }
+                    }
+                }
+                it("valueContainerDeinited error") {
+                    queueSafeValue = nil
+                    self.runCommandInOneQueueAndFinishInAnother { done in
+                        commands.get { (_, finishCommand) in
+                            finishCommand()
+                            done()
+                        }
                     }
                 }
             }
         }
+        describe("set funcs") {
+            let newValue = self.createInstance(value: (0...100_000).randomElement() ?? 1)
+            describe("with auto-completion") {
+                it("successful result") {
+                    self.runCommandInOneQueueAndFinishInAnother { done in
+                        commands.set(newValue: newValue) { _ in done() }
+                    }
+                    
+                    self.runCommandInOneQueueAndFinishInAnother { done in
+                        commands.set { _ in done() }
+                    }
+                    
+                    self.runCommandInOneQueueAndFinishInAnother { done in
+                        commands.set { _ in } completion: { _ in done() }
+                    }
+                }
+
+                it("valueContainerDeinited error") {
+                    queueSafeValue = nil
+                    self.runCommandInOneQueueAndFinishInAnother { done in
+                        commands.set(newValue: newValue) { _ in done() }
+                    }
+                }
+                
+                it("valueContainerDeinited error 2") {
+                    queueSafeValue = nil
+                    self.runCommandInOneQueueAndFinishInAnother { done in
+                        commands.set { _ in } completion: { _ in done() }
+                    }
+                }
+            }
+            
+            describe("with manual completion") {
+                it("successful result") {
+                    self.runCommandInOneQueueAndFinishInAnother { done in
+                        commands.set { (_, finishCommand) in
+                            finishCommand()
+                            done()
+                        }
+                    }
+                    
+                    self.runCommandInOneQueueAndFinishInAnother { done in
+                        commands.set { (_, finishCommand) in
+                            finishCommand()
+                        } completion: { _ in
+                            done()
+                        }
+                    }
+                }
+                it("valueContainerDeinited error") {
+                    queueSafeValue = nil
+                    self.runCommandInOneQueueAndFinishInAnother { done in
+                        commands.set { (_, finishCommand) in
+                            finishCommand()
+                        } completion: { _ in
+                            done()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func runCommandInOneQueueAndFinishInAnother(closure: @escaping (@escaping () -> Void) -> Void) {
+        var queue1: DispatchQueue!
+        let queue2 = self.queueSafeValueDispatchQueue
+        while (queue1 == nil) {
+            let randomQueue = Queues.random
+            if randomQueue != queue2 { queue1 = randomQueue }
+        }
+        
+        expect(queue1) != queue2
+        var visitedQueue1: Bool!
+        var visitedQueue2: Bool!
+        waitUntil(timeout: 1) { done in
+            queue1.async {
+                expect(queue1) == DispatchQueue.current
+                visitedQueue1 = true
+                closure {
+                    expect(queue2) == DispatchQueue.current
+                    visitedQueue2 = true
+                    done()
+                }
+            }
+        }
+        expect(visitedQueue1) == true
+        expect(visitedQueue2) == true
     }
 }
 

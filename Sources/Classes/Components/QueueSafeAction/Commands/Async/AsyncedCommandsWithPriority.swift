@@ -119,7 +119,6 @@ extension AsyncedCommandsWithPriority {
      - Requires: `CommandCompletionClosure`  must always be executed (called).
      - Parameter manualCompletion: a closure that  provide access to the `CurrentValue`,  where it is possible to change the original instance of the `CurrentValue`. Sequential or asynchronous code is expected inside the `accessClosure`.
      - Attention: `accessClosure` will not be run if any ` QueueSafeValueError` occurs.
-     - Returns: `UpdatedValue` on success or  `QueueSafeValueError` on fail.
      */
     public func set(manualCompletion accessClosure: ((inout CurrentValue, @escaping CommandCompletionClosure) -> Void)?,
                     completion commandClosure: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) {
