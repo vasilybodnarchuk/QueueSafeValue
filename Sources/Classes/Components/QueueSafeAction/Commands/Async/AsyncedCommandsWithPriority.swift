@@ -89,7 +89,8 @@ extension AsyncedCommandsWithPriority {
         - newValue: value to set.
         - completion: a closure that returns the `UpdatedValue` on success or  `QueueSafeValueError` on fail. Expected sequential code inside the `commandClosure`.
      */
-    public func set(newValue: Value, completion commandClosure: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) {
+    public func set(newValue: Value,
+                    completion commandClosure: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) {
         execute(command: {
             $0 = newValue
             return $0
@@ -101,7 +102,7 @@ extension AsyncedCommandsWithPriority {
      - Important: the func will be executed asynchronously in `CommandQueue`.
      - Parameters:
         - accessClosure: a closure that provide access to the `CurrentValue`,  where it is possible to change the original instance of the `CurrentValue`. Expected sequential code inside the `accessClosure`.
-        - completion: a closure that returns the `UpdatedValue` on success or  `QueueSafeValueError` on fail. Expected sequential code inside the `commandClosure`.
+        - completion: a closure that returns the `UpdatedValue` on success or  `QueueSafeValueError` on fail. Expected sequential code inside the `accessClosure`.
      - Attention: `accessClosure` will not be run if any ` QueueSafeValueError` occurs.
      */
     public func set(accessClosure: ((inout CurrentValue) -> Void)?,
@@ -110,5 +111,30 @@ extension AsyncedCommandsWithPriority {
             accessClosure?(&$0)
             return $0
         }, completion: commandClosure)
+    }
+
+    /**
+     Queue-safe (thread-safe) `value` setting inside the `accessClosure` command that must be completed manually.
+     - Important: the func will be executed asynchronously in `CommandQueue`.
+     - Requires: `CommandCompletionClosure`  must always be executed (called).
+     - Parameter manualCompletion: a closure that  provide access to the `CurrentValue`,  where it is possible to change the original instance of the `CurrentValue`. Sequential or asynchronous code is expected inside the `accessClosure`.
+     - Attention: `accessClosure` will not be run if any ` QueueSafeValueError` occurs.
+     - Returns: `UpdatedValue` on success or  `QueueSafeValueError` on fail.
+     */
+    public func set(manualCompletion accessClosure: ((inout CurrentValue, @escaping CommandCompletionClosure) -> Void)?,
+                    completion commandClosure: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) {
+        manuallyCompleted { complete in
+            execute(command: { currentValue -> UpdatedValue in
+                accessClosure?(&currentValue, complete)
+                return currentValue
+            }, completion: { (result) in
+                commandClosure?(result)
+                switch result {
+                case .failure: complete()
+                case .success: break
+                }
+            })
+
+        }
     }
 }

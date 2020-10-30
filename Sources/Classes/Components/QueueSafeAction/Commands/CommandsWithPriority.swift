@@ -21,6 +21,7 @@ public class CommandsWithPriority<Value> {
 
     /// The type of closures to be called (executed) in commands with manual completion.
     public typealias CommandCompletionClosure = () -> Void
+    public typealias ValueReturningCommandCompletionClosure = () -> UpdatedValue
 
     /// Retains the original instance of the `value` and provides queue-safe (thread-safe) access to it.
     private(set) weak var valueContainer: Container?

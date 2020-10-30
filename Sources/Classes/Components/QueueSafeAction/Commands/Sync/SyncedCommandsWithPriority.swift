@@ -108,6 +108,7 @@ extension SyncedCommandsWithPriority {
     /**
      Queue-safe (thread-safe) `value` setting inside the `accessClosure` command that must be completed manually.
      - Important: the func runs synchronously in `CommandQueue` (blocks a queue where this code runs until it completed).
+     - Requires: `CommandCompletionClosure`  must always be executed (called).
      - Parameter manualCompletion: a closure that  provide access to the `CurrentValue`,  where it is possible to change the original instance of the `CurrentValue`. Sequential or asynchronous code is expected inside the `accessClosure`.
      - Attention: `accessClosure` will not be run if any ` QueueSafeValueError` occurs.
      - Returns: `UpdatedValue` on success or  `QueueSafeValueError` on fail.
