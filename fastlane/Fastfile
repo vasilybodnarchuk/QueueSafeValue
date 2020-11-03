@@ -31,7 +31,8 @@ platform :ios do
   lane :test do
     scan(
       workspace: "Example/QueueSafeValue.xcworkspace",
-      scheme: "QueueSafeValue-Example"
+      scheme: "QueueSafeValue-Example",
+      configuration: "Debug",
     )
   end
 end
