@@ -30,7 +30,7 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
     *always returns* `Result<Value, QueueSafeValueError>`
     
-7. #### Available different value manipulation commands:
+7. #### Available different value manipulation commands
 
     *atomic command:* `queueSafeValue.wait.lowestPriority.get()`
    
@@ -178,24 +178,24 @@ func get(manualCompletion commandClosure: ((Result<CurrentValue, QueueSafeValueE
 // Option 1
 let queueSafeValue = QueueSafeValue(value: 4.44)
 DispatchQueue.global(qos: .unspecified).async {
-    queueSafeValue.wait.highestPriority.get { (result, complete) in
+    queueSafeValue.wait.highestPriority.get { result, done in
         switch result {
         case .failure(let error): print(error)
         case .success(let value): print(value)
         }
-        complete() // must always be executed (called)
+        done() // Must always be executed (called). Can be called in another DispatchQueue.
     }
 }
 
 // Option 2
 let queueSafeSyncedValue = QueueSafeSyncedValue(value: 4.45)
 DispatchQueue.global(qos: .utility).async {
-    queueSafeSyncedValue.highestPriority.get { (result, complete) in
+    queueSafeSyncedValue.highestPriority.get { result, done in
         switch result {
         case .failure(let error): print(error)
         case .success(let value): print(value)
         }
-        complete() // must always be executed (called)
+        done() // Must always be executed (called). Can be called in another DispatchQueue.
     }
 }
 ```
@@ -252,9 +252,7 @@ func set(completion accessClosure: ((inout CurrentValue) -> Void)?) -> Result<Up
 // Option 1
 let queueSafeValue = QueueSafeValue(value: 1)
 DispatchQueue.main.async {
-    let result = queueSafeValue.wait.lowestPriority.set { currentValue in
-        currentValue = 3
-    }
+    let result = queueSafeValue.wait.lowestPriority.set { $0 = 3 }
     switch result {
     case .failure(let error): print(error)
     case .success(let value): print(value)
@@ -264,9 +262,7 @@ DispatchQueue.main.async {
 // Option 2
 let queueSafeSyncedValue = QueueSafeSyncedValue(value: ["a":1])
 DispatchQueue.main.async {
-    let result = queueSafeSyncedValue.lowestPriority.set { currentValue in
-        currentValue["b"] = 2
-    }
+    let result = queueSafeSyncedValue.lowestPriority.set { $0["b"] = 2 }
     switch result {
     case .failure(let error): print(error)
     case .success(let value): print(value)
@@ -294,9 +290,9 @@ func set(manualCompletion accessClosure: ((inout CurrentValue,
 // Option 1
 let queueSafeValue = QueueSafeValue(value: "value 1")
 DispatchQueue.main.async {
-    let result = queueSafeValue.wait.lowestPriority.set { currentValue, complete in
+    let result = queueSafeValue.wait.lowestPriority.set { currentValue, done in
         currentValue = "value 2"
-        complete() // must always be executed (called)
+        done() // Must always be executed (called). Can be called in another DispatchQueue.
     }
     switch result {
     case .failure(let error): print(error)
@@ -307,9 +303,9 @@ DispatchQueue.main.async {
 // Option 2
 let queueSafeSyncedValue = QueueSafeSyncedValue(value: "value a")
 DispatchQueue.main.async {
-    let result = queueSafeSyncedValue.lowestPriority.set { currentValue, complete in
+    let result = queueSafeSyncedValue.lowestPriority.set { currentValue, done in
         currentValue = "value b"
-        complete() // must always be executed (called)
+        done() // Must always be executed (called). Can be called in another DispatchQueue.
     }
     switch result {
     case .failure(let error): print(error)
@@ -405,7 +401,7 @@ queueSafeValue.async(performIn: .global(qos: .utility)).highestPriority.get { re
     case .failure(let error): print(error)
     case .success(let value): print(value)
     }
-    done()
+    done() // Must always be executed (called). Can be called in another DispatchQueue.
 }
 
 // Option 2
@@ -415,7 +411,7 @@ queueSafeAsyncedValue.highestPriority.get { result, done in
     case .failure(let error): print(error)
     case .success(let value): print(value)
     }
-    done()
+    done() // Must always be executed (called). Can be called in another DispatchQueue.
 }
 ```
 
@@ -529,13 +525,13 @@ let queueSafeValue = QueueSafeValue(value: 999.1)
 // Without completion block
 queueSafeValue.async(performIn: .background).highestPriority.set { currentValue, done in
     currentValue = 999.2
-    done()
+    done() // Must always be executed (called). Can be called in another DispatchQueue.
 }
 
 // With completion block
 queueSafeValue.async(performIn: .background).highestPriority.set { currentValue, done in
     currentValue = 999.3
-    done()
+    done() // Must always be executed (called). Can be called in another DispatchQueue.
 } completion: { result in
     switch result {
     case .failure(let error): print(error)
@@ -549,13 +545,13 @@ let queueSafeAsyncedValue = QueueSafeAsyncedValue(value: 1000.1, queue: .global(
 // Without completion block
 queueSafeAsyncedValue.highestPriority.set { currentValue, done in
     currentValue = 1000.2
-    done()
+    done() // Must always be executed (called). Can be called in another DispatchQueue.
 }
 
 // With completion block
 queueSafeAsyncedValue.highestPriority.set { currentValue, done in
     currentValue = 1000.3
-    done()
+    done() // Must always be executed (called). Can be called in another DispatchQueue.
 } completion: { result in
     switch result {
     case .failure(let error): print(error)
