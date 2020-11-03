@@ -48,52 +48,48 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
 ## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩 &nbsp; 🇶​​​​​🇺​​​​​🇪​​​​​🇺​​​​​🇪​​​​​
 
-- stores `commands` and executes them sequentially with the correct priority.
--  `QueueSafeValue` has a built-in `command queue` (`priority queue`) where all 
--  `closures` (`commands`) will be placed and perfomed after. 
+- stores `commands` and executes them sequentially with the correct priority
+-  `QueueSafeValue` has a built-in `command queue` (`priority queue`) where all `closures` (`commands`) will be placed and perfomed after
 
-## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩 &nbsp; 🇨​​​​​🇱​​​​​🇴​​​​​🇸​​​​​🇺​​​​​🇷​​​​​🇪​​​​​
+## 🇨​​​​​🇱​​​​​🇴​​​​​🇸​​​​​🇺​​​​​🇷​​​​​🇪​​​​​​​​​🇸​
 
 - is a closure inside which the value is accessed
 - protected from concurrent access to `value` (works as `critical section`, implementation based on `DispatchGroup`)
 
 *Available command closures*: 
-- `commandClosure` - default closure that expects to work with serial code within itself 
-- `manually completed commandClosure` -  closure that expects to work with serial / asynchronous code within itself. This closure must be completed manually by calling the `CommandCompletionClosure`, placed as a property inside `commandClosure`
+- `commandClosure` -  provides access to the `value`
+- `accessClosure` - provides direct access to the value (using `inout` keyword)
+- `commandCompletionClosure` - a closure that must always be performed (called) if available as a property inside the `commandClosure` or `accessClosure`. Executing the closure notifies the `command queue` that the `command` has completed. After that, the `command queue` will unblock the access to the value and execute the next `command`, if it exists.
 
-## 🇦​​​​​🇨​​​​​🇨​​​​​🇪​​​​​🇸​​​​​🇸 &nbsp; 🇨​​​​​🇱​​​​​🇴​​​​​🇸​​​​​🇺​​​​​🇷​​​​​🇪​​​​​
-
-- same as `commandClosure`, but has direct access to the value (using the `input` keyword)
-
-## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩 &nbsp; ​​​​🇨​​​​​🇴​​​​​🇲​​​​​🇵​​​​​🇱​​​​​🇪​​​​​🇹​​​​​🇮​​​​​🇴​​​​​🇳 &nbsp; 🇨​​​​​​​​​​🇱​​​​​🇴​​​​​🇸​​​​​🇺​​​​​🇷​​​​​🇪​​​​​
-
-- a closure that must always be performed (called) if available as a property inside the `commandClosure`
+*Execution method*:
+- `completion commandClosure/accessClosure` -  closure that expects to work with serial code within itself. 
+- `manualCompletion commandClosure/accessClosure` -  closure that expects to work with serial / asynchronous code within itself. This closure must be completed manually by calling the `CommandCompletionClosure`, placed as a property inside `commandClosure` or `accessClosure`
 
 ### Request components:
 
 ## 🇸​​​​​🇨​​​​​🇭​​​​​🇪​​​​​🇩​​​​​🇺​​​​​🇱​​​​​🇪​​​​​
 
-> describes will func be executed synchronously or asynchronously. 
+> describes will func be executed synchronously or asynchronously
 
 *Available schedules*: 
-- `wait` - (sync) performs `commands` sequentially. Blocks the queue where this code runs until it completed.
-- `async` - performs a `command` asynchronously of the queue that calls this function.
+- `wait` - (sync) performs `commands` sequentially. Blocks the queue where this code runs until it completed
+- `async` - performs a `command` asynchronously of the queue that calls this function
 
 ## 🇵​​​​​🇷​​​​​🇮​​​​​🇴​​​​​🇷​​​​​🇮​​​​​🇹​​​​​🇾​​​​​
 
-> describes when (in what order) `command` will be executed in `command queue`. 
+> describes when (in what order) `command` will be executed in `command queue`
 
 *Available priorities*: 
-- `lowestPriority` - a `command` with `lowest priority` will be executed last.
-- `highestPriority` - a `command` with `highest priority` will be executed first.
+- `lowestPriority` - a `command` with `lowest priority` will be executed last
+- `highestPriority` - a `command` with `highest priority` will be executed first
 
 ## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​
 
-> describes what to do with `value` 
+> describes what to do with `value` (provides access to the `value`)
 
 ### Available synchronous commands: 
 
-### 1. Synchronously `get` value
+### 1.  `get` value synchronously
 
 * returns `CurrentValue` or `QueueSafeValueError`
 * is used when only the return `value` is required (no `value` processing)
@@ -125,7 +121,7 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 2. Synchronously `get` value inside `commandClosure`
+### 2.  `get` value synchronously inside the `commandClosure`
 
 * returns `CurrentValue` or `QueueSafeValueError` inside `commandClosure`
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
@@ -161,7 +157,7 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 3. Synchronously `get` value inside `commandClosure` with manual completion
+### 3.  `get` value synchronously inside the `commandClosure` with manual completion
 
 * returns `CurrentValue` or `QueueSafeValueError` and  `CommandCompletionClosure` inside the `commandClosure`
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
@@ -200,7 +196,7 @@ DispatchQueue.global(qos: .utility).async {
 }
 ```
 
-### 4. Synchronously `set` value
+### 4.  `set` value synchronously
 
 * returns `UpdatedValue` or `QueueSafeValueError`
 * is used when only the set of `value` is required (no `value` processing)
@@ -234,7 +230,7 @@ DispatchQueue.global(qos: .userInitiated).async {
 }
 ```
 
-### 5. Synchronously `set` value inside the `accessClosure`
+### 5.  `set` value synchronously inside the `accessClosure`
 
 * sets `CurrentValue` inside the `accessClosure` 
 * is used when it is necessary to both read and write a `value` inside one closure
@@ -270,7 +266,7 @@ DispatchQueue.main.async {
 }
 ```
 
-### 6. Synchronously `set` value inside the `accessClosure` with manual completion
+### 6.  `set` value synchronously inside the `accessClosure` with manual completion
 
 * sets `CurrentValue` inside the `accessClosure` 
 * is used when it is necessary to both read and write a `value` inside one closure
@@ -314,7 +310,7 @@ DispatchQueue.main.async {
 }
 ```
 
-### 7. Synchronously `map` value inside a `commandClosure` 
+### 7.  `map` value synchronously inside the `commandClosure` 
 
 * maps (transforms) `CurrentValue` to `MappedValue` inside the `commandClosure` 
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
@@ -349,7 +345,7 @@ DispatchQueue.global(qos: .background).async {
 
 ### Available asynchronous commands: 
 
-### 1. Asynchronously `get` value inside `commandClosure`
+### 1.  `get` value ssynchronously inside `commandClosure`
 
 * returns `CurrentValue` or `QueueSafeValueError` inside the `commandClosure`
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
@@ -380,7 +376,7 @@ queueSafeAsyncedValue.highestPriority.get { result in
     }
 }
 ```
-### 2. Asynchronously `get` value inside `commandClosure` with manual completion
+### 2. `get` value ssynchronously inside the `commandClosure` with manual completion
 
 * returns `CurrentValue` or `QueueSafeValueError` and  `CommandCompletionClosure` inside the `commandClosure`
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
@@ -415,7 +411,7 @@ queueSafeAsyncedValue.highestPriority.get { result, done in
 }
 ```
 
-### 3. Asynchronously `set` 
+### 3.  `set` value ssynchronously
 
 * returns `UpdatedValue` or `QueueSafeValueError` inside the `commandClosure`
 * is used when only the set of `value` is required (no `value` processing)
@@ -456,7 +452,7 @@ queueSafeAsyncedValue.highestPriority.set(newValue: 9) { result in
 }
 ```
 
-### 4. Asynchronously `set` value inside the `accessClosure`
+### 4.  `set` value ssynchronously inside the `accessClosure`
 
 * sets `CurrentValue` inside the `accessClosure` 
 * is used when it is necessary to both read and write a `value` inside one closure
@@ -503,7 +499,7 @@ queueSafeAsyncedValue.highestPriority.set { currentValue in
     }
 }
 ```
-### 5. Asynchronously `set` value inside the `accessClosure` with manual completion
+### 5.  `set` value ssynchronously inside the `accessClosure` with manual completion
 
 * sets `CurrentValue` inside the `accessClosure` 
 * is used when it is necessary to both read and write a `value` inside one closure
