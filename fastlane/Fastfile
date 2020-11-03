@@ -29,7 +29,7 @@ platform :ios do
   end
 
   lane :test do
-    run_tests(
+    scan(
       workspace: "Example/QueueSafeValue.xcworkspace",
       scheme: "QueueSafeValue-Example"
     )
