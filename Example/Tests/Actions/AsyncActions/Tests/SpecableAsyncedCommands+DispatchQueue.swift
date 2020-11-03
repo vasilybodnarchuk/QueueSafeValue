@@ -142,7 +142,7 @@ extension SpecableAsyncedCommands {
         expect(queue1) != queue2
         var visitedQueue1: Bool!
         var visitedQueue2: Bool!
-        waitUntil(timeout: 1) { done in
+        waitUntil(timeout: .seconds(1)) { done in
             queue1.async {
                 expect(queue1) == DispatchQueue.current
                 visitedQueue1 = true

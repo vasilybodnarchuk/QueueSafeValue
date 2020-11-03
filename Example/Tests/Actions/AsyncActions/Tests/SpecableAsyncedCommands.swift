@@ -41,7 +41,7 @@ extension SpecableAsyncedCommands {
 
     private func expected(_ result: Result<SimpleClass, QueueSafeValueError>,
                           from commands: Commands) {
-        waitUntil(timeout: 1) { done in
+        waitUntil(timeout: .seconds(1)) { done in
             commands.get { _result in
                 expect(_result) == result
                 done()
@@ -73,7 +73,7 @@ extension SpecableAsyncedCommands {
             
             context("with manual completion") {
                 it("successful result") {
-                    waitUntil(timeout: 1) { done in
+                    waitUntil(timeout: .seconds(1)) { done in
                         commands.get { result, finishCommand in
                             expect(result) == .success(expectedValue)
                             finishCommand()
@@ -85,7 +85,7 @@ extension SpecableAsyncedCommands {
                 it("valueContainerDeinited error") {
                     self.expected(.success(expectedValue), from: commands)
                     queueSafeValue = nil
-                    waitUntil(timeout: 1) { done in
+                    waitUntil(timeout: .seconds(1)) { done in
                         commands.get { result, finishCommand in
                             expect(result) == .failure(.valueContainerDeinited)
                             finishCommand()
@@ -129,7 +129,7 @@ extension SpecableAsyncedCommands {
             
             context("with auto-completion") {
                 it("successful result") {
-                    waitUntil(timeout: 1) { done in
+                    waitUntil(timeout: .seconds(1)) { done in
                         commands.set(newValue: newValue) { result in
                             expect(result) == .success(newValue)
                             done()
@@ -140,7 +140,7 @@ extension SpecableAsyncedCommands {
                 
                 it("valueContainerDeinited error") {
                     queueSafeValue = nil
-                    waitUntil(timeout: 1) { done in
+                    waitUntil(timeout: .seconds(1)) { done in
                         commands.set(newValue: newValue) { result in
                             expect(result) == .failure(.valueContainerDeinited)
                             done()
@@ -153,7 +153,7 @@ extension SpecableAsyncedCommands {
             context("with manual completion") {
                 it("successful result") {
                     var visitedAccessClosure: Bool!
-                    waitUntil(timeout: 2) { done in
+                    waitUntil(timeout: .seconds(2)) { done in
                         commands.set { (currentValue, finishCommand) in
                             currentValue = newValue
                             visitedAccessClosure = true
@@ -171,7 +171,7 @@ extension SpecableAsyncedCommands {
                 it("valueContainerDeinited error") {
                     queueSafeValue = nil
                     var visitedAccessClosure: Bool!
-                    waitUntil(timeout: 1) { done in
+                    waitUntil(timeout: .seconds(1)) { done in
                         commands.set { (currentValue, finishCommand) in
                             currentValue = newValue
                             visitedAccessClosure = true

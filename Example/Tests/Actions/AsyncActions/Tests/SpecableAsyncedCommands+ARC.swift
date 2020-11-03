@@ -37,7 +37,7 @@ extension SpecableAsyncedCommands {
                 }
                 describe("with auto-completion") {
                     it("successful result") {
-                        waitUntil(timeout: 1) { done in
+                        waitUntil(timeout: .seconds(1)) { done in
                             commands.get { result in
                                 self.expectEqualReferencesToTheSameObject(reference1: try? result.get(),
                                                                           reference2: object,
@@ -51,7 +51,7 @@ extension SpecableAsyncedCommands {
                         queueSafeValue = nil
                         let expectedRetainCount = 2
                         expect(expectedRetainCount) == CFGetRetainCount(object)
-                        waitUntil(timeout: 1) { done in
+                        waitUntil(timeout: .seconds(1)) { done in
                             commands.get { result in
                                 expect(expectedRetainCount) == CFGetRetainCount(object)
                                 done()
@@ -62,7 +62,7 @@ extension SpecableAsyncedCommands {
                 
                 describe("with manual completion") {
                     it("successful result") {
-                        waitUntil(timeout: 1) { done in
+                        waitUntil(timeout: .seconds(1)) { done in
                             commands.get { result, finishCommand in
                                 self.expectEqualReferencesToTheSameObject(reference1: try? result.get(),
                                                                           reference2: object,
@@ -77,7 +77,7 @@ extension SpecableAsyncedCommands {
                         queueSafeValue = nil
                         let expectedRetainCount = 2
                         expect(expectedRetainCount) == CFGetRetainCount(object)
-                        waitUntil(timeout: 1) { done in
+                        waitUntil(timeout: .seconds(1)) { done in
                             commands.get { result, finishCommand in
                                 expect(expectedRetainCount) == CFGetRetainCount(object)
                                 finishCommand()
@@ -106,7 +106,7 @@ extension SpecableAsyncedCommands {
                 describe("with auto-completion") {
                     describe("one line setting") {
                         it("successful result") {
-                            waitUntil(timeout: 1) { done in
+                            waitUntil(timeout: .seconds(1)) { done in
                                 commands.set(newValue: newObject) { result in
                                     self.expectEqualReferencesToTheSameObject(reference1: try? result.get(),
                                                                               reference2: newObject,
@@ -120,7 +120,7 @@ extension SpecableAsyncedCommands {
                             queueSafeValue = nil
                             let expectedRetainCount = 2
                             expect(expectedRetainCount) == CFGetRetainCount(object)
-                            waitUntil(timeout: 1) { done in
+                            waitUntil(timeout: .seconds(1)) { done in
                                 commands.set(newValue: newObject) { result in
                                     expect(expectedRetainCount) == CFGetRetainCount(object)
                                     done()
@@ -130,7 +130,7 @@ extension SpecableAsyncedCommands {
                     }
                     describe("multiline setting") {
                         it("successful result") {
-                            waitUntil(timeout: 1) { done in
+                            waitUntil(timeout: .seconds(1)) { done in
                                 commands.set { currentValue in
                                     currentValue = newObject
                                     self.expectEqualReferencesToTheSameObject(reference1: currentValue,
@@ -142,7 +142,7 @@ extension SpecableAsyncedCommands {
                         }
                         
                         it("successful result 2") {
-                            waitUntil(timeout: 1) { done in
+                            waitUntil(timeout: .seconds(1)) { done in
                                 commands.set { curentValue in
                                     curentValue = newObject
                                     expect(3) == CFGetRetainCount(curentValue)
@@ -159,7 +159,7 @@ extension SpecableAsyncedCommands {
                             queueSafeValue = nil
                             let expectedRetainCount = 2
                             expect(expectedRetainCount) == CFGetRetainCount(object)
-                            waitUntil(timeout: 1) { done in
+                            waitUntil(timeout: .seconds(1)) { done in
                                 commands.set { currentValue in
                                     // MARK: Will not be executed in any error
                                     currentValue = newObject
@@ -175,7 +175,7 @@ extension SpecableAsyncedCommands {
                 
                 describe("with manual completion") {
                     it("successful result") {
-                        waitUntil(timeout: 1) { done in
+                        waitUntil(timeout: .seconds(1)) { done in
                             commands.set { (currentValue, finishCommand) in
                                 currentValue = newObject
                                 self.expectEqualReferencesToTheSameObject(reference1: currentValue,
@@ -188,7 +188,7 @@ extension SpecableAsyncedCommands {
                     }
                     
                     it("successful result") {
-                        waitUntil(timeout: 1) { done in
+                        waitUntil(timeout: .seconds(1)) { done in
                             commands.set { (currentValue, finishCommand) in
                                 currentValue = newObject
                                 self.expectEqualReferencesToTheSameObject(reference1: currentValue,
@@ -209,7 +209,7 @@ extension SpecableAsyncedCommands {
                         queueSafeValue = nil
                         let expectedRetainCount = 2
                         expect(expectedRetainCount) == CFGetRetainCount(object)
-                        waitUntil(timeout: 1) { done in
+                        waitUntil(timeout: .seconds(1)) { done in
                             commands.set { (currentValue, finishCommand) in
                                 // MARK: Will not be executed in any error
                                 currentValue = newObject
