@@ -30,11 +30,13 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
     *always returns* `Result<Value, QueueSafeValueError>`
     
-7. #### Implemented both atomic functions and value processing functions in a closure
+7. #### Available different value manipulation commands:
 
-    *atomic function:* `queueSafeValue.wait.lowestPriority.get()`
+    *atomic command:* `queueSafeValue.wait.lowestPriority.get()`
    
-   *value processing function in a closure:* ` queueSafeValue.wait.lowestPriority.get { result in ... }`
+   *value processing command in a closure:* ` queueSafeValue.wait.lowestPriority.get { result in ... }`
+   
+   *value accessing command in a closure:* ` queueSafeValue.wait.lowestPriority.set { currentValue in currentVaule = newValue }`
 
 ## Documentation
 
@@ -351,12 +353,14 @@ DispatchQueue.global(qos: .background).async {
 
 ### Available asynchronous commands: 
 
-### 1. Asynchronous `get`
+### 1. Asynchronously `get` value inside `commandClosure`
 
-> asynchronously returns the `value` in a `closure`
+* returns `CurrentValue` or `QueueSafeValueError` inside the `commandClosure`
+* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
+* `commandClosure` will be completed automatically
 
 ```Swift
-func get(closure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
+func get(completion commandClosure: ((Result<CurrentValue, QueueSafeValueError>) -> Void)?)
 ```
 
 > Code sample
@@ -380,13 +384,48 @@ queueSafeAsyncedValue.highestPriority.get { result in
     }
 }
 ```
+### 2. Asynchronously `get` value inside `commandClosure` with manual completion
 
-### 2. Asynchronous `set` 
+* returns `CurrentValue` or `QueueSafeValueError` and  `CommandCompletionClosure` inside the `commandClosure`
+* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
+* **important**:  `commandClosure` must be completed manually by performing (calling) `CommandCompletionClosure`
 
-> asynchronously sets `value`
 
 ```Swift
-func set(newValue: Value, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)
+func get(manualCompletion commandClosure: ((Result<CurrentValue, QueueSafeValueError>,
+                                            @escaping CommandCompletionClosure) -> Void)?)
+```
+> Code sample
+
+```Swift
+// Option 1
+let queueSafeValue = QueueSafeValue(value: "test")
+queueSafeValue.async(performIn: .global(qos: .utility)).highestPriority.get { result, done in
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+    done()
+}
+
+// Option 2
+let queueSafeAsyncedValue = QueueSafeAsyncedValue(value: "super test", queue: .global(qos: .background))
+queueSafeAsyncedValue.highestPriority.get { result, done in
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+    done()
+}
+```
+
+### 3. Asynchronously `set` 
+
+* returns `UpdatedValue` or `QueueSafeValueError` inside the `commandClosure`
+* is used when only the set of `value` is required (no `value` processing)
+
+```Swift
+func set(newValue: Value, completion commandClosure: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)
 ```
 
 > Code sample
@@ -421,52 +460,108 @@ queueSafeAsyncedValue.highestPriority.set(newValue: 9) { result in
 }
 ```
 
-### 3. Asynchronous `update`
+### 4. Asynchronously `set` value inside the `accessClosure`
 
-> asynchronously updates `value` in closure. 
+* sets `CurrentValue` inside the `accessClosure` 
+* is used when it is necessary to both read and write a `value` inside one closure
+* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `accessClosure`
+* **Attention**: `accessClosure` will not be run if any ` QueueSafeValueError` occurs
 
 ```Swift
-func update(closure: ((inout CurrentValue) -> Void)?, completion: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)
+func set(accessClosure: ((inout CurrentValue) -> Void)?,
+         completion commandClosure: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil)
 ```
 
 > Code sample
 
 ```Swift
 // Option 1.
-let queueSafeValue = QueueSafeValue<Int>(value: 1)
+let queueSafeValue = QueueSafeValue(value: 1)
 
 // Without completion block
-queueSafeValue.async(performIn: .background).highestPriority.update(closure: { currentValue in
-    currentValue = 10
-})
+queueSafeValue.async(performIn: .background).highestPriority.set { $0 = 10 }
 
 // With completion block
-queueSafeValue.async(performIn: .background).highestPriority.update(closure: { currentValue in
+queueSafeValue.async(performIn: .background).highestPriority.set { currentValue in
     currentValue = 11
-}, completion: { result in
+} completion: { result in
     switch result {
     case .failure(let error): print(error)
     case .success(let value): print(value)
     }
-})
+}
 
 // Option 2.
-let queueSafeAsyncedValue = QueueSafeAsyncedValue<Int>(value: 1, queue: .global(qos: .userInteractive))
+let queueSafeAsyncedValue = QueueSafeAsyncedValue(value: 1, queue: .global(qos: .userInteractive))
 
 // Without completion block
-queueSafeAsyncedValue.highestPriority.update(closure: { currentValue in
-    currentValue = 10
-})
+queueSafeAsyncedValue.highestPriority.set { $0 = 10 }
 
 // With completion block
-queueSafeAsyncedValue.highestPriority.update(closure: { currentValue in
+queueSafeAsyncedValue.highestPriority.set { currentValue in
     currentValue = 11
-}, completion: { result in
+} completion: { result in
     switch result {
     case .failure(let error): print(error)
     case .success(let value): print(value)
     }
-})
+}
+```
+### 5. Asynchronously `set` value inside the `accessClosure` with manual completion
+
+* sets `CurrentValue` inside the `accessClosure` 
+* is used when it is necessary to both read and write a `value` inside one closure
+* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `accessClosure`
+* **important**:  `accessClosure` must be completed manually by performing (calling) `CommandCompletionClosure`
+* **Attention**: `accessClosure` will not be run if any ` QueueSafeValueError` occurs.
+
+```Swift
+func set(manualCompletion accessClosure: ((inout CurrentValue, @escaping CommandCompletionClosure) -> Void)?,
+         completion commandClosure: ((Result<UpdatedValue, QueueSafeValueError>) -> Void)? = nil) 
+```
+
+> Code sample
+
+```Swift
+// Option 1.
+let queueSafeValue = QueueSafeValue(value: 999.1)
+
+// Without completion block
+queueSafeValue.async(performIn: .background).highestPriority.set { currentValue, done in
+    currentValue = 999.2
+    done()
+}
+
+// With completion block
+queueSafeValue.async(performIn: .background).highestPriority.set { currentValue, done in
+    currentValue = 999.3
+    done()
+} completion: { result in
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+}
+
+// Option 2.
+let queueSafeAsyncedValue = QueueSafeAsyncedValue(value: 1000.1, queue: .global(qos: .userInteractive))
+
+// Without completion block
+queueSafeAsyncedValue.highestPriority.set { currentValue, done in
+    currentValue = 1000.2
+    done()
+}
+
+// With completion block
+queueSafeAsyncedValue.highestPriority.set { currentValue, done in
+    currentValue = 1000.3
+    done()
+} completion: { result in
+    switch result {
+    case .failure(let error): print(error)
+    case .success(let value): print(value)
+    }
+}
 ```
     
 ## Requirements
