@@ -235,7 +235,7 @@ extension CommandQueueSpec {
                             asyncedIteration: @escaping (_ step: Int, CommandQueue, DispatchGroup, _ command: @escaping () -> Void) -> Void,
                             completion: ((CommandQueue) -> Void)? = nil) {
         let commandQueue = CommandQueue()
-        waitUntil(timeout: 10) { done in
+        waitUntil(timeout: .seconds(10)) { done in
             var array = [Int]()
             array.reserveCapacity(expectedArray.count)
             let dispatchGroup = DispatchGroup()
