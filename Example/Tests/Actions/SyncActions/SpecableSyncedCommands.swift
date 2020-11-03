@@ -16,10 +16,10 @@ protocol SpecableSyncedCommands: SpecableCommands where Commands == SyncedComman
 
 extension SpecableSyncedCommands {
     func runTests() {
-//        describe(testedObjectName) {
-//            testBasicFunctionality()
-//            checkQueueWhereCommandIsRunning()
-//        }
+        describe(testedObjectName) {
+            testBasicFunctionality()
+            checkQueueWhereCommandIsRunning()
+        }
     }
 }
     
