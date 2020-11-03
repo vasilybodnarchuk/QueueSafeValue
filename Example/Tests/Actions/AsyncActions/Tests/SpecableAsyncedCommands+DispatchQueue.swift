@@ -18,10 +18,13 @@ extension SpecableAsyncedCommands {
         let expectedValue = createDefultInstance()
         var queueSafeValue: QueueSafeValueType!
         var commands: Commands!
+
         beforeEach {
             queueSafeValue = self.createQueueSafeValue(value: expectedValue)
             commands = self.commands(from: queueSafeValue)
         }
+
+        // MARK: get funcs
 
         describe("get funcs") {
             describe("with auto-completion") {
@@ -58,6 +61,9 @@ extension SpecableAsyncedCommands {
                 }
             }
         }
+
+        // MARK: set funcs
+
         describe("set funcs") {
             let newValue = self.createInstance(value: (0...100_000).randomElement() ?? 1)
             describe("with auto-completion") {
@@ -120,7 +126,11 @@ extension SpecableAsyncedCommands {
             }
         }
     }
-    
+}
+
+// MARK: Helpers
+
+extension SpecableAsyncedCommands {
     private func runCommandInOneQueueAndFinishInAnother(closure: @escaping (@escaping () -> Void) -> Void) {
         var queue1: DispatchQueue!
         let queue2 = self.queueSafeValueDispatchQueue

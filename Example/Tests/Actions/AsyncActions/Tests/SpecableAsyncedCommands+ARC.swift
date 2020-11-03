@@ -13,17 +13,7 @@ import QueueSafeValue
 // MARK: Make sure the closures of the commands don't retain objects.
 
 extension SpecableAsyncedCommands {
-    
-    func expectEqualReferencesToTheSameObject(reference1: AnyObject?,
-                                              reference2: AnyObject?,
-                                              expectedReferenceCount: Int) {
-        let counter1 = CFGetRetainCount(reference1)
-        let counter2 = CFGetRetainCount(reference2)
-        expect(counter1) == counter2
-        expect(Int(counter1)) == expectedReferenceCount
-        expect(reference1) === reference2
-    }
-        
+
     func testReferenceCounters() {
         describe("ARC") {
             var object: Value!
@@ -233,5 +223,19 @@ extension SpecableAsyncedCommands {
                 }
             }
         }
+    }
+}
+
+// MARK: Helpers
+
+extension SpecableAsyncedCommands {
+    private func expectEqualReferencesToTheSameObject(reference1: AnyObject?,
+                                                      reference2: AnyObject?,
+                                                      expectedReferenceCount: Int) {
+        let counter1 = CFGetRetainCount(reference1)
+        let counter2 = CFGetRetainCount(reference2)
+        expect(counter1) == counter2
+        expect(Int(counter1)) == expectedReferenceCount
+        expect(reference1) === reference2
     }
 }

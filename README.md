@@ -44,22 +44,26 @@ Framework that provides thread-safe (queue-safe) access to the value.
 
 ### Definitions:
 
-## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​  🇶​​​​​🇺​​​​​🇪​​​​​🇺​​​​​🇪​​​​​
+## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​    🇶​​​​​🇺​​​​​🇪​​​​​🇺​​​​​🇪​​​​​
 
 - stores `commands` and executes them sequentially with the correct priority.
 -  `QueueSafeValue` has a built-in `command queue` (`priority queue`) where all 
 -  `closures` (`commands`) will be placed and perfomed after. 
 
-## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​  🇨​​​​​🇱​​​​​🇴​​​​​🇸​​​​​🇺​​​​​🇷​​​​​🇪​​​​​
+## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​    🇨​​​​​🇱​​​​​🇴​​​​​🇸​​​​​🇺​​​​​🇷​​​​​🇪​​​​​
 
 - is a closure inside which the value is accessed
 - protected from concurrent access to `value` (works as `critical section`, implementation based on `DispatchGroup`)
 
 *Available command closures*: 
 - `commandClosure` - default closure that expects to work with serial code within itself 
-- `manually completed commandClosure` -  closure that expects to work with serial / asynchronous code within itself. This closure must be completed manually by calling the `CommandCompletionClosure`, placed as a property inside `commandClosure`.
+- `manually completed commandClosure` -  closure that expects to work with serial / asynchronous code within itself. This closure must be completed manually by calling the `CommandCompletionClosure`, placed as a property inside `commandClosure`
 
-## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​  🇨​​​​​🇴​​​​​🇲​​​​​🇵​​​​​🇱​​​​​🇪​​​​​🇹​​​​​🇮​​​​​🇴​​​​​🇳​​​​​  🇨​​​​​🇱​​​​​🇴​​​​​🇸​​​​​🇺​​​​​🇷​​​​​🇪​​​​​
+## 🇦​​​​​🇨​​​​​🇨​​​​​🇪​​​​​🇸​​​​​🇸​​​​​    🇨​​​​​🇱​​​​​🇴​​​​​🇸​​​​​🇺​​​​​🇷​​​​​🇪​​​​​
+
+- same as `commandClosure`, but has direct access to the value (using the `input` keyword)
+
+## 🇨​​​​​🇴​​​​​🇲​​​​​🇲​​​​​🇦​​​​​🇳​​​​​🇩​​​​​    🇨​​​​​🇴​​​​​🇲​​​​​🇵​​​​​🇱​​​​​🇪​​​​​🇹​​​​​🇮​​​​​🇴​​​​​🇳​​​​​  🇨​​​​​🇱​​​​​🇴​​​​​🇸​​​​​🇺​​​​​🇷​​​​​🇪​​​​​
 
 - a closure that must always be performed (called) if available as a property inside the `commandClosure`
 
@@ -163,7 +167,7 @@ DispatchQueue.global(qos: .utility).async {
 
 ```Swift
 func get(manualCompletion commandClosure: ((Result<CurrentValue, QueueSafeValueError>,
-                                            @escaping CommandCompletionClosure) -> Void)?)
+                                            @escaping CommandCompletionClosure) -> Void)?)                                            
 ```
 
 > Code sample
@@ -201,7 +205,7 @@ DispatchQueue.global(qos: .utility).async {
 
 ```Swift
 @discardableResult
-public func set(newValue: Value) -> Result<UpdatedValue, QueueSafeValueError>
+func set(newValue: Value) -> Result<UpdatedValue, QueueSafeValueError>
 ```
 
 > Code sample
@@ -228,16 +232,16 @@ DispatchQueue.global(qos: .userInitiated).async {
 }
 ```
 
-### 5. Synchronously `set` value inside a `commandClosure`
+### 5. Synchronously `set` value inside the `accessClosure`
 
-* sets `CurrentValue` inside the `commandClosure` 
+* sets `CurrentValue` inside the `accessClosure` 
 * is used when it is necessary to both read and write a `value` inside one closure
-* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
-* **Attention**: `commandClosure` will not be run if any ` QueueSafeValueError` occurs
+* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `accessClosure`
+* **Attention**: `accessClosure` will not be run if any ` QueueSafeValueError` occurs
 
 ```Swift
 @discardableResult
-func set(completion commandClosure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
+func set(completion accessClosure: ((inout CurrentValue) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
 ```
 
 > Code sample
@@ -268,18 +272,18 @@ DispatchQueue.main.async {
 }
 ```
 
-### 6. Synchronously `set` value inside a `commandClosure` with manual completion
+### 6. Synchronously `set` value inside the `accessClosure` with manual completion
 
-* sets `CurrentValue` inside the `commandClosure` 
+* sets `CurrentValue` inside the `accessClosure` 
 * is used when it is necessary to both read and write a `value` inside one closure
-* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
-* **important**:  `commandClosure` must be completed manually by performing (calling) `CommandCompletionClosure`
-* **Attention**: `commandClosure` will not be run if any ` QueueSafeValueError` occurs.
+* is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `accessClosure`
+* **important**:  `accessClosure` must be completed manually by performing (calling) `CommandCompletionClosure`
+* **Attention**: `accessClosure` will not be run if any ` QueueSafeValueError` occurs.
 
 ```Swift
 @discardableResult
-func set(manualCompletion commandClosure: ((inout CurrentValue, 
-                                            @escaping CommandCompletionClosure) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
+func set(manualCompletion accessClosure: ((inout CurrentValue, 
+                                           @escaping CommandCompletionClosure) -> Void)?) -> Result<UpdatedValue, QueueSafeValueError>
 ```
 
 > Code sample
@@ -318,7 +322,7 @@ DispatchQueue.main.async {
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
 
 ```Swift
-public func map<MappedValue>(completion commandClosure: ((CurrentValue) -> MappedValue)?) -> Result<MappedValue, QueueSafeValueError>
+func map<MappedValue>(completion commandClosure: ((CurrentValue) -> MappedValue)?) -> Result<MappedValue, QueueSafeValueError>
 ```
 
 > Code sample

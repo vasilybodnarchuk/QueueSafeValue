@@ -18,8 +18,8 @@ protocol SpecableAsyncedCommands: SpecableCommands where Commands == AsyncedComm
 extension SpecableAsyncedCommands {
     func runTests() {
         describe(testedObjectName) {
-           // testBasicFunctionality()
-            //checkQueueWhereCommandIsRunning()
+            testBasicFunctionality()
+            checkQueueWhereCommandIsRunning()
             testReferenceCounters()
         }
     }
