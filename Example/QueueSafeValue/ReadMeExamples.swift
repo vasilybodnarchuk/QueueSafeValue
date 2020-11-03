@@ -20,16 +20,16 @@ class ReadMeExamples {
 
 extension ReadMeExamples {
     func runSyncActions() {
-        syncGetActionSample()
-        syncGetInClosureActionSample()
-        syncedGetValueInsideClosureCommandWithManualCompletionSample()
-        syncSetActionSample()
-        syncUpdateActionSample()
-        syncedUpdateValueInsideClosureCommandWithManualCompletionSample()
-        syncTransformActionSample()
+        synchronousValueGetting()
+        synchronousValueGettingInClosure()
+        synchronousValueGettingInClosureWithManualCompletion()
+        synchronousValueSetting()
+        synchronousValueSettingInClosure()
+        synchronousValueSettingInClosureWithManualCompletion()
+        synchronousValueTransformation()
     }
     
-    private func syncGetActionSample() {
+    private func synchronousValueGetting() {
         // Option 1
         let queueSafeValue = QueueSafeValue(value: true)
         DispatchQueue.global(qos: .utility).async {
@@ -51,7 +51,7 @@ extension ReadMeExamples {
         }
     }
     
-    private func syncGetInClosureActionSample() {
+    private func synchronousValueGettingInClosure() {
         // Option 1
         let queueSafeValue = QueueSafeValue(value: 6)
         DispatchQueue.global(qos: .unspecified).async {
@@ -75,33 +75,33 @@ extension ReadMeExamples {
         }
     }
     
-    private func syncedGetValueInsideClosureCommandWithManualCompletionSample() {
+    private func synchronousValueGettingInClosureWithManualCompletion() {
         // Option 1
         let queueSafeValue = QueueSafeValue(value: 4.44)
         DispatchQueue.global(qos: .unspecified).async {
-            queueSafeValue.wait.highestPriority.get { (result, complete) in
+            queueSafeValue.wait.highestPriority.get { result, done in
                 switch result {
                 case .failure(let error): print(error)
                 case .success(let value): print(value)
                 }
-                complete() // should always be executed (called)
+                done() // Must always be executed (called). Can be called in another DispatchQueue.
             }
         }
         
         // Option 2
         let queueSafeSyncedValue = QueueSafeSyncedValue(value: 4.45)
         DispatchQueue.global(qos: .utility).async {
-            queueSafeSyncedValue.highestPriority.get { (result, complete) in
+            queueSafeSyncedValue.highestPriority.get { result, done in
                 switch result {
                 case .failure(let error): print(error)
                 case .success(let value): print(value)
                 }
-                complete() // should always be executed (called)
+                done() // Must always be executed (called). Can be called in another DispatchQueue.
             }
         }
     }
     
-    private func syncSetActionSample() {
+    private func synchronousValueSetting() {
         // Option 1
         let queueSafeValue = QueueSafeValue<Int>(value: 1)
         DispatchQueue.global(qos: .userInitiated).async {
@@ -123,13 +123,11 @@ extension ReadMeExamples {
         }
     }
     
-    private func syncUpdateActionSample() {
+    private func synchronousValueSettingInClosure() {
         // Option 1
         let queueSafeValue = QueueSafeValue(value: 1)
         DispatchQueue.main.async {
-            let result = queueSafeValue.wait.lowestPriority.set { currentValue in
-                currentValue = 3
-            }
+            let result = queueSafeValue.wait.lowestPriority.set { $0 = 3 }
             switch result {
             case .failure(let error): print(error)
             case .success(let value): print(value)
@@ -139,9 +137,7 @@ extension ReadMeExamples {
         // Option 2
         let queueSafeSyncedValue = QueueSafeSyncedValue(value: ["a":1])
         DispatchQueue.main.async {
-            let result = queueSafeSyncedValue.lowestPriority.set { currentValue in
-                currentValue["b"] = 2
-            }
+            let result = queueSafeSyncedValue.lowestPriority.set { $0["b"] = 2 }
             switch result {
             case .failure(let error): print(error)
             case .success(let value): print(value)
@@ -149,13 +145,13 @@ extension ReadMeExamples {
         }
     }
     
-    private func syncedUpdateValueInsideClosureCommandWithManualCompletionSample() {
+    private func synchronousValueSettingInClosureWithManualCompletion() {
         // Option 1
         let queueSafeValue = QueueSafeValue(value: "value 1")
         DispatchQueue.main.async {
-            let result = queueSafeValue.wait.lowestPriority.set { currentValue, complete in
+            let result = queueSafeValue.wait.lowestPriority.set { currentValue, done in
                 currentValue = "value 2"
-                complete() // should always be executed (called)
+                done() // Must always be executed (called). Can be called in another DispatchQueue.
             }
             switch result {
             case .failure(let error): print(error)
@@ -166,9 +162,9 @@ extension ReadMeExamples {
         // Option 2
         let queueSafeSyncedValue = QueueSafeSyncedValue(value: "value a")
         DispatchQueue.main.async {
-            let result = queueSafeSyncedValue.lowestPriority.set { currentValue, complete in
+            let result = queueSafeSyncedValue.lowestPriority.set { currentValue, done in
                 currentValue = "value b"
-                complete() // should always be executed (called)
+                done() // Must always be executed (called). Can be called in another DispatchQueue.
             }
             switch result {
             case .failure(let error): print(error)
@@ -177,7 +173,7 @@ extension ReadMeExamples {
         }
     }
     
-    private func syncTransformActionSample() {
+    private func synchronousValueTransformation() {
         // Option 1
         let queueSafeValue = QueueSafeValue(value: 5)
         DispatchQueue.global(qos: .background).async {
@@ -200,16 +196,20 @@ extension ReadMeExamples {
     }
 }
 
-/// MARK: Async actions
+// MARK: Async actions
 
 extension ReadMeExamples {
     func runAsyncActions() {
-        asyncGetActionSample()
-        asyncSetActionSample()
-        asyncUpdateActionSample()
+        asynchronousValueGetting()
+        asynchronousValueGettingWithManualCompletion()
+        asynchronousSimpleValueSetting()
+        asynchronousValueSettingInClosure()
+        asynchronousValueSettingInClosureWithManualCompletion()
     }
+    
+    // MARK: Async get
 
-    private func asyncGetActionSample() {
+    private func asynchronousValueGetting() {
         // Option 1
         let queueSafeValue = QueueSafeValue(value: true)
         queueSafeValue.async(performIn: .global(qos: .utility)).highestPriority.get { result in
@@ -229,7 +229,31 @@ extension ReadMeExamples {
         }
     }
     
-    private func asyncSetActionSample() {
+    // MARK: Async get with manual completion
+    
+    private func asynchronousValueGettingWithManualCompletion() {
+        // Option 1
+        let queueSafeValue = QueueSafeValue(value: "test")
+        queueSafeValue.async(performIn: .global(qos: .utility)).highestPriority.get { result, done in
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
+            done() // Must always be executed (called). Can be called in another DispatchQueue.
+        }
+        
+        // Option 2
+        let queueSafeAsyncedValue = QueueSafeAsyncedValue(value: "super test", queue: .global(qos: .background))
+        queueSafeAsyncedValue.highestPriority.get { result, done in
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
+            done() // Must always be executed (called). Can be called in another DispatchQueue.
+        }
+    }
+    
+    private func asynchronousSimpleValueSetting() {
         // Option 1
         let queueSafeValue = QueueSafeValue(value: 7)
         
@@ -259,41 +283,79 @@ extension ReadMeExamples {
         }
     }
     
-    private func asyncUpdateActionSample() {
+    private func asynchronousValueSettingInClosure() {
         // Option 1.
-        let queueSafeValue = QueueSafeValue<Int>(value: 1)
+        let queueSafeValue = QueueSafeValue(value: 1)
 
         // Without completion block
-        queueSafeValue.async(performIn: .background).highestPriority.update(closure: { currentValue in
-            currentValue = 10
-        })
+        queueSafeValue.async(performIn: .background).highestPriority.set { $0 = 10 }
         
         // With completion block
-        queueSafeValue.async(performIn: .background).highestPriority.update(closure: { currentValue in
+        queueSafeValue.async(performIn: .background).highestPriority.set { currentValue in
             currentValue = 11
-        }, completion: { result in
+        } completion: { result in
             switch result {
             case .failure(let error): print(error)
             case .success(let value): print(value)
             }
-        })
+        }
         
         // Option 2.
-        let queueSafeAsyncedValue = QueueSafeAsyncedValue<Int>(value: 1, queue: .global(qos: .userInteractive))
+        let queueSafeAsyncedValue = QueueSafeAsyncedValue(value: 1, queue: .global(qos: .userInteractive))
 
         // Without completion block
-        queueSafeAsyncedValue.highestPriority.update(closure: { currentValue in
-            currentValue = 10
-        })
+        queueSafeAsyncedValue.highestPriority.set { $0 = 10 }
         
         // With completion block
-        queueSafeAsyncedValue.highestPriority.update(closure: { currentValue in
+        queueSafeAsyncedValue.highestPriority.set { currentValue in
             currentValue = 11
-        }, completion: { result in
+        } completion: { result in
             switch result {
             case .failure(let error): print(error)
             case .success(let value): print(value)
             }
-        })
+        }
+    }
+    
+    private func asynchronousValueSettingInClosureWithManualCompletion() {
+        // Option 1.
+        let queueSafeValue = QueueSafeValue(value: 999.1)
+
+        // Without completion block
+        queueSafeValue.async(performIn: .background).highestPriority.set { currentValue, done in
+            currentValue = 999.2
+            done() // Must always be executed (called). Can be called in another DispatchQueue.
+        }
+        
+        // With completion block
+        queueSafeValue.async(performIn: .background).highestPriority.set { currentValue, done in
+            currentValue = 999.3
+            done() // Must always be executed (called). Can be called in another DispatchQueue.
+        } completion: { result in
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
+        }
+        
+        // Option 2.
+        let queueSafeAsyncedValue = QueueSafeAsyncedValue(value: 1000.1, queue: .global(qos: .userInteractive))
+
+        // Without completion block
+        queueSafeAsyncedValue.highestPriority.set { currentValue, done in
+            currentValue = 1000.2
+            done() // Must always be executed (called). Can be called in another DispatchQueue.
+        }
+        
+        // With completion block
+        queueSafeAsyncedValue.highestPriority.set { currentValue, done in
+            currentValue = 1000.3
+            done()
+        } completion: { result in
+            switch result {
+            case .failure(let error): print(error)
+            case .success(let value): print(value)
+            }
+        }
     }
 }

@@ -206,7 +206,7 @@ extension SpecableSyncedCommands {
         it("check that closure of \(funcName) command is being executed on the correct queue") {
             let queue = Queues.random
             let commands = self.commands(from: queueSafeValue)
-            waitUntil(timeout: 1) { done in
+            waitUntil(timeout: .seconds(1)) { done in
                 queue.async {
                     expect(DispatchQueue.current) == queue
                     closure(commands) {

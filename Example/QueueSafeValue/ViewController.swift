@@ -122,12 +122,12 @@ extension Examples {
     private func asyncUpdateActionSample() {
         let queueSafeValue = QueueSafeValue<Int>(value: 1)
         // Without completion block
-        queueSafeValue.async(performIn: .background).lowestPriority.update(closure: { currentValue in
+        queueSafeValue.async(performIn: .background).lowestPriority.set{ currentValue in
             currentValue = 10
-        })
+        }
         
         // With completion block
-        queueSafeValue.async(performIn: .background).lowestPriority.update(closure: { currentValue in
+        queueSafeValue.async(performIn: .background).lowestPriority.set(accessClosure: { currentValue in
             currentValue = 11
         }, completion: { result in
             self.log(title: "Async lowPriority update", result: result)

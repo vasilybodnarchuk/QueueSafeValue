@@ -1,3 +1,5 @@
+#source 'https://github.com/CocoaPods/Specs.git'
+source 'https://cdn.cocoapods.org/'
 use_frameworks!
 platform :ios, '9.0'
 
@@ -8,8 +10,8 @@ end
 target 'QueueSafeValue_Tests' do
   inherit! :search_paths
   pod 'QueueSafeValue', :path => '../'
-  pod 'Quick', '~> 3.0.0'
-  pod 'Nimble', '~> 8.1.2'
+  pod 'Quick'
+  pod 'Nimble'
   pod 'SwiftLint'
 end
 
