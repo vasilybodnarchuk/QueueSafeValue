@@ -345,7 +345,7 @@ DispatchQueue.global(qos: .background).async {
 
 ### Available asynchronous commands: 
 
-### 1.  `get` value ssynchronously inside `commandClosure`
+### 1.  `get` value asynchronously inside `commandClosure`
 
 * returns `CurrentValue` or `QueueSafeValueError` inside the `commandClosure`
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
@@ -376,7 +376,7 @@ queueSafeAsyncedValue.highestPriority.get { result in
     }
 }
 ```
-### 2. `get` value ssynchronously inside the `commandClosure` with manual completion
+### 2. `get` value asynchronously inside the `commandClosure` with manual completion
 
 * returns `CurrentValue` or `QueueSafeValueError` and  `CommandCompletionClosure` inside the `commandClosure`
 * is used as a `critical section` when it is necessary to hold reading / writing of the `value` while it is processed in the `commandClosure`
@@ -411,7 +411,7 @@ queueSafeAsyncedValue.highestPriority.get { result, done in
 }
 ```
 
-### 3.  `set` value ssynchronously
+### 3.  `set` value asynchronously
 
 * returns `UpdatedValue` or `QueueSafeValueError` inside the `commandClosure`
 * is used when only the set of `value` is required (no `value` processing)
@@ -452,7 +452,7 @@ queueSafeAsyncedValue.highestPriority.set(newValue: 9) { result in
 }
 ```
 
-### 4.  `set` value ssynchronously inside the `accessClosure`
+### 4.  `set` value asynchronously inside the `accessClosure`
 
 * sets `CurrentValue` inside the `accessClosure` 
 * is used when it is necessary to both read and write a `value` inside one closure
@@ -499,7 +499,7 @@ queueSafeAsyncedValue.highestPriority.set { currentValue in
     }
 }
 ```
-### 5.  `set` value ssynchronously inside the `accessClosure` with manual completion
+### 5.  `set` value asynchronously inside the `accessClosure` with manual completion
 
 * sets `CurrentValue` inside the `accessClosure` 
 * is used when it is necessary to both read and write a `value` inside one closure
